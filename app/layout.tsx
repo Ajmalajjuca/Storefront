@@ -1,19 +1,16 @@
 import { CartProvider } from "components/cart/cart-context";
-import { Navbar } from "components/layout/navbar";
-import { WelcomeToast } from "components/welcome-toast";
-import { GeistSans } from "geist/font/sans";
-import { getCart } from "lib/shopify";
-import { ReactNode } from "react";
-import { Toaster } from "sonner";
-import "./globals.css";
+import { SiteShell } from "components/site-shell";
+import { getCart, getPages, getProducts } from "lib/shopify";
 import { baseUrl } from "lib/utils";
+import { ReactNode } from "react";
+import "./globals.css";
 
 const { SITE_NAME } = process.env;
 
 export const metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: SITE_NAME!,
+    default: SITE_NAME ?? "Storefront",
     template: `%s | ${SITE_NAME}`,
   },
   robots: {
@@ -27,19 +24,39 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  // Don't await the fetch, pass the Promise to the context provider
   const cart = getCart();
 
+  const [products, pages] = await Promise.all([
+    getProducts({}).catch(() => []),
+    getPages().catch(() => []),
+  ]);
+
+  const storyCount = pages.filter((p) => p.handle.startsWith("story-")).length;
+
+  const navItems = [
+    { title: "All", href: "/indexes/products", count: products.length },
+    ...(storyCount > 0
+      ? [{ title: "Stories", href: "/story", count: storyCount }]
+      : []),
+  ];
+
   return (
-    <html lang="en" className={GeistSans.variable}>
-      <body className="bg-neutral-50 text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;700&family=Barlow:ital,wght@0,400;0,500;0,700;1,400&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>
         <CartProvider cartPromise={cart}>
-          <Navbar />
-          <main>
-            {children}
-            <Toaster closeButton />
-            <WelcomeToast />
-          </main>
+          <SiteShell navItems={navItems}>{children}</SiteShell>
         </CartProvider>
       </body>
     </html>

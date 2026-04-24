@@ -1,0 +1,8 @@
+.wrapper {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.inner {
+  display: inline-block;
+}

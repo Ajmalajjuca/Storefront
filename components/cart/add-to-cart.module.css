@@ -1,0 +1,38 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-s);
+}
+
+.btn {
+  width: 100%;
+  padding: 14rem;
+  background: var(--color-off-black);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--border-radius);
+  font-family: inherit;
+  font-size: var(--font-size-tiny);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--transition-base);
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--color-medium-grey);
+}
+
+.btn:disabled {
+  background: var(--color-divider);
+  color: var(--color-medium-grey);
+  cursor: not-allowed;
+}
+
+.error {
+  font-size: var(--font-size-tiny);
+  color: #c0392b;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-base);
+}

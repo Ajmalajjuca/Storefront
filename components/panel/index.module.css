@@ -1,0 +1,25 @@
+.wrapper {
+  position: fixed;
+  top: var(--header-height);
+  bottom: 10rem;
+  right: var(--grid-margin);
+  width: calc(var(--grid-column) * 3 + var(--grid-gutter) * 2);
+  background: var(--color-inner-background);
+  border-radius: var(--border-radius);
+  z-index: calc(var(--z-panel) + 50);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4rem 24rem rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 900px) {
+  .wrapper {
+    top: var(--header-height);
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+  }
+}

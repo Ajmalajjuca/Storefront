@@ -1,0 +1,218 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--gap) var(--grid-gutter);
+  border-bottom: var(--border-size) solid var(--color-divider);
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: var(--font-size-tiny);
+  font-weight: 700;
+  font-stretch: expanded;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-base);
+}
+
+.closeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-tiny);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-base);
+  color: var(--color-off-black);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color var(--transition-base);
+  padding: 0;
+}
+
+.closeBtn:hover {
+  color: var(--color-medium-grey);
+}
+
+.items {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--gap) 0;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: var(--gap);
+  color: var(--color-medium-grey);
+  font-size: var(--font-size-tiny);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-base);
+}
+
+/* Cart line item */
+.line {
+  display: grid;
+  grid-template-columns: 48rem 1fr;
+  gap: var(--gap);
+  padding: var(--gap) var(--grid-gutter);
+  border-bottom: var(--border-size) solid var(--color-divider);
+}
+
+.lineImage {
+  width: 48rem;
+  height: 48rem;
+  object-fit: cover;
+  border-radius: var(--inner-border-radius);
+  background: var(--color-divider);
+}
+
+.lineInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  min-width: 0;
+}
+
+.lineTitle {
+  font-size: var(--font-size-tiny);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lineVariant {
+  font-size: var(--font-size-tiny);
+  color: var(--color-medium-grey);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-base);
+}
+
+.lineActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.lineQty {
+  display: flex;
+  align-items: center;
+  gap: 6rem;
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+}
+
+.qtyBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18rem;
+  height: 18rem;
+  border: var(--border-size) solid var(--color-divider);
+  border-radius: var(--inner-border-radius);
+  font-size: var(--font-size-tiny);
+  background: none;
+  cursor: pointer;
+  color: var(--color-off-black);
+  transition: color var(--transition-base), border-color var(--transition-base);
+}
+
+.qtyBtn:hover {
+  color: var(--color-medium-grey);
+  border-color: var(--color-medium-grey);
+}
+
+.linePrice {
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+}
+
+.removeBtn {
+  font-size: var(--font-size-tiny);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-base);
+  color: var(--color-medium-grey);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition-base);
+}
+
+.removeBtn:hover {
+  color: var(--color-off-black);
+}
+
+/* Checkout section */
+.checkout {
+  flex-shrink: 0;
+  padding: var(--grid-gutter);
+  background: var(--color-off-black);
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.totals {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.totalRow.grand {
+  color: var(--color-white);
+  font-weight: 500;
+}
+
+.checkoutBtn {
+  width: 100%;
+  padding: 12rem;
+  background: var(--color-white);
+  color: var(--color-off-black);
+  border: none;
+  border-radius: var(--border-radius);
+  font-family: inherit;
+  font-size: var(--font-size-tiny);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+.checkoutBtn:hover {
+  background: var(--color-medium-grey);
+}
+
+@media (max-width: 900px) {
+  .line {
+    grid-template-columns: 60rem 1fr;
+  }
+
+  .lineImage {
+    width: 60rem;
+    height: 60rem;
+  }
+}

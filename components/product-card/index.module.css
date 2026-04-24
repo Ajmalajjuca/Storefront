@@ -1,0 +1,64 @@
+.wrapper {
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: var(--color-inner-background);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.wrapper:hover .image {
+  transform: scale(1.03);
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--color-divider);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out-expo);
+}
+
+.number {
+  position: absolute;
+  top: var(--gap);
+  left: var(--gap);
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+  color: var(--color-off-black);
+  background: var(--color-background);
+  border-radius: var(--inner-border-radius);
+  padding: 2rem 4rem;
+  line-height: 1;
+}
+
+.info {
+  padding: var(--gap-s) var(--gap);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.title {
+  font-size: var(--font-size-tiny);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price {
+  font-size: var(--font-size-tiny);
+  color: var(--color-medium-grey);
+  letter-spacing: var(--letter-spacing-base);
+}

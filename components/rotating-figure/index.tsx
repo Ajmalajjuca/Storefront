@@ -30,8 +30,7 @@ export function RotatingFigure({
   const [frame, setFrame] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const displayFrame =
-    externalFrame !== undefined ? externalFrame : frame;
+  const displayFrame = externalFrame !== undefined ? externalFrame : frame;
 
   useEffect(() => {
     if (externalFrame !== undefined || videoMedia || images.length <= 1) return;

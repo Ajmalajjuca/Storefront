@@ -39,6 +39,7 @@ import {
   Menu,
   Page,
   Product,
+  ProductMedia,
   ShopifyAddToCartOperation,
   ShopifyCart,
   ShopifyCartOperation,
@@ -50,7 +51,6 @@ import {
   ShopifyMenuOperation,
   ShopifyPageOperation,
   ShopifyPagesOperation,
-  ProductMedia,
   ShopifyProduct,
   ShopifyProductMedia,
   ShopifyProductOperation,
@@ -485,7 +485,7 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
       handle,
     },
   });
-
+  console.log("Product data:", res.body.data.product);
   return reshapeProduct(res.body.data.product, false);
 }
 

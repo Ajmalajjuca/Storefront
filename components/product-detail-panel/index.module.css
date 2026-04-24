@@ -8,6 +8,13 @@
   gap: 14rem;
   pointer-events: auto;
   max-width: 300rem;
+  max-height: calc(100dvh - calc(var(--grid-margin) * 6));
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.panel::-webkit-scrollbar {
+  display: none;
 }
 
 .lookCounter {
@@ -27,14 +34,14 @@
   color: var(--color-off-black);
 }
 
-/* ── 360° filmstrip ── */
+/* ── Image filmstrip ── */
 .filmstripSection {
   display: flex;
   flex-direction: column;
   gap: 6rem;
 }
 
-.degree {
+.filmstripLabel {
   font-size: var(--font-size-tiny);
   letter-spacing: var(--letter-spacing-base);
   text-transform: uppercase;
@@ -43,7 +50,7 @@
 
 .filmstrip {
   display: flex;
-  gap: 1rem;
+  gap: 4rem;
   overflow-x: auto;
   scrollbar-width: none;
   max-width: 280rem;
@@ -56,23 +63,21 @@
 .frame {
   position: relative;
   flex-shrink: 0;
-  width: 20rem;
-  height: 32rem;
-  border: 1.5rem solid transparent;
-  background: none;
+  width: 44rem;
+  height: 62rem;
+  background: var(--color-divider);
   padding: 0;
   cursor: pointer;
   overflow: hidden;
-  transition: border-color 0.15s, opacity 0.15s;
-  opacity: 0.5;
+  transition: opacity 0.15s;
+  opacity: 0.45;
 }
 
 .frame:hover {
-  opacity: 0.8;
+  opacity: 0.75;
 }
 
 .frameCurrent {
-  border-color: var(--color-off-black);
   opacity: 1;
 }
 
@@ -81,31 +86,119 @@
   object-position: center top;
 }
 
-/* ── Specs table ── */
-.specs {
+/* ── Options (color swatches + size chips) ── */
+.optionsSection {
   display: flex;
   flex-direction: column;
-  gap: 5rem;
-  margin: 0;
+  gap: 10rem;
 }
 
-.specRow {
+.optionGroup {
   display: flex;
-  align-items: baseline;
-  gap: 16rem;
+  flex-direction: column;
+  gap: 6rem;
 }
 
-.specName {
+.optionLabel {
   font-size: var(--font-size-tiny);
   letter-spacing: var(--letter-spacing-base);
   text-transform: uppercase;
   color: var(--color-medium-grey);
-  min-width: 52rem;
 }
 
-.specValue {
+.optionValues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5rem;
+  align-items: center;
+}
+
+.swatch {
+  width: 14rem;
+  height: 14rem;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: box-shadow 0.15s;
+}
+
+.swatchLight {
+  box-shadow: inset 0 0 0 1rem var(--color-divider);
+}
+
+.swatchActive {
+  box-shadow:
+    0 0 0 2rem var(--color-background),
+    0 0 0 3.5rem var(--color-off-black);
+}
+
+.sizeChip {
   font-size: var(--font-size-tiny);
   letter-spacing: var(--letter-spacing-base);
   text-transform: uppercase;
+  background: none;
+  padding: 3rem 8rem;
+  cursor: pointer;
+  color: var(--color-medium-grey);
+  transition: color 0.15s;
+}
+
+.sizeChip:hover {
   color: var(--color-off-black);
+}
+
+.sizeChipActive {
+  color: var(--color-off-black);
+  text-decoration: underline;
+  text-underline-offset: 2rem;
+}
+
+/* ── Lightbox ── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightboxInner {
+  position: relative;
+  width: 80vw;
+  height: 88vh;
+  max-width: 900px;
+}
+
+.lightboxClose {
+  position: absolute;
+  top: -28rem;
+  right: 0;
+  z-index: 1;
+  font-size: 16rem;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4rem;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.lightboxClose:hover {
+  opacity: 1;
+}
+
+.lightboxImageWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.lightboxImage {
+  object-fit: contain;
+  object-position: center;
 }

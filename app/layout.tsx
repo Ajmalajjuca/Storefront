@@ -29,6 +29,8 @@ export default async function RootLayout({
     getCollections().catch(() => []),
   ]);
 
+  console.log("Products:", products);
+
   const storyCount = pages.filter((p) => p.handle.startsWith("story-")).length;
 
   const navItems = [

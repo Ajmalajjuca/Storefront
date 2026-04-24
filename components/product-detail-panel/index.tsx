@@ -1,9 +1,47 @@
 "use client";
 
 import type { Product } from "lib/shopify/types";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
+import { useState } from "react";
+import { createPortal } from "react-dom";
 import styles from "./index.module.css";
+
+const COLOR_MAP: Record<string, string> = {
+  black: "#0a0a0a",
+  white: "#ffffff",
+  red: "#e63946",
+  blue: "#3a86ff",
+  green: "#2d6a4f",
+  yellow: "#f4d35e",
+  orange: "#f4a261",
+  purple: "#7b2d8b",
+  pink: "#f48fb1",
+  grey: "#9e9e9e",
+  gray: "#9e9e9e",
+  brown: "#795548",
+  navy: "#003049",
+  beige: "#d7c9aa",
+  cream: "#f5f0e8",
+  ivory: "#ffffed",
+  tan: "#d2b48c",
+  silver: "#c0c0c0",
+  gold: "#ffd700",
+  khaki: "#c3b091",
+  olive: "#808000",
+  teal: "#008080",
+  coral: "#ff6b6b",
+  maroon: "#800000",
+};
+
+const LIGHT_COLORS = new Set([
+  "white",
+  "cream",
+  "ivory",
+  "yellow",
+  "beige",
+  "silver",
+]);
 
 type Props = {
   product: Product;
@@ -25,67 +63,155 @@ export function ProductDetailPanel({
   onFrameChange,
 }: Props) {
   const images = product.images;
-  const totalFrames = images.length;
-  const hasFilmstrip = totalFrames > 1;
-  const degree = hasFilmstrip
-    ? Math.round((currentFrame / totalFrames) * 360)
-    : 0;
+  const hasFilmstrip = images.length > 1;
+
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<
+    Record<string, string>
+  >(() => {
+    const init: Record<string, string> = {};
+    product.options.forEach((opt) => {
+      if (opt.values.length > 0) init[opt.id] = opt.values[0]!;
+    });
+    return init;
+  });
+
+  function handleFrameClick(i: number, url: string) {
+    onFrameChange(i);
+    setLightboxSrc(url);
+  }
+
+  function selectOption(optId: string, val: string) {
+    setSelectedOptions((prev) => ({ ...prev, [optId]: val }));
+  }
 
   return (
-    <motion.div
-      className={styles.panel}
-      initial={{ opacity: 0, x: -16 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -16 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* Look counter */}
-      <span className={styles.lookCounter}>
-        LOOK {pad(lookIndex + 1)} / {pad(totalLooks)}
-      </span>
+    <>
+      <motion.div
+        className={styles.panel}
+        initial={{ opacity: 0, x: -16 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -16 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <span className={styles.lookCounter}>
+          LOOK {pad(lookIndex + 1)} / {pad(totalLooks)}
+        </span>
 
-      {/* Product title */}
-      <h2 className={styles.title}>{product.title.toUpperCase()}</h2>
+        <h2 className={styles.title}>{product.title.toUpperCase()}</h2>
 
-      {/* 360° filmstrip — only for image-based products with multiple frames */}
-      {hasFilmstrip && (
-        <div className={styles.filmstripSection}>
-          <span className={styles.degree}>
-            {String(degree).padStart(3, "0")}° / 360°
-          </span>
-          <div className={styles.filmstrip}>
-            {images.map((img, i) => (
-              <button
-                key={i}
-                className={`${styles.frame}${i === currentFrame ? ` ${styles.frameCurrent}` : ""}`}
-                onClick={() => onFrameChange(i)}
-                aria-label={`Frame ${i + 1}`}
-              >
-                <Image
-                  src={img.url}
-                  alt={`${product.title} angle ${i + 1}`}
-                  fill
-                  sizes="30px"
-                  className={styles.frameImg}
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Product specs from options */}
-      {product.options.length > 0 && (
-        <dl className={styles.specs}>
-          {product.options.map((opt) => (
-            <div key={opt.id} className={styles.specRow}>
-              <dt className={styles.specName}>{opt.name.toUpperCase()}</dt>
-              <dd className={styles.specValue}>{opt.values.join(", ")}</dd>
+        {hasFilmstrip && (
+          <div className={styles.filmstripSection}>
+            <span className={styles.filmstripLabel}>
+              {images.length} IMAGES
+            </span>
+            <div className={styles.filmstrip}>
+              {images.map((img, i) => (
+                <button
+                  key={i}
+                  className={`${styles.frame}${i === currentFrame ? ` ${styles.frameCurrent}` : ""}`}
+                  onClick={() => handleFrameClick(i, img.url)}
+                  aria-label={`View image ${i + 1}`}
+                >
+                  <Image
+                    src={img.url}
+                    alt={`${product.title} ${i + 1}`}
+                    fill
+                    sizes="48px"
+                    className={styles.frameImg}
+                  />
+                </button>
+              ))}
             </div>
-          ))}
-        </dl>
-      )}
-    </motion.div>
+          </div>
+        )}
+
+        {product.options.length > 0 && (
+          <div className={styles.optionsSection}>
+            {product.options.map((opt) => {
+              const isColor = /colou?r/i.test(opt.name);
+              const isSize = /size/i.test(opt.name);
+              return (
+                <div key={opt.id} className={styles.optionGroup}>
+                  <span className={styles.optionLabel}>
+                    {opt.name.toUpperCase()}
+                  </span>
+                  <div className={styles.optionValues}>
+                    {opt.values.map((val) => {
+                      const isActive = selectedOptions[opt.id] === val;
+                      if (isColor) {
+                        const lower = val.toLowerCase();
+                        const hex = COLOR_MAP[lower];
+                        const isLight = LIGHT_COLORS.has(lower);
+                        return (
+                          <button
+                            key={val}
+                            className={`${styles.swatch}${isLight ? ` ${styles.swatchLight}` : ""}${isActive ? ` ${styles.swatchActive}` : ""}`}
+                            style={{ background: hex ?? lower }}
+                            title={val}
+                            onClick={() => selectOption(opt.id, val)}
+                            aria-label={val}
+                          />
+                        );
+                      }
+                      if (isSize) {
+                        return (
+                          <button
+                            key={val}
+                            className={`${styles.sizeChip}${isActive ? ` ${styles.sizeChipActive}` : ""}`}
+                            onClick={() => selectOption(opt.id, val)}
+                          >
+                            {val}
+                          </button>
+                        );
+                      }
+                      return (
+                        <button
+                          key={val}
+                          className={`${styles.sizeChip}${isActive ? ` ${styles.sizeChipActive}` : ""}`}
+                          onClick={() => selectOption(opt.id, val)}
+                        >
+                          {val}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </motion.div>
+
+      {lightboxSrc &&
+        typeof window !== "undefined" &&
+        createPortal(
+          <div className={styles.lightbox} onClick={() => setLightboxSrc(null)}>
+            <div
+              className={styles.lightboxInner}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className={styles.lightboxClose}
+                onClick={() => setLightboxSrc(null)}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+              <div className={styles.lightboxImageWrap}>
+                <Image
+                  src={lightboxSrc}
+                  alt={product.title}
+                  fill
+                  sizes="90vw"
+                  className={styles.lightboxImage}
+                />
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
+    </>
   );
 }

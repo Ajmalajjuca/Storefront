@@ -11,6 +11,7 @@ type Props = {
   products: Product[];
   selectedIndex: number | null;
   onSelect: (index: number | null) => void;
+  onQuickView?: () => void;
   currentFrame: number;
   onFrameChange: (frame: number) => void;
 };
@@ -23,6 +24,7 @@ export function ScrollStage({
   products,
   selectedIndex,
   onSelect,
+  onQuickView,
   currentFrame,
   onFrameChange,
 }: Props) {
@@ -40,6 +42,17 @@ export function ScrollStage({
   // transformOrigin tracks where in the stage the zoom should emanate from
   const [transformOrigin, setTransformOrigin] = useState("50% 80%");
 
+  const selectedProduct =
+    selectedIndex !== null ? products[selectedIndex]! : null;
+  const prevProduct =
+    selectedIndex !== null && selectedIndex > 0
+      ? products[selectedIndex - 1]!
+      : null;
+  const nextProduct =
+    selectedIndex !== null && selectedIndex < total - 1
+      ? products[selectedIndex + 1]!
+      : null;
+
   // Escape → deselect
   useEffect(() => {
     if (!isDetail) return;
@@ -50,31 +63,38 @@ export function ScrollStage({
     return () => window.removeEventListener("keydown", handler);
   }, [isDetail, onSelect]);
 
-  // Wheel in detail mode → navigate between products (left/right)
+  // Wheel in detail mode → navigate through current product's images frame by frame
   // Row mode: no interception — page scroll works normally to reveal the footer
   useEffect(() => {
     if (!isDetail) return;
+    const totalFrames = selectedProduct?.images.length ?? 1;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       if (navCooldown.current) return;
       const delta = e.deltaY || e.deltaX;
       if (Math.abs(delta) < 15) return;
       const dir = delta > 0 ? 1 : -1;
-      const next = (selectedIndex ?? 0) + dir;
-      if (next >= 0 && next < total) {
+      const nextFrame = Math.max(
+        0,
+        Math.min(totalFrames - 1, currentFrame + dir),
+      );
+      if (nextFrame !== currentFrame) {
         navCooldown.current = true;
-        setTransformOrigin(dir > 0 ? "88% 50%" : "12% 50%");
-        onSelect(next);
+        onFrameChange(nextFrame);
         setTimeout(() => {
           navCooldown.current = false;
-        }, 650);
+        }, 200);
       }
     };
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => window.removeEventListener("wheel", onWheel);
-  }, [isDetail, selectedIndex, total, onSelect]);
+  }, [isDetail, selectedProduct, currentFrame, onFrameChange]);
 
   function handleRowSelect(i: number) {
+    if (i === selectedIndex) {
+      onQuickView?.();
+      return;
+    }
     const slot = slotRefs.current[i];
     const stage = stageRef.current;
     if (slot && stage) {
@@ -87,19 +107,12 @@ export function ScrollStage({
     onSelect(i);
   }
 
-  const selectedProduct =
-    selectedIndex !== null ? products[selectedIndex]! : null;
-  const prevProduct =
-    selectedIndex !== null && selectedIndex > 0
-      ? products[selectedIndex - 1]!
-      : null;
-  const nextProduct =
-    selectedIndex !== null && selectedIndex < total - 1
-      ? products[selectedIndex + 1]!
-      : null;
-
   return (
-    <div ref={stageRef} className={styles.stage} onClick={() => isDetail && onSelect(null)}>
+    <div
+      ref={stageRef}
+      className={styles.stage}
+      onClick={() => isDetail && onSelect(null)}
+    >
       {/* Title overlay — fades out in detail mode */}
       <AnimatePresence>
         {!isDetail && (
@@ -160,7 +173,7 @@ export function ScrollStage({
                 product={selectedProduct}
                 externalFrame={currentFrame}
                 priority
-                onClick={() => onSelect(null)}
+                onClick={() => onQuickView?.()}
               />
             </motion.div>
 

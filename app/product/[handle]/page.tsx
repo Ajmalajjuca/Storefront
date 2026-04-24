@@ -33,6 +33,7 @@ export default async function ProductPage(props: {
 }) {
   const params = await props.params;
   const product = await getProduct(params.handle);
+  console.log("Product data:", product);
   if (!product) return notFound();
 
   const price = new Intl.NumberFormat("en-US", {

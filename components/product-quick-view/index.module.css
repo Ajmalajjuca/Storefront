@@ -1,0 +1,373 @@
+/* ── Overlay ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background);
+  overflow: hidden;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── Left panel — fixed, no borders ── */
+.leftPanel {
+  width: 38%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: calc(var(--grid-margin) * 4) var(--grid-margin) var(--grid-margin);
+  display: flex;
+  flex-direction: column;
+  gap: 20rem;
+  position: relative;
+}
+
+.leftPanel::-webkit-scrollbar {
+  display: none;
+}
+
+.closeBtn {
+  position: absolute;
+  top: var(--grid-margin);
+  right: var(--grid-margin);
+  font-size: 20rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-off-black);
+  padding: 4rem;
+  line-height: 1;
+}
+
+.category {
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  color: var(--color-medium-grey);
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: clamp(22rem, 2.5vw, 40rem);
+  font-weight: 900;
+  font-stretch: expanded;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  color: var(--color-off-black);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.price {
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  color: var(--color-off-black);
+  margin: 0;
+}
+
+/* ── Thumbnails ── */
+.thumbnailSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6rem;
+}
+
+.imageCounter {
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  color: var(--color-medium-grey);
+}
+
+.thumbnails {
+  display: flex;
+  gap: 4rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.thumbnails::-webkit-scrollbar {
+  display: none;
+}
+
+.thumb {
+  position: relative;
+  flex-shrink: 0;
+  width: 44rem;
+  height: 62rem;
+  background: var(--color-divider);
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0.45;
+  transition: opacity 0.15s;
+}
+
+.thumb:hover {
+  opacity: 0.75;
+}
+
+.thumbActive {
+  opacity: 1;
+}
+
+.thumbImg {
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* ── Options ── */
+.optionSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8rem;
+}
+
+.optionLabel {
+  font-size: var(--font-size-small);
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+  color: var(--color-medium-grey);
+}
+
+.optionValues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6rem;
+  align-items: center;
+}
+
+/* Colour swatches */
+.swatch {
+  width: 20rem;
+  height: 20rem;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+  flex-shrink: 0;
+}
+
+.swatchLight {
+  box-shadow: inset 0 0 0 1rem var(--color-divider);
+}
+
+.swatchActive {
+  box-shadow:
+    0 0 0 2.5rem var(--color-background),
+    0 0 0 4rem var(--color-off-black);
+}
+
+/* Size / generic chips — filled background so they're always visible */
+.sizeBtn {
+  font-size: var(--font-size-small);
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+  background: var(--color-divider);
+  padding: 5rem 12rem;
+  cursor: pointer;
+  color: var(--color-off-black);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.sizeBtn:hover {
+  background: var(--color-off-black);
+  color: var(--color-background);
+}
+
+.sizeBtnActive {
+  background: var(--color-off-black);
+  color: var(--color-background);
+}
+
+/* ── Accordions — no border lines ── */
+.accordions {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.accordionItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.accordionTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  padding: 10rem 0;
+  cursor: pointer;
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+  color: var(--color-off-black);
+}
+
+.accordionIcon {
+  font-size: 14rem;
+  line-height: 1;
+}
+
+.accordionContent {
+  overflow: hidden;
+  padding-bottom: 12rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8rem;
+}
+
+.accordionText {
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  color: var(--color-off-black);
+  margin: 0;
+}
+
+.accordionHtml {
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  color: var(--color-off-black);
+}
+
+.closeSection {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+  color: var(--color-medium-grey);
+  padding: 0;
+}
+
+/* ── Right side wrapper — counter stays pinned, panel scrolls inside ── */
+.rightWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 0;
+}
+
+/* Counter is outside the scroll container so it never scrolls away */
+.rightCounter {
+  position: absolute;
+  top: var(--grid-margin);
+  right: var(--grid-margin);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.counterText {
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  color: var(--color-off-black);
+}
+
+/* Scroll container — slide heights are set by JS (ResizeObserver) */
+.rightPanel {
+  flex: 1;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  min-height: 0;
+}
+
+.rightPanel::-webkit-scrollbar {
+  display: none;
+}
+
+/* height is applied inline by ResizeObserver; position:relative needed for fill Image */
+.imageSlide {
+  position: relative;
+  width: 100%;
+  scroll-snap-align: start;
+  background: var(--color-inner-background);
+}
+
+.rightImage {
+  object-fit: contain;
+  object-position: center center;
+}
+
+/* ── Bottom bar ── */
+.bottomBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10rem var(--grid-margin);
+  gap: 16rem;
+}
+
+.bottomLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.bottomPrice {
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  font-weight: 700;
+  color: var(--color-off-black);
+}
+
+.bottomOptions {
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  color: var(--color-medium-grey);
+  text-transform: uppercase;
+}
+
+.addToCartBtn {
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+  background: var(--color-off-black);
+  color: var(--color-background);
+  border: none;
+  padding: 10rem 24rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.addToCartBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.errorMsg {
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  color: #c0392b;
+  margin: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .body {
+    flex-direction: column;
+  }
+
+  .leftPanel {
+    width: 100%;
+    max-height: 45vh;
+    padding-top: calc(var(--grid-margin) * 3);
+  }
+
+  .rightPanel {
+    min-height: 40vh;
+  }
+}

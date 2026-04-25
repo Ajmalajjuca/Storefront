@@ -1,8 +1,8 @@
-import { ProductPageClient } from "./product-client";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
 import { getProduct } from "lib/shopify";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ProductPageClient } from "./product-client";
 
 export async function generateMetadata(props: {
   params: Promise<{ handle: string }>;
@@ -27,7 +27,6 @@ export default async function ProductPage(props: {
 }) {
   const params = await props.params;
   const product = await getProduct(params.handle);
-  console.log("Product data:", product);
   if (!product) return notFound();
 
   return <ProductPageClient product={product} />;

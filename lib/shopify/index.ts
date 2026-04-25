@@ -197,11 +197,11 @@ const reshapeMedia = (
         sources: v.sources ?? [],
         previewImage: v.previewImage
           ? {
-              url: v.previewImage.url,
-              altText: v.previewImage.altText ?? "",
-              width: v.previewImage.width,
-              height: v.previewImage.height,
-            }
+            url: v.previewImage.url,
+            altText: v.previewImage.altText ?? "",
+            width: v.previewImage.width,
+            height: v.previewImage.height,
+          }
           : undefined,
       };
     }
@@ -485,7 +485,6 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
       handle,
     },
   });
-  console.log("Product data:", res.body.data.product);
   return reshapeProduct(res.body.data.product, false);
 }
 

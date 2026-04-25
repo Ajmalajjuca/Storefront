@@ -1,5 +1,6 @@
 "use client";
 
+import { ChromaKeyCanvas } from "components/chroma-key-canvas";
 import type { Product, ProductMedia } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -76,14 +77,11 @@ export function RotatingFigure({
             aria-label={product.title}
           >
             <div className={styles.mediaWrap}>
-              <video
+              <ChromaKeyCanvas
                 src={mp4.url}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className={styles.media}
+                isVideo={true}
                 poster={videoMedia.previewImage?.url}
+                className={styles.media}
               />
             </div>
           </button>
@@ -96,14 +94,11 @@ export function RotatingFigure({
           aria-label={product.title}
         >
           <div className={styles.mediaWrap}>
-            <video
+            <ChromaKeyCanvas
               src={mp4.url}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className={styles.media}
+              isVideo={true}
               poster={videoMedia.previewImage?.url}
+              className={styles.media}
             />
           </div>
         </Link>
@@ -125,13 +120,19 @@ export function RotatingFigure({
         aria-label={product.title}
       >
         <div className={styles.mediaWrap}>
-          <Image
+          {priority && (
+            <Image
+              src={currentImage.url}
+              alt=""
+              priority
+              fill
+              sizes="1px"
+              style={{ opacity: 0, pointerEvents: "none", zIndex: -1 }}
+            />
+          )}
+          <ChromaKeyCanvas
             src={currentImage.url}
-            alt={currentImage.altText ?? product.title}
-            fill
-            sizes="40vw"
             className={styles.media}
-            priority={priority}
           />
         </div>
       </button>
@@ -147,13 +148,19 @@ export function RotatingFigure({
       aria-label={product.title}
     >
       <div className={styles.mediaWrap}>
-        <Image
+        {priority && (
+          <Image
+            src={currentImage.url}
+            alt=""
+            priority
+            fill
+            sizes="1px"
+            style={{ opacity: 0, pointerEvents: "none", zIndex: -1 }}
+          />
+        )}
+        <ChromaKeyCanvas
           src={currentImage.url}
-          alt={currentImage.altText ?? product.title}
-          fill
-          sizes="12vw"
           className={styles.media}
-          priority={priority}
         />
       </div>
     </Link>

@@ -11,7 +11,6 @@ type Props = {
   products: Product[];
   selectedIndex: number | null;
   onSelect: (index: number | null) => void;
-  onQuickView?: () => void;
   currentFrame: number;
   onFrameChange: (frame: number) => void;
 };
@@ -24,7 +23,6 @@ export function ScrollStage({
   products,
   selectedIndex,
   onSelect,
-  onQuickView,
   currentFrame,
   onFrameChange,
 }: Props) {
@@ -63,36 +61,37 @@ export function ScrollStage({
     return () => window.removeEventListener("keydown", handler);
   }, [isDetail, onSelect]);
 
-  // Wheel in detail mode → navigate through current product's images frame by frame
+  // Wheel in detail mode → navigate through adjacent products
   // Row mode: no interception — page scroll works normally to reveal the footer
   useEffect(() => {
-    if (!isDetail) return;
-    const totalFrames = selectedProduct?.images.length ?? 1;
+    if (!isDetail || selectedIndex === null) return;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       if (navCooldown.current) return;
       const delta = e.deltaY || e.deltaX;
       if (Math.abs(delta) < 15) return;
       const dir = delta > 0 ? 1 : -1;
-      const nextFrame = Math.max(
-        0,
-        Math.min(totalFrames - 1, currentFrame + dir),
-      );
-      if (nextFrame !== currentFrame) {
+      
+      const nextIndex = selectedIndex + dir;
+      if (nextIndex >= 0 && nextIndex < total) {
         navCooldown.current = true;
-        onFrameChange(nextFrame);
+        if (dir > 0) {
+          setTransformOrigin("88% 50%");
+        } else {
+          setTransformOrigin("12% 50%");
+        }
+        onSelect(nextIndex);
         setTimeout(() => {
           navCooldown.current = false;
-        }, 200);
+        }, 400);
       }
     };
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => window.removeEventListener("wheel", onWheel);
-  }, [isDetail, selectedProduct, currentFrame, onFrameChange]);
+  }, [isDetail, selectedIndex, total, onSelect]);
 
   function handleRowSelect(i: number) {
     if (i === selectedIndex) {
-      onQuickView?.();
       return;
     }
     const slot = slotRefs.current[i];
@@ -173,7 +172,6 @@ export function ScrollStage({
                 product={selectedProduct}
                 externalFrame={currentFrame}
                 priority
-                onClick={() => onQuickView?.()}
               />
             </motion.div>
 

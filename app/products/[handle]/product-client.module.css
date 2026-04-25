@@ -1,11 +1,9 @@
-/* ── Overlay ── */
-.overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
+/* ── Container ── */
+.container {
   display: flex;
   flex-direction: column;
   background: var(--color-background);
+  height: calc(100vh - 80px); /* Approximate height remaining after global header */
   overflow: hidden;
 }
 

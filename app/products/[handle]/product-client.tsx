@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { Product, ProductVariant } from "lib/shopify/types";
 import Image from "next/image";
 import { useActionState, useEffect, useRef, useState } from "react";
-import styles from "./index.module.css";
+import styles from "./product-client.module.css";
 
 const SWATCH_COLORS: Record<string, string> = {
   NOIR: "#0a0a0a",
@@ -36,14 +36,13 @@ const HIDDEN_TAG = "nextjs-frontend-hidden";
 
 type Props = {
   product: Product;
-  onClose: () => void;
 };
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export function ProductQuickView({ product, onClose }: Props) {
+export function ProductPageClient({ product }: Props) {
   const { addCartItem } = useCart();
   const [message, formAction, isPending] = useActionState(addItem, null);
 
@@ -55,7 +54,6 @@ export function ProductQuickView({ product, onClose }: Props) {
   const [imageIndex, setImageIndex] = useState(0);
   const [openSection, setOpenSection] = useState<string | null>(null);
 
-  const overlayRef = useRef<HTMLDivElement>(null);
   const rightPanelRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const imageIndexRef = useRef(0);
@@ -64,26 +62,10 @@ export function ProductQuickView({ product, onClose }: Props) {
   const images = product.images;
   const total = images.length;
 
-  // Keep ref in sync so wheel handler never reads stale imageIndex
   useEffect(() => {
     imageIndexRef.current = imageIndex;
   }, [imageIndex]);
 
-  // Escape closes the modal
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      e.stopImmediatePropagation();
-      onClose();
-    };
-    window.addEventListener("keydown", handler, { capture: true });
-    return () =>
-      window.removeEventListener("keydown", handler, { capture: true });
-  }, [onClose]);
-
-  // Set each slide's height = the panel's visible height so scroll-snap works.
-  // height:100% is unreliable inside a flex-derived scroll container,
-  // so we measure with ResizeObserver and apply it as an inline px value.
   useEffect(() => {
     const panel = rightPanelRef.current;
     if (!panel) return;
@@ -99,7 +81,6 @@ export function ProductQuickView({ product, onClose }: Props) {
     return () => ro.disconnect();
   }, [total]);
 
-  // Sync left-panel counter/thumbnails with whichever slide is in view
   useEffect(() => {
     const panel = rightPanelRef.current;
     if (!panel || total <= 1) return;
@@ -116,33 +97,6 @@ export function ProductQuickView({ product, onClose }: Props) {
     );
     slideRefs.current.forEach((s) => s && io.observe(s));
     return () => io.disconnect();
-  }, [total]);
-
-  // Intercept wheel anywhere in the modal → snap to next/prev slide smoothly.
-  // Cooldown prevents rapid multi-slide jumps per gesture.
-  // stopPropagation keeps the ScrollStage window handler from also firing.
-  useEffect(() => {
-    const overlay = overlayRef.current;
-    const panel = rightPanelRef.current;
-    if (!overlay || !panel) return;
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (wheelCooldown.current) return;
-      const dir = e.deltaY > 0 ? 1 : -1;
-      const cur = imageIndexRef.current;
-      const next = Math.max(0, Math.min(total - 1, cur + dir));
-      if (next === cur) return;
-      wheelCooldown.current = true;
-      const slide = slideRefs.current[next];
-      if (slide) panel.scrollTo({ top: slide.offsetTop, behavior: "smooth" });
-      setImageIndex(next);
-      setTimeout(() => {
-        wheelCooldown.current = false;
-      }, 650);
-    };
-    overlay.addEventListener("wheel", onWheel, { passive: false });
-    return () => overlay.removeEventListener("wheel", onWheel);
   }, [total]);
 
   function scrollToImage(i: number) {
@@ -162,7 +116,6 @@ export function ProductQuickView({ product, onClose }: Props) {
 
   const category = product.tags.find((t) => t !== HIDDEN_TAG);
 
-  // Hide Shopify's meaningless default variant option
   const realOptions = product.options.filter(
     (opt) =>
       !(
@@ -204,30 +157,14 @@ export function ProductQuickView({ product, onClose }: Props) {
   const addItemAction = formAction.bind(null, matchingVariant?.id);
 
   return (
-    <motion.div
-      ref={overlayRef}
-      className={styles.overlay}
-      initial={{ y: "100%" }}
-      animate={{ y: 0 }}
-      exit={{ y: "100%" }}
-      transition={{ type: "spring", stiffness: 280, damping: 32, mass: 0.9 }}
-    >
+    <div className={styles.container}>
       <div className={styles.body}>
-        {/* ── Left panel — stays put while right panel scrolls ── */}
         <div className={styles.leftPanel}>
-          <button
-            className={styles.closeBtn}
-            onClick={onClose}
-            aria-label="Close"
-          >
-            ×
-          </button>
-
           {category && (
             <span className={styles.category}>{category.toUpperCase()}</span>
           )}
 
-          <h2 className={styles.title}>{product.title}</h2>
+          <h1 className={styles.title}>{product.title}</h1>
           <p className={styles.price}>{priceDisplay}</p>
 
           {total > 1 && (
@@ -352,7 +289,6 @@ export function ProductQuickView({ product, onClose }: Props) {
           </div>
         </div>
 
-        {/* ── Right side: wrapper keeps counter pinned, panel scrolls ── */}
         <div className={styles.rightWrapper}>
           {total > 1 && (
             <div className={styles.rightCounter}>
@@ -362,7 +298,6 @@ export function ProductQuickView({ product, onClose }: Props) {
             </div>
           )}
 
-          {/* Scroll container — JS sets each slide's height via ResizeObserver */}
           <div className={styles.rightPanel} ref={rightPanelRef}>
             {images.map((img, i) => (
               <div
@@ -386,7 +321,6 @@ export function ProductQuickView({ product, onClose }: Props) {
         </div>
       </div>
 
-      {/* ── Bottom bar ── */}
       <div className={styles.bottomBar}>
         <div className={styles.bottomLeft}>
           <span className={styles.bottomPrice}>{priceDisplay}</span>
@@ -428,6 +362,6 @@ export function ProductQuickView({ product, onClose }: Props) {
           </p>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -1,8 +1,14 @@
-.wrapper {
+.group {
   position: fixed;
   bottom: var(--grid-margin);
   left: var(--grid-margin);
   z-index: var(--z-bars);
+  display: flex;
+  gap: 8rem;
+  flex-wrap: wrap;
+}
+
+.wrapper {
   background: var(--color-inner-background);
   border: var(--border-size) solid var(--color-divider);
   border-radius: var(--border-radius);

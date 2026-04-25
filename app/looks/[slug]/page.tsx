@@ -1,49 +1,49 @@
-import { Footer } from "components/footer";
-import { ProductCard } from "components/product-card";
-import { getCollectionProducts, getPage } from "lib/shopify";
+import { HomeScene } from "components/home-scene";
+import { HIDDEN_PRODUCT_TAG } from "lib/constants";
+import { getProduct, getProducts, getCollectionProducts, getProductRecommendations } from "lib/shopify";
+import type { Product } from "lib/shopify/types";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import styles from "./page.module.css";
 
 export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const page = await getPage(`looks-${params.slug}`).catch(() => null);
-  if (!page) return { title: params.slug };
+  const product = await getProduct(params.slug);
+  if (!product) return notFound();
+
+  const { url, width, height, altText: alt } = product.featuredImage || {};
+  const indexable = !product.tags?.includes(HIDDEN_PRODUCT_TAG);
 
   return {
-    title: page.seo?.title || page.title,
-    description: page.seo?.description,
-    openGraph: { type: "article" },
+    title: product.seo?.title || product.title,
+    description: product.seo?.description || product.description,
+    robots: { index: indexable, follow: indexable },
+    openGraph: url ? { images: [{ url, width, height, alt }] } : undefined,
   };
 }
 
-export default async function LooksPage(props: {
+export default async function LookPage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const params = await props.params;
+  const product = await getProduct(params.slug);
+  if (!product) return notFound();
 
-  // Try to get products from a collection matching the slug
   const products = await getCollectionProducts({
-    collection: params.slug,
-  }).catch(() => []);
+    collection: "hidden-homepage-featured-items",
+  })
+    .catch(() => [])
+    .then((items) =>
+      items.length > 0 ? items : getProducts({}).catch(() => []),
+    );
 
-  return (
-    <div className={styles.wrapper}>
-      <div className={styles.hero}>
-        <h1 className={styles.title}>{params.slug.replace(/-/g, " ")}</h1>
-      </div>
-
-      {products.length > 0 && (
-        <div className={styles.grid}>
-          {products.map((product, i) => (
-            <ProductCard key={product.id} product={product} index={i} />
-          ))}
-        </div>
-      )}
-
-      <Footer />
-    </div>
+  const recommendationsMap: Record<string, Product[]> = {};
+  await Promise.all(
+    products.map(async (p) => {
+      recommendationsMap[p.id] = await getProductRecommendations(p.id).catch(() => []);
+    })
   );
+
+  return <HomeScene products={products} recommendationsMap={recommendationsMap} initialHandle={params.slug} />;
 }

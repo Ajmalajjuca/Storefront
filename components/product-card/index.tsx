@@ -26,7 +26,7 @@ export function ProductCard({ product, index, priority = false }: Props) {
   const inView = useInView(ref, { once: true, margin: "0px 0px -60px 0px" });
 
   const num = (index + 1).toString().padStart(2, "0");
-  const image = product.featuredImage;
+  const image = product.featuredImage || product.images[0];
   const price = product.priceRange.minVariantPrice;
 
   return (

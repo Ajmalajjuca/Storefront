@@ -95,10 +95,13 @@
   pointer-events: none; /* individual children opt-in */
 }
 
-/* Selected product: fills full stage */
+/* Selected product: fills center of stage */
 .detailMain {
   position: absolute;
-  inset: 0;
+  top: 15%;
+  bottom: 20%;
+  left: 40%;
+  right: 40%;
   z-index: 1;
   cursor: default;
   pointer-events: auto;
@@ -147,5 +150,12 @@
 
   .detailAdjacent {
     width: 10%;
+  }
+
+  .detailMain {
+    top: 15%;
+    bottom: 25%;
+    left: 25%;
+    right: 25%;
   }
 }

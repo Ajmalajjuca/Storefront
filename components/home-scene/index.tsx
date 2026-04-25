@@ -2,10 +2,8 @@
 
 import { BottomBar } from "components/bottom-bar";
 import { Footer } from "components/footer";
-import { ProductQuickView } from "components/product-quick-view";
 import { ScrollStage } from "components/scroll-stage";
 import {
-  AnimatePresence,
   motion,
   useScroll,
   useTransform,
@@ -16,9 +14,11 @@ import styles from "./index.module.css";
 
 type Props = {
   products: Product[];
+  recommendationsMap?: Record<string, Product[]>;
+  initialHandle?: string;
 };
 
-export function HomeScene({ products }: Props) {
+export function HomeScene({ products, recommendationsMap = {}, initialHandle }: Props) {
   const { scrollY } = useScroll();
 
   const [vh, setVh] = useState(800);
@@ -29,15 +29,54 @@ export function HomeScene({ products }: Props) {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(() => {
+    if (initialHandle) {
+      const idx = products.findIndex((p) => p.handle === initialHandle);
+      return idx !== -1 ? idx : null;
+    }
+    return null;
+  });
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [quickViewOpen, setQuickViewOpen] = useState(false);
 
   function handleSelect(index: number | null) {
     setSelectedIndex(index);
     setCurrentFrame(0);
-    setQuickViewOpen(false);
+
+    // Update URL without triggering Next.js hard navigation
+    if (index !== null && products[index]) {
+      History.prototype.pushState.apply(window.history, [null, "", `/looks/${products[index].handle}`]);
+    } else {
+      History.prototype.pushState.apply(window.history, [null, "", `/`]);
+    }
   }
+
+  // Prevent page scroll when in detail view to stop footer from overlapping
+  useEffect(() => {
+    if (selectedIndex !== null) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [selectedIndex]);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === "/") {
+        setSelectedIndex(null);
+      } else if (path.startsWith("/looks/")) {
+        const handle = path.replace("/looks/", "");
+        const idx = products.findIndex((p) => p.handle === handle);
+        if (idx !== -1) setSelectedIndex(idx);
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [products]);
 
   const footerY = useTransform(scrollY, [0, vh], ["100%", "0%"]);
   const mainOpacity = useTransform(scrollY, [0, vh], [1, 0]);
@@ -54,27 +93,20 @@ export function HomeScene({ products }: Props) {
           products={products}
           selectedIndex={selectedIndex}
           onSelect={handleSelect}
-          onQuickView={() => setQuickViewOpen(true)}
           currentFrame={currentFrame}
           onFrameChange={setCurrentFrame}
         />
       </motion.div>
 
-      <BottomBar count={products.length} selectedProduct={selectedProduct} />
+      <BottomBar 
+        count={products.length} 
+        selectedProduct={selectedProduct} 
+        relatedProducts={selectedProduct ? recommendationsMap[selectedProduct.id] : undefined}
+      />
 
       <motion.div style={{ y: footerY }} className={styles.footerSlider}>
         <Footer />
       </motion.div>
-
-      <AnimatePresence>
-        {quickViewOpen && selectedProduct && (
-          <ProductQuickView
-            key={selectedProduct.id}
-            product={selectedProduct}
-            onClose={() => setQuickViewOpen(false)}
-          />
-        )}
-      </AnimatePresence>
     </>
   );
 }

@@ -1,8 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
 import styles from "./index.module.css";
 
 type NavItem = {
@@ -28,8 +26,6 @@ export function Header({
   onCartClick,
   collectionLabel,
 }: Props) {
-  const [menuOpen, setMenuOpen] = useState(false);
-
   return (
     <>
       {/* ── Small panel: top-left ─────────────────────── */}
@@ -39,21 +35,9 @@ export function Header({
           <Link
             href="/"
             className={styles.logoLink}
-            onClick={() => setMenuOpen(false)}
           >
-            <span className={styles.logoText}>BÉCANE</span>
+            <span className={styles.logoText}>BECANE</span>
           </Link>
-
-          {/* Hamburger (mobile only) */}
-          <button
-            className={`${styles.menuIcon}${menuOpen ? ` ${styles.menuOpen}` : ""}`}
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-          >
-            <span className={styles.menuLine} />
-            <span className={styles.menuLine} />
-            <span className={styles.menuLine} />
-          </button>
         </div>
 
         {/* Nav row */}
@@ -107,37 +91,6 @@ export function Header({
           </span>
         </div>
       )}
-
-      {/* ── Mobile full-screen overlay ────────────────── */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            className={styles.mobileOverlay}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={styles.mobileNavLink}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.title}
-              </Link>
-            ))}
-            <Link
-              href="/page/size-guide"
-              className={styles.mobileNavLink}
-              onClick={() => setMenuOpen(false)}
-            >
-              Size Guide
-            </Link>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

@@ -28,42 +28,16 @@
 
 .logoText {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 14rem;
+  font-size: 16rem;
   font-weight: 900;
+  font-style: italic;
   font-stretch: expanded;
   text-transform: uppercase;
   letter-spacing: 0.02em;
   line-height: 1;
 }
 
-.menuIcon {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 2rem;
-}
 
-.menuLine {
-  width: 14rem;
-  height: 1rem;
-  background: var(--color-off-black);
-  transition:
-    transform 0.2s,
-    opacity 0.2s;
-}
-
-.menuOpen .menuLine:nth-child(1) {
-  transform: translateY(4rem) rotate(45deg);
-}
-.menuOpen .menuLine:nth-child(2) {
-  opacity: 0;
-}
-.menuOpen .menuLine:nth-child(3) {
-  transform: translateY(-4rem) rotate(-45deg);
-}
 
 /* Nav row */
 .navRow {
@@ -147,33 +121,7 @@
   background: var(--color-inner-background);
 }
 
-/* ── Mobile full-screen menu overlay ──────────────────────────────── */
-.mobileOverlay {
-  position: fixed;
-  inset: 0;
-  background: var(--color-background);
-  z-index: calc(var(--z-header) - 1);
-  display: flex;
-  flex-direction: column;
-  padding: calc(var(--grid-margin) * 4) var(--grid-margin) var(--grid-margin);
-  gap: var(--gap);
-}
 
-.mobileNavLink {
-  font-size: 28rem;
-  font-weight: 700;
-  font-stretch: expanded;
-  text-transform: uppercase;
-  color: var(--color-off-black);
-  text-decoration: none;
-  border-bottom: var(--border-size) solid var(--color-divider);
-  padding-bottom: var(--gap);
-  transition: color var(--transition-base);
-}
-
-.mobileNavLink:hover {
-  color: var(--color-medium-grey);
-}
 
 @media (max-width: 900px) {
   .panel {

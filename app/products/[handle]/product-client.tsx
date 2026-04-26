@@ -43,6 +43,9 @@ function pad(n: number) {
 }
 
 export function ProductPageClient({ product }: Props) {
+  console.log("PRODUCT OPTIONS:", JSON.stringify(product.options));
+  console.log("REAL OPTIONS:", JSON.stringify(product.options.filter(opt => !(opt.values.length === 1 && opt.values[0]?.toLowerCase() === "default title"))));
+
   const { addCartItem } = useCart();
   const [message, formAction, isPending] = useActionState(addItem, null);
 
@@ -164,14 +167,18 @@ export function ProductPageClient({ product }: Props) {
             <span className={styles.category}>{category.toUpperCase()}</span>
           )}
 
-          <h1 className={styles.title}>{product.title}</h1>
-          <p className={styles.price}>{priceDisplay}</p>
+          <div className={styles.titleRow}>
+            <h1 className={styles.title}>{product.title}</h1>
+            <p className={styles.price}>{priceDisplay}</p>
+          </div>
 
           {total > 1 && (
             <div className={styles.thumbnailSection}>
-              <span className={styles.imageCounter}>
-                {pad(imageIndex + 1)} / {pad(total)}
-              </span>
+              <div className={styles.thumbnailHeader}>
+                <span className={styles.imageCounter}>
+                  {pad(imageIndex + 1)} / {pad(total)}
+                </span>
+              </div>
               <div className={styles.thumbnails}>
                 {images.map((img, i) => (
                   <button
@@ -200,11 +207,11 @@ export function ProductPageClient({ product }: Props) {
               option.name.toLowerCase().includes("colour");
 
             return (
-              <div key={option.id} className={styles.optionSection}>
-                <span className={styles.optionLabel}>
+              <div key={option.id} className={styles.optionSectionRow}>
+                <span className={styles.optionLabelRow}>
                   {option.name.toUpperCase()}
                 </span>
-                <div className={styles.optionValues}>
+                <div className={isColor ? styles.optionListColor : styles.optionListSize}>
                   {option.values.map((val) => {
                     const active = selectedOptions[option.name] === val;
                     const selectOption = () =>
@@ -215,28 +222,27 @@ export function ProductPageClient({ product }: Props) {
 
                     if (isColor) {
                       const bg = SWATCH_COLORS[val.toUpperCase()] ?? "#b2b2b2";
-                      const isLight = bg === "#f5f5f5" || bg === "#f5f0e1";
                       return (
                         <button
                           key={val}
-                          className={[
-                            styles.swatch,
-                            active ? styles.swatchActive : "",
-                            isLight ? styles.swatchLight : "",
-                          ].join(" ")}
-                          style={{ background: bg }}
+                          className={`${styles.colorRow} ${active ? styles.colorRowActive : ""}`}
                           onClick={selectOption}
-                          title={val}
                           aria-label={val}
                           aria-pressed={active}
-                        />
+                        >
+                          <span
+                            className={styles.colorDot}
+                            style={{ background: bg }}
+                          />
+                          <span className={styles.colorName}>{val.toUpperCase()}</span>
+                        </button>
                       );
                     }
 
                     return (
                       <button
                         key={val}
-                        className={`${styles.sizeBtn} ${active ? styles.sizeBtnActive : ""}`}
+                        className={`${styles.sizeText} ${active ? styles.sizeTextActive : ""}`}
                         onClick={selectOption}
                         aria-pressed={active}
                       >
@@ -293,7 +299,7 @@ export function ProductPageClient({ product }: Props) {
           {total > 1 && (
             <div className={styles.rightCounter}>
               <span className={styles.counterText}>
-                {pad(imageIndex + 1)} / {pad(total)}
+                PRODUCTS {pad(imageIndex + 1)} / {pad(total)}
               </span>
             </div>
           )}
@@ -322,16 +328,8 @@ export function ProductPageClient({ product }: Props) {
       </div>
 
       <div className={styles.bottomBar}>
-        <div className={styles.bottomLeft}>
-          <span className={styles.bottomPrice}>{priceDisplay}</span>
-          {matchingVariant && (
-            <span className={styles.bottomOptions}>
-              {matchingVariant.selectedOptions.map((o) => o.value).join(" / ")}
-            </span>
-          )}
-        </div>
-
         <form
+          className={styles.cartForm}
           action={async () => {
             if (matchingVariant) addCartItem(matchingVariant, product);
             addItemAction();
@@ -346,13 +344,16 @@ export function ProductPageClient({ product }: Props) {
               !matchingVariant
             }
           >
-            {isPending
-              ? "ADDING..."
-              : !matchingVariant
-                ? "SELECT OPTIONS"
-                : !matchingVariant.availableForSale
-                  ? "SOLD OUT"
-                  : "ADD TO CART"}
+            <span>
+              {isPending
+                ? "ADDING..."
+                : !matchingVariant
+                  ? "SELECT OPTIONS"
+                  : !matchingVariant.availableForSale
+                    ? "SOLD OUT"
+                    : "ADD TO CART"}
+            </span>
+            <span>{priceDisplay}</span>
           </button>
         </form>
 

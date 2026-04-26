@@ -5,6 +5,7 @@
   background: var(--color-background);
   height: calc(100vh - 80px); /* Approximate height remaining after global header */
   overflow: hidden;
+  position: relative;
 }
 
 .body {
@@ -19,7 +20,7 @@
   width: 38%;
   overflow-y: auto;
   scrollbar-width: none;
-  padding: calc(var(--grid-margin) * 4) var(--grid-margin) var(--grid-margin);
+  padding: calc(var(--grid-margin) * 4) var(--grid-margin) 100rem;
   display: flex;
   flex-direction: column;
   gap: 20rem;
@@ -50,36 +51,50 @@
   text-transform: uppercase;
 }
 
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 16rem;
+  margin-bottom: 24rem;
+}
+
 .title {
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: clamp(22rem, 2.5vw, 40rem);
+  font-family: "Barlow", sans-serif;
+  font-size: 28rem;
   font-weight: 900;
-  font-stretch: expanded;
   letter-spacing: -0.02em;
-  line-height: 0.9;
   color: var(--color-off-black);
   text-transform: uppercase;
   margin: 0;
+  flex: 1;
 }
 
 .price {
   font-size: var(--font-size-tiny);
   letter-spacing: var(--letter-spacing-base);
   color: var(--color-off-black);
+  font-weight: 700;
   margin: 0;
 }
 
-/* ── Thumbnails ── */
+.thumbnailHeader {
+  width: 100rem;
+  flex-shrink: 0;
+  display: flex;
+}
+
 .thumbnailSection {
   display: flex;
-  flex-direction: column;
-  gap: 6rem;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 24rem;
 }
 
 .imageCounter {
   font-size: var(--font-size-tiny);
   letter-spacing: var(--letter-spacing-base);
-  color: var(--color-medium-grey);
+  font-weight: 700;
+  color: var(--color-off-black);
 }
 
 .thumbnails {
@@ -120,69 +135,88 @@
 }
 
 /* ── Options ── */
-.optionSection {
+.optionSectionRow {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 24rem;
+}
+
+.optionLabelRow {
+  width: 100rem; /* Fixed width to align the values nicely */
+  font-size: var(--font-size-tiny);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+  color: var(--color-off-black);
+}
+
+.optionListColor {
   display: flex;
   flex-direction: column;
   gap: 8rem;
 }
 
-.optionLabel {
-  font-size: var(--font-size-small);
-  letter-spacing: var(--letter-spacing-base);
-  text-transform: uppercase;
-  color: var(--color-medium-grey);
-}
-
-.optionValues {
+.optionListSize {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 6rem;
-  align-items: center;
 }
 
-/* Colour swatches */
-.swatch {
-  width: 20rem;
-  height: 20rem;
-  border-radius: 50%;
+.colorRow {
+  display: flex;
+  align-items: center;
+  gap: 8rem;
+  background: none;
+  border: none;
   padding: 0;
   cursor: pointer;
-  transition: box-shadow 0.15s;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+
+.colorRow:hover {
+  opacity: 0.8;
+}
+
+.colorRowActive {
+  opacity: 1;
+}
+
+.colorDot {
+  width: 6rem;
+  height: 6rem;
   flex-shrink: 0;
 }
 
-.swatchLight {
-  box-shadow: inset 0 0 0 1rem var(--color-divider);
-}
-
-.swatchActive {
-  box-shadow:
-    0 0 0 2.5rem var(--color-background),
-    0 0 0 4rem var(--color-off-black);
-}
-
-/* Size / generic chips — filled background so they're always visible */
-.sizeBtn {
-  font-size: var(--font-size-small);
+.colorName {
+  font-size: var(--font-size-tiny);
   letter-spacing: var(--letter-spacing-base);
-  text-transform: uppercase;
-  background: var(--color-divider);
-  padding: 5rem 12rem;
-  cursor: pointer;
   color: var(--color-off-black);
-  transition:
-    background 0.15s,
-    color 0.15s;
+  text-transform: uppercase;
 }
 
-.sizeBtn:hover {
-  background: var(--color-off-black);
-  color: var(--color-background);
+.sizeText {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  color: var(--color-off-black);
+  text-transform: uppercase;
+  opacity: 0.5;
+  transition: opacity 0.15s;
 }
 
-.sizeBtnActive {
-  background: var(--color-off-black);
-  color: var(--color-background);
+.sizeText:hover {
+  opacity: 0.8;
+}
+
+.sizeTextActive {
+  opacity: 1;
+  font-weight: 700;
 }
 
 /* ── Accordions — no border lines ── */
@@ -287,12 +321,10 @@
   display: none;
 }
 
-/* height is applied inline by ResizeObserver; position:relative needed for fill Image */
 .imageSlide {
   position: relative;
   width: 100%;
   scroll-snap-align: start;
-  background: var(--color-inner-background);
 }
 
 .rightImage {
@@ -302,41 +334,29 @@
 
 /* ── Bottom bar ── */
 .bottomBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10rem var(--grid-margin);
-  gap: 16rem;
+  position: absolute;
+  bottom: var(--grid-margin);
+  left: var(--grid-margin);
+  width: calc(38% - var(--grid-margin) * 2);
+  z-index: var(--z-bars);
 }
 
-.bottomLeft {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-}
-
-.bottomPrice {
-  font-size: var(--font-size-tiny);
-  letter-spacing: var(--letter-spacing-base);
-  font-weight: 700;
-  color: var(--color-off-black);
-}
-
-.bottomOptions {
-  font-size: var(--font-size-tiny);
-  letter-spacing: var(--letter-spacing-base);
-  color: var(--color-medium-grey);
-  text-transform: uppercase;
+.cartForm {
+  width: 100%;
 }
 
 .addToCartBtn {
-  font-size: var(--font-size-tiny);
-  letter-spacing: var(--letter-spacing-base);
-  text-transform: uppercase;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background: var(--color-off-black);
   color: var(--color-background);
   border: none;
-  padding: 10rem 24rem;
+  padding: 14rem 20rem;
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
   cursor: pointer;
   transition: opacity 0.15s;
 }

@@ -1,7 +1,13 @@
+"use client";
+
 import type { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./index.module.css";
+
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 type Props = {
   count: number;
@@ -20,74 +26,122 @@ export function BottomBar({
   isExpanded = false,
   onClose,
 }: Props) {
-  if (selectedProduct) {
-    const productsToShow = relatedProducts?.length
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (!selectedProduct) return;
+
+      if (isExpanded) {
+        gsap.to(".collapsed", { autoAlpha: 0, y: 20, duration: 0.3, ease: "power2.out" });
+        gsap.fromTo(
+          ".expanded",
+          { autoAlpha: 0, y: 20 },
+          { autoAlpha: 1, y: 0, duration: 0.4, delay: 0.1, ease: "power2.out" }
+        );
+      } else {
+        gsap.to(".expanded", { autoAlpha: 0, y: 20, duration: 0.3, ease: "power2.out" });
+        gsap.fromTo(
+          ".collapsed",
+          { autoAlpha: 0, y: 20 },
+          { autoAlpha: 1, y: 0, duration: 0.4, delay: 0.1, ease: "power2.out" }
+        );
+      }
+    },
+    { scope: containerRef, dependencies: [isExpanded, selectedProduct] }
+  );
+
+  const productsToShow = selectedProduct
+    ? relatedProducts?.length
       ? relatedProducts
-      : [selectedProduct];
-
-    if (isExpanded) {
-      return (
-        <div className={styles.expandedPanel}>
-          <div className={styles.expandedCards}>
-            {productsToShow.map((p) => {
-              const price = p.priceRange?.minVariantPrice;
-              const priceString = price
-                ? `${parseInt(price.amount, 10)} ${price.currencyCode}`
-                : "";
-
-              return (
-                <div key={p.id} className={styles.productCard}>
-                  <div className={styles.cardInfo}>
-                    <span className={styles.cardTitle}>{p.title.toUpperCase()}</span>
-                    <span className={styles.cardPrice}>{priceString}</span>
-                  </div>
-                  <Link href={`/products/${p.handle}`} className={styles.cardImageLink}>
-                    {p.featuredImage && (
-                      <Image
-                        src={p.featuredImage.url}
-                        alt={p.title}
-                        fill
-                        sizes="(max-width: 900px) 45vw, 15vw"
-                        className={styles.cardImage}
-                      />
-                    )}
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-          <div className={styles.expandedFooter}>
-            <span className={styles.count}>{productsToShow.length} PRODUCTS</span>
-            <button className={styles.discover} onClick={onClose}>
-              CLOSE
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className={styles.group}>
-        {productsToShow.map((p) => (
-          <div key={p.id} className={styles.wrapper}>
-            <span className={styles.count}>{p.title.toUpperCase()}</span>
-            <Link href={`/products/${p.handle}`} className={styles.discover}>
-              VIEW
-            </Link>
-          </div>
-        ))}
-      </div>
-    );
-  }
+      : [selectedProduct]
+    : [];
 
   return (
-    <div className={styles.group}>
-      <div className={styles.wrapper}>
-        <span className={styles.count}>{count} PRODUCTS</span>
-        <Link href={discoverHref} className={styles.discover}>
-          DISCOVER
-        </Link>
-      </div>
+    <div ref={containerRef}>
+      {/* Global default view */}
+      {!selectedProduct && (
+        <div className={styles.group}>
+          <div className={styles.wrapper}>
+            <span className={styles.count}>{count} PRODUCTS</span>
+            <Link href={discoverHref} className={styles.discover}>
+              DISCOVER
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Detail view with toggleable states */}
+      {selectedProduct && (
+        <>
+          <div
+            className={`collapsed ${styles.group}`}
+            style={{
+              opacity: isExpanded ? 0 : 1,
+              visibility: isExpanded ? "hidden" : "visible",
+            }}
+          >
+            {productsToShow.map((p) => (
+              <div key={p.id} className={styles.wrapper}>
+                <span className={styles.count}>{p.title.toUpperCase()}</span>
+                <Link href={`/products/${p.handle}`} className={styles.discover}>
+                  VIEW
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          <div
+            className={`expanded ${styles.expandedPanel}`}
+            style={{
+              opacity: isExpanded ? 1 : 0,
+              visibility: isExpanded ? "visible" : "hidden",
+            }}
+          >
+            <div className={styles.expandedCards}>
+              {productsToShow.map((p) => {
+                const price = p.priceRange?.minVariantPrice;
+                const priceString = price
+                  ? `${parseInt(price.amount, 10)} ${price.currencyCode}`
+                  : "";
+
+                return (
+                  <div key={p.id} className={styles.productCard}>
+                    <div className={styles.cardInfo}>
+                      <span className={styles.cardTitle}>
+                        {p.title.toUpperCase()}
+                      </span>
+                      <span className={styles.cardPrice}>{priceString}</span>
+                    </div>
+                    <Link
+                      href={`/products/${p.handle}`}
+                      className={styles.cardImageLink}
+                    >
+                      {p.featuredImage && (
+                        <Image
+                          src={p.featuredImage.url}
+                          alt={p.title}
+                          fill
+                          sizes="(max-width: 900px) 45vw, 15vw"
+                          className={styles.cardImage}
+                        />
+                      )}
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+            <div className={styles.expandedFooter}>
+              <span className={styles.count}>
+                {productsToShow.length} PRODUCTS
+              </span>
+              <button className={styles.discover} onClick={onClose}>
+                CLOSE
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

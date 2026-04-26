@@ -58,12 +58,6 @@ export function Header({
         </div>
       </div>
 
-      {/* ── Top-right: collection info ────────────────── */}
-      {collectionLabel && (
-        <div className={styles.topRight}>
-          <span className={styles.collectionLabel}>{collectionLabel}</span>
-        </div>
-      )}
     </>
   );
 }

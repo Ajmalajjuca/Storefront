@@ -16,6 +16,18 @@ export async function addItem(
   prevState: any,
   selectedVariantId: string | undefined,
 ) {
+  let cartId = (await cookies()).get("cartId")?.value;
+  let cart;
+
+  if (cartId) {
+    cart = await getCart();
+  }
+
+  if (!cartId || !cart) {
+    cart = await createCart();
+    (await cookies()).set("cartId", cart.id!);
+  }
+
   if (!selectedVariantId) {
     return "Error adding item to cart";
   }

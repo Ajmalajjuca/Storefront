@@ -103,10 +103,12 @@
 }
 
 .collectionLabel {
-  font-size: var(--font-size-tiny);
-  letter-spacing: var(--letter-spacing-base);
+  font-size: 14rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--color-off-black);
+  -webkit-font-smoothing: antialiased;
 }
 
 .profileIcon {

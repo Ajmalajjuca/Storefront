@@ -296,14 +296,6 @@ export function ProductPageClient({ product }: Props) {
         </div>
 
         <div className={styles.rightWrapper}>
-          {total > 1 && (
-            <div className={styles.rightCounter}>
-              <span className={styles.counterText}>
-                PRODUCTS {pad(imageIndex + 1)} / {pad(total)}
-              </span>
-            </div>
-          )}
-
           <div className={styles.rightPanel} ref={rightPanelRef}>
             {images.map((img, i) => (
               <div

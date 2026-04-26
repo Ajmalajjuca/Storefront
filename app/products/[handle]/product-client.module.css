@@ -296,16 +296,19 @@
 /* Counter is outside the scroll container so it never scrolls away */
 .rightCounter {
   position: absolute;
-  top: var(--grid-margin);
+  top: calc(var(--grid-margin) * 2.5); /* Move below the global header's label */
   right: var(--grid-margin);
   z-index: 2;
   pointer-events: none;
 }
 
 .counterText {
-  font-size: var(--font-size-tiny);
-  letter-spacing: var(--letter-spacing-base);
+  font-size: 14rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--color-off-black);
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Scroll container — slide heights are set by JS (ResizeObserver) */

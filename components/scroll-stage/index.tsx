@@ -13,6 +13,7 @@ type Props = {
   onSelect: (index: number | null) => void;
   currentFrame: number;
   onFrameChange: (frame: number) => void;
+  onModelClick?: () => void;
 };
 
 function pad(n: number) {
@@ -25,6 +26,7 @@ export function ScrollStage({
   onSelect,
   currentFrame,
   onFrameChange,
+  onModelClick,
 }: Props) {
   const total = products.length;
   if (total === 0) return null;
@@ -172,6 +174,7 @@ export function ScrollStage({
                 product={selectedProduct}
                 externalFrame={currentFrame}
                 priority
+                onClick={onModelClick}
               />
             </motion.div>
 

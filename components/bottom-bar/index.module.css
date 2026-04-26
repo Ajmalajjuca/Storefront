@@ -40,8 +40,87 @@
   color: var(--color-medium-grey);
 }
 
+.expandedPanel {
+  position: fixed;
+  bottom: var(--grid-margin);
+  left: var(--grid-margin);
+  z-index: var(--z-bars);
+  background: var(--color-inner-background);
+  border: var(--border-size) solid var(--color-divider);
+  padding: 16rem;
+  display: flex;
+  flex-direction: column;
+  gap: 16rem;
+}
+
+.expandedCards {
+  display: flex;
+  gap: 16rem;
+}
+
+.productCard {
+  width: 220rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12rem;
+}
+
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+}
+
+.cardImageLink {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--color-background);
+}
+
+.cardImage {
+  object-fit: cover;
+}
+
+.expandedFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: var(--border-size) solid var(--color-divider);
+  padding-top: 16rem;
+  margin-top: 8rem;
+}
+
+.discover {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--font-size-tiny);
+  letter-spacing: var(--letter-spacing-base);
+  text-transform: uppercase;
+  color: var(--color-off-black);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
 @media (max-width: 900px) {
   .wrapper {
+    min-width: 160rem;
+  }
+  .expandedPanel {
+    width: calc(100% - var(--grid-margin) * 2);
+    padding: 12rem;
+  }
+  .expandedCards {
+    overflow-x: auto;
+    padding-bottom: 8rem;
+  }
+  .productCard {
     min-width: 160rem;
   }
 }

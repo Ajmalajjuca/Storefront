@@ -230,19 +230,21 @@ const reshapeProduct = (
   };
 };
 
-const reshapeProducts = (products: ShopifyProduct[]) => {
+const reshapeProducts = (
+  products: ShopifyProduct[],
+  filterHiddenProducts: boolean = true,
+) => {
   const reshapedProducts = [];
 
   for (const product of products) {
     if (product) {
-      const reshapedProduct = reshapeProduct(product);
+      const reshapedProduct = reshapeProduct(product, filterHiddenProducts);
 
       if (reshapedProduct) {
         reshapedProducts.push(reshapedProduct);
       }
     }
   }
-
   return reshapedProducts;
 };
 
@@ -373,6 +375,7 @@ export async function getCollectionProducts({
 
   return reshapeProducts(
     removeEdgesAndNodes(res.body.data.collection.products),
+    collection !== "hidden-homepage-featured-items",
   );
 }
 

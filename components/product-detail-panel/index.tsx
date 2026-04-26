@@ -63,7 +63,7 @@ export function ProductDetailPanel({
   onFrameChange,
 }: Props) {
   const images = product.images;
-  const hasFilmstrip = images.length > 1;
+  const filmstripImage = images.length > 0 ? images[images.length - 1] : null;
 
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [selectedOptions, setSelectedOptions] = useState<
@@ -101,28 +101,34 @@ export function ProductDetailPanel({
 
         <h2 className={styles.title}>{product.title.toUpperCase()}</h2>
 
-        {hasFilmstrip && (
+        {filmstripImage && (
           <div className={styles.filmstripSection}>
             <span className={styles.filmstripLabel}>
-              {images.length} IMAGES
+              {Math.round((currentFrame / 35) * 360)}° / 360°
             </span>
-            <div className={styles.filmstrip}>
-              {images.map((img, i) => (
-                <button
-                  key={i}
-                  className={`${styles.frame}${i === currentFrame ? ` ${styles.frameCurrent}` : ""}`}
-                  onClick={() => handleFrameClick(i, img.url)}
-                  aria-label={`View image ${i + 1}`}
-                >
-                  <Image
-                    src={img.url}
-                    alt={`${product.title} ${i + 1}`}
-                    fill
-                    sizes="48px"
-                    className={styles.frameImg}
-                  />
-                </button>
-              ))}
+            <div 
+              className={styles.filmstripTrack}
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+                const percentage = x / rect.width;
+                const frame = Math.floor(percentage * 36);
+                onFrameChange(Math.max(0, Math.min(35, frame)));
+              }}
+              onMouseLeave={() => onFrameChange(0)}
+            >
+              <img
+                src={filmstripImage.url}
+                alt={`${product.title} filmstrip`}
+                className={styles.filmstripRawImg}
+              />
+              <div
+                className={styles.filmstripHighlight}
+                style={{
+                  width: `${100 / 36}%`,
+                  transform: `translateX(${currentFrame * 100}%)`,
+                }}
+              />
             </div>
           </div>
         )}

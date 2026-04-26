@@ -38,9 +38,12 @@ export function HomeScene({ products, recommendationsMap = {}, initialHandle }: 
   });
   const [currentFrame, setCurrentFrame] = useState(0);
 
+  const [isExpanded, setIsExpanded] = useState(false);
+
   function handleSelect(index: number | null) {
     setSelectedIndex(index);
     setCurrentFrame(0);
+    setIsExpanded(false);
 
     // Update URL without triggering Next.js hard navigation
     if (index !== null && products[index]) {
@@ -68,10 +71,14 @@ export function HomeScene({ products, recommendationsMap = {}, initialHandle }: 
       const path = window.location.pathname;
       if (path === "/") {
         setSelectedIndex(null);
+        setIsExpanded(false);
       } else if (path.startsWith("/looks/")) {
         const handle = path.replace("/looks/", "");
         const idx = products.findIndex((p) => p.handle === handle);
-        if (idx !== -1) setSelectedIndex(idx);
+        if (idx !== -1) {
+          setSelectedIndex(idx);
+          setIsExpanded(false);
+        }
       }
     };
     window.addEventListener("popstate", handlePopState);
@@ -95,6 +102,7 @@ export function HomeScene({ products, recommendationsMap = {}, initialHandle }: 
           onSelect={handleSelect}
           currentFrame={currentFrame}
           onFrameChange={setCurrentFrame}
+          onModelClick={() => setIsExpanded((prev) => !prev)}
         />
       </motion.div>
 
@@ -102,6 +110,8 @@ export function HomeScene({ products, recommendationsMap = {}, initialHandle }: 
         count={products.length} 
         selectedProduct={selectedProduct} 
         relatedProducts={selectedProduct ? recommendationsMap[selectedProduct.id] : undefined}
+        isExpanded={isExpanded}
+        onClose={() => setIsExpanded(false)}
       />
 
       <motion.div style={{ y: footerY }} className={styles.footerSlider}>

@@ -64,6 +64,8 @@ export function ScrollStage({
       ? products[selectedIndex + 1]!
       : null;
 
+      console.log("prevProduct", prevProduct);
+
   // — Circular layout for mobile
   useGSAP(
     () => {
@@ -309,28 +311,33 @@ export function ScrollStage({
               {prevProduct && (
                 <div 
                   className={styles.jumpThumb}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setTransformOrigin("12% 50%");
-                    onSelect(selectedIndex! - 1);
-                  }}
                 >
-                  <Image src={prevProduct.featuredImage?.url || ""} alt="" fill sizes="20px" style={{ objectFit: "cover" }} />
+                  <RotatingFigure 
+                    product={prevProduct} 
+                    onClick={() => {
+                      setTransformOrigin("12% 50%");
+                      onSelect(selectedIndex! - 1);
+                    }} 
+                  />
                 </div>
               )}
               <div className={`${styles.jumpThumb} ${styles.jumpThumbActive}`}>
-                <Image src={selectedProduct.featuredImage?.url || ""} alt="" fill sizes="20px" style={{ objectFit: "cover" }} />
+                <RotatingFigure 
+                  product={selectedProduct} 
+                  externalFrame={currentFrame}
+                />
               </div>
               {nextProduct && (
                 <div 
                   className={styles.jumpThumb}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setTransformOrigin("88% 50%");
-                    onSelect(selectedIndex! + 1);
-                  }}
                 >
-                  <Image src={nextProduct.featuredImage?.url || ""} alt="" fill sizes="20px" style={{ objectFit: "cover" }} />
+                  <RotatingFigure 
+                    product={nextProduct} 
+                    onClick={() => {
+                      setTransformOrigin("88% 50%");
+                      onSelect(selectedIndex! + 1);
+                    }} 
+                  />
                 </div>
               )}
             </div>

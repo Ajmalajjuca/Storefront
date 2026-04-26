@@ -29,5 +29,9 @@ export function PageTransition({ children }: Props) {
     { scope: containerRef, dependencies: [pathname], revertOnUpdate: true }
   );
 
-  return <div ref={containerRef}>{children}</div>;
+  return (
+    <div ref={containerRef} key={pathname}>
+      {children}
+    </div>
+  );
 }

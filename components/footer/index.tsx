@@ -27,11 +27,11 @@ export function Footer() {
         </div>
 
         <div className={styles.rightLinks}>
-          <a href="mailto:hello@becaneparis.com" className={styles.link}>
-            hello@becaneparis.com
+          <a href="mailto:hello@blckole.com" className={styles.link}>
+            hello@blckole.com
           </a>
           <a
-            href="https://instagram.com/becaneparis"
+            href="https://instagram.com/blckole"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.link}

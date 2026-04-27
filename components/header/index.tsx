@@ -36,7 +36,7 @@ export function Header({
             href="/"
             className={styles.logoLink}
           >
-            <span className={styles.logoText}>BECANE</span>
+            <span className={styles.logoText}>BLCKOLE</span>
           </Link>
         </div>
 

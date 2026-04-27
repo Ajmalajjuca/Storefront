@@ -5,7 +5,7 @@ import { baseUrl } from "lib/utils";
 import { ReactNode } from "react";
 import "./globals.css";
 
-const SITE_NAME = process.env.SITE_NAME || "BECANE";
+const SITE_NAME = process.env.SITE_NAME || "BLCKOLE";
 
 export const metadata = {
   metadataBase: new URL(baseUrl),

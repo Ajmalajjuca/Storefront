@@ -60,11 +60,15 @@ export function FeaturedProducts({ products }: Props) {
 
       <div ref={gridRef} className={styles.grid}>
         {displayProducts.map((product) => (
-          <Link
-            href={`/products/${product.handle}`}
+          <div
             key={product.id}
             className={styles.card}
           >
+            <Link
+              href={`/products/${product.handle}`}
+              className={styles.cardLinkOverlay}
+              aria-label={`View ${product.title}`}
+            />
             <div className={styles.imageWrap}>
               {product.featuredImage ? (
                 <Image
@@ -85,7 +89,7 @@ export function FeaturedProducts({ products }: Props) {
                 {product.priceRange.minVariantPrice.currencyCode}
               </p>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </section>

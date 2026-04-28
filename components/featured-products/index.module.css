@@ -50,15 +50,21 @@
   flex-direction: column;
   border-right: 1px solid var(--color-divider);
   border-bottom: 1px solid var(--color-divider);
-  text-decoration: none;
   color: inherit;
   transition: background-color 0.3s;
+  position: relative;
 }
 .card:nth-child(4n) {
   border-right: none;
 }
 .card:hover {
   background-color: rgba(0, 0, 0, 0.02);
+}
+
+.cardLinkOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
 }
 
 .imageWrap {

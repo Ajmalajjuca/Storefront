@@ -270,20 +270,29 @@ export function ScrollStage({
       } else if (justExited) {
         slotRefs.current.forEach((slot, i) => {
           if (!slot) return;
+          gsap.set(slot, { transition: "none" });
+          
           if (i === lastIndex) {
-            gsap.set(slot, { transition: "none", opacity: 1 });
+            gsap.set(slot, { opacity: 1 });
             gsap.to(slot, { x: 0, y: 0, scale: 1, duration: 0.6, ease: "power3.inOut", zIndex: 1, onComplete: () => gsap.set(slot, { clearProps: "transition" }) });
           } else {
-            gsap.set(slot, { transition: "none" });
             const isMobile = window.innerWidth <= 768;
             const offset = i - mobileGridIndex;
             const targetScale = isMobile ? Math.max(1 - Math.abs(offset) * 0.15, 0.4) : 1;
             const targetOpacity = isMobile ? Math.max(1 - Math.abs(offset) * 0.3, 0) : 1;
             
-            gsap.to(slot, { opacity: targetOpacity, scale: targetScale, duration: 0.6, ease: "power3.inOut", onComplete: () => gsap.set(slot, { clearProps: "transition" }) });
+            gsap.to(slot, { x: 0, y: 0, opacity: targetOpacity, scale: targetScale, duration: 0.6, ease: "power3.inOut", onComplete: () => gsap.set(slot, { clearProps: "transition" }) });
           }
         });
         rowRef.current.style.pointerEvents = "auto";
+      } else if (isDetail && firstDetailRenderRef.current) {
+        // Handle direct visit to detail page
+        slotRefs.current.forEach((slot) => {
+          if (slot) {
+             gsap.set(slot, { opacity: 0, scale: 0.95 });
+          }
+        });
+        rowRef.current.style.pointerEvents = "none";
       }
     },
     { scope: stageRef, dependencies: [isDetail, mobileGridIndex] },

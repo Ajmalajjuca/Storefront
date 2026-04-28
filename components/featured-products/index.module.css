@@ -1,0 +1,114 @@
+.section {
+  width: 100%;
+  border-top: 1px solid var(--color-divider);
+  background: var(--color-background);
+  padding-bottom: 60rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 40rem var(--grid-margin);
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: clamp(48rem, 6vw, 84rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.85;
+  color: var(--color-off-black);
+}
+
+.count {
+  font-size: var(--font-size-tiny);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-base);
+  color: var(--color-medium-grey);
+  margin-bottom: 8rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--color-divider);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.3s;
+}
+.card:nth-child(4n) {
+  border-right: none;
+}
+.card:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.imageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f4f4f4;
+  overflow: hidden;
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+}
+
+.details {
+  padding: 16rem var(--grid-margin);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16rem;
+}
+
+.productTitle {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price {
+  font-size: var(--font-size-tiny);
+  color: var(--color-medium-grey);
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .card:nth-child(2n) {
+    border-right: none;
+  }
+  .card:nth-child(odd) {
+    border-right: 1px solid var(--color-divider);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    border-right: none !important;
+  }
+}

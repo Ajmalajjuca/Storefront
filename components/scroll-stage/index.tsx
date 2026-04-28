@@ -216,7 +216,6 @@ export function ScrollStage({
   }, [isDetail, selectedIndex, total, onSelect, mobileGridIndex]);
 
   // — Figures row opacity and Flying Thumbnail
-  const prevDetailRef = useRef(false);
   const prevSelectedIndexRef = useRef(selectedIndex);
 
   useEffect(() => {
@@ -228,14 +227,9 @@ export function ScrollStage({
   useGSAP(
     () => {
       if (!rowRef.current) return;
-      
-      const justEntered = isDetail && !prevDetailRef.current;
-      const justExited = !isDetail && prevDetailRef.current;
-      const lastIndex = justExited ? prevSelectedIndexRef.current : selectedIndex;
-      
-      prevDetailRef.current = isDetail;
 
-      if (justEntered) {
+      if (isDetail) {
+        const lastIndex = selectedIndex;
         slotRefs.current.forEach((slot, i) => {
           if (!slot) return;
           if (i === lastIndex) {
@@ -273,7 +267,8 @@ export function ScrollStage({
           }
         });
         rowRef.current.style.pointerEvents = "none";
-      } else if (justExited) {
+      } else if (prevSelectedIndexRef.current !== null) {
+        const lastIndex = prevSelectedIndexRef.current;
         slotRefs.current.forEach((slot, i) => {
           if (!slot) return;
           if (i === lastIndex) {

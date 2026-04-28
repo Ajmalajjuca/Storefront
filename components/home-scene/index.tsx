@@ -68,7 +68,7 @@ export function HomeScene({
     };
   }, [selectedIndex]);
 
-  // Handle browser back/forward
+  // Handle browser back/forward seamlessly without triggering React transitions
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;

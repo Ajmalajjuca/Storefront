@@ -130,10 +130,7 @@ export function RotatingFigure({
         aria-label={product.title}
       >
         <div className={styles.mediaWrap}>
-          <ChromaKeyCanvas
-            src={currentImage.url}
-            className={styles.media}
-          />
+          <ChromaKeyCanvas src={currentImage.url} className={styles.media} />
         </div>
       </button>
     );
@@ -148,10 +145,7 @@ export function RotatingFigure({
       aria-label={product.title}
     >
       <div className={styles.mediaWrap}>
-        <ChromaKeyCanvas
-          src={currentImage.url}
-          className={styles.media}
-        />
+        <ChromaKeyCanvas src={currentImage.url} className={styles.media} />
       </div>
     </Link>
   );

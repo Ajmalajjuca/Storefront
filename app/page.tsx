@@ -1,5 +1,9 @@
 import { HomeScene } from "components/home-scene";
-import { getCollectionProducts, getProducts, getProductRecommendations } from "lib/shopify";
+import {
+  getCollectionProducts,
+  getProductRecommendations,
+  getProducts,
+} from "lib/shopify";
 import type { Product } from "lib/shopify/types";
 
 export const metadata = {
@@ -20,11 +24,19 @@ export default async function HomePage() {
   const recommendationsMap: Record<string, Product[]> = {};
   await Promise.all(
     products.map(async (p) => {
-      recommendationsMap[p.id] = await getProductRecommendations(p.id).catch(() => []);
-    })
+      recommendationsMap[p.id] = await getProductRecommendations(p.id).catch(
+        () => [],
+      );
+    }),
   );
 
   const featuredProducts = await getProducts({}).catch(() => []);
 
-  return <HomeScene products={products} recommendationsMap={recommendationsMap} featuredProducts={featuredProducts} />;
+  return (
+    <HomeScene
+      products={products}
+      recommendationsMap={recommendationsMap}
+      featuredProducts={featuredProducts}
+    />
+  );
 }

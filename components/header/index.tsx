@@ -32,10 +32,7 @@ export function Header({
       <div className={styles.panel}>
         {/* Logo row */}
         <div className={styles.logoRow}>
-          <Link
-            href="/"
-            className={styles.logoLink}
-          >
+          <Link href="/" className={styles.logoLink}>
             <span className={styles.logoText}>BLCKOLE</span>
           </Link>
         </div>
@@ -57,7 +54,6 @@ export function Header({
           </button>
         </div>
       </div>
-
     </>
   );
 }

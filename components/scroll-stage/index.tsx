@@ -5,7 +5,7 @@ import { ProductDetailPanel } from "components/product-detail-panel";
 import { RotatingFigure } from "components/rotating-figure";
 import gsap from "gsap";
 import type { Product } from "lib/shopify/types";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./index.module.css";
 
 gsap.registerPlugin(useGSAP);
@@ -23,7 +23,7 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export function ScrollStage({
+export const ScrollStage = React.memo(function ScrollStage({
   products,
   selectedIndex,
   onSelect,
@@ -32,6 +32,7 @@ export function ScrollStage({
   onModelClick,
 }: Props) {
   const total = products.length;
+
   if (total === 0) return null;
 
   const isDetail = selectedIndex !== null;
@@ -50,7 +51,6 @@ export function ScrollStage({
   const [transformOrigin, setTransformOrigin] = useState("50% 80%");
   const [detailMounted, setDetailMounted] = useState(isDetail);
   const [titleMounted, setTitleMounted] = useState(!isDetail);
-  const [entranceRect, setEntranceRect] = useState<DOMRect | null>(null);
 
   const selectedProduct =
     selectedIndex !== null ? products[selectedIndex]! : null;
@@ -75,54 +75,55 @@ export function ScrollStage({
   useGSAP(
     () => {
       const updateLayout = () => {
-        if (!rowRef.current || window.innerWidth > 768) {
+        const isMobile = window.innerWidth <= 768;
+
+        if (!isMobile) {
+          // Desktop: clear all mobile-specific GSAP transforms so flex layout takes over
           slotRefs.current.forEach((slot) => {
-            // On desktop, we ONLY clear inline styles if the element was previously formatted for mobile (position: absolute).
-            // We never clear scale/opacity if in detail view, as it would instantly break the zooming animations.
-            if (slot && slot.style.position === "absolute") {
-              if (isDetail) {
-                gsap.set(slot, { clearProps: "position,left,top,margin" });
-              } else {
-                gsap.set(slot, { clearProps: "position,left,top,margin,scale,opacity,zIndex" });
-              }
+            if (!slot) return;
+            if (!isDetail) {
+              gsap.set(slot, {
+                clearProps: "x,y,xPercent,yPercent,scale,zIndex,autoAlpha",
+              });
+            } else {
+              // In detail mode keep x/y/scale for flying-thumbnail; clear mobile centering only
+              gsap.set(slot, { xPercent: 0, yPercent: 0 });
             }
           });
           return;
         }
 
+        // Mobile: CSS sets position:absolute; left:50%; top:45%.
+        // GSAP offsets each slot from that anchor using x/y transforms only — no layout props.
         const slots = slotRefs.current.filter(Boolean) as HTMLDivElement[];
-        const drCX = window.innerWidth * 0.5;
-        const drCY = window.innerHeight * 0.45;
-
         slots.forEach((slot, i) => {
           const offset = i - mobileGridIndex;
-          
-          const x = drCX + offset * (window.innerWidth * 0.35) - slot.offsetWidth / 2;
-          const y = drCY - Math.abs(offset) * 15 - slot.offsetHeight / 2;
-          
+          const xOffset = offset * (window.innerWidth * 0.35);
+          const yOffset = -Math.abs(offset) * 15;
           const scale = Math.max(1 - Math.abs(offset) * 0.15, 0.4);
           const opacity = Math.max(1 - Math.abs(offset) * 0.3, 0);
 
           if (!isDetail) {
             gsap.to(slot, {
-              position: "absolute",
-              left: x,
-              top: y,
-              scale: scale,
-              opacity: opacity,
+              xPercent: -50,
+              yPercent: -50,
+              x: xOffset,
+              y: yOffset,
+              scale,
+              autoAlpha: opacity,
               zIndex: 10 - Math.abs(offset),
-              margin: 0,
               duration: 0.5,
               ease: "power2.out",
-              overwrite: "auto"
+              overwrite: "auto",
             });
           } else {
+            // In detail mode: only update stacking/centering without animation
             gsap.set(slot, {
-              position: "absolute",
-              left: x,
-              top: y,
-              margin: 0,
-              zIndex: 10 - Math.abs(offset)
+              xPercent: -50,
+              yPercent: -50,
+              x: xOffset,
+              y: yOffset,
+              zIndex: 10 - Math.abs(offset),
             });
           }
         });
@@ -193,14 +194,18 @@ export function ScrollStage({
             navCooldown.current = true;
             setTransformOrigin(dir > 0 ? "88% 50%" : "12% 50%");
             onSelect(nextIndex);
-            setTimeout(() => { navCooldown.current = false; }, 600);
+            setTimeout(() => {
+              navCooldown.current = false;
+            }, 600);
           }
         } else if (!isDetail && window.innerWidth <= 768) {
           const nextIndex = mobileGridIndex + dir;
           if (nextIndex >= 0 && nextIndex < total) {
             navCooldown.current = true;
             setMobileGridIndex(nextIndex);
-            setTimeout(() => { navCooldown.current = false; }, 400);
+            setTimeout(() => {
+              navCooldown.current = false;
+            }, 400);
           }
         }
       }
@@ -219,11 +224,13 @@ export function ScrollStage({
   useGSAP(
     () => {
       if (!rowRef.current) return;
-      
+
       const justEntered = isDetail && !prevDetailRef.current;
       const justExited = !isDetail && prevDetailRef.current;
-      const lastIndex = justExited ? prevSelectedIndexRef.current : selectedIndex;
-      
+      const lastIndex = justExited
+        ? prevSelectedIndexRef.current
+        : selectedIndex;
+
       prevDetailRef.current = isDetail;
       if (selectedIndex !== null) {
         prevSelectedIndexRef.current = selectedIndex;
@@ -234,22 +241,30 @@ export function ScrollStage({
           if (!slot) return;
           if (i === lastIndex) {
             const isMobile = window.innerWidth <= 768;
-            const drWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * 0.4;
-            const drHeight = window.innerHeight * 0.7; // Detail view height is 70vh
+            const drWidth = isMobile
+              ? window.innerWidth * 0.9
+              : window.innerWidth * 0.4;
+            const drHeight = window.innerHeight * 0.7;
             const drCX = window.innerWidth * 0.5;
-            const drCY = isMobile ? window.innerHeight * 0.4 : window.innerHeight * 0.45;
-            
+            const drCY = isMobile
+              ? window.innerHeight * 0.4
+              : window.innerHeight * 0.45;
+
             const rect = slot.getBoundingClientRect();
             const srCX = rect.left + rect.width / 2;
             const srCY = rect.top + rect.height / 2;
-            
-            const targetX = drCX - srCX;
-            const targetY = drCY - srCY;
-            
-            // Replicate object-fit: contain mathematically
-            const targetScale = Math.min(drWidth / slot.offsetWidth, drHeight / slot.offsetHeight);
 
-            gsap.set(slot, { transition: "none" });
+            // Use current GSAP x/y as base so the delta is correct regardless of
+            // whether the slot was already offset by mobile-grid transforms.
+            const currentX = (gsap.getProperty(slot, "x") as number) || 0;
+            const currentY = (gsap.getProperty(slot, "y") as number) || 0;
+            const targetX = currentX + (drCX - srCX);
+            const targetY = currentY + (drCY - srCY);
+            const targetScale = Math.min(
+              drWidth / slot.offsetWidth,
+              drHeight / slot.offsetHeight,
+            );
+
             gsap.to(slot, {
               x: targetX,
               y: targetY,
@@ -257,40 +272,86 @@ export function ScrollStage({
               duration: 0.8,
               ease: "expo.out",
               zIndex: 50,
-              onComplete: () => gsap.set(slot, { clearProps: "transition" })
+              overwrite: "auto",
             });
-            // Crossfade out at the end when detail WebGL is ready
-            gsap.to(slot, { opacity: 0, duration: 0.2, delay: 0.6, ease: "none" });
+            gsap.to(slot, {
+              autoAlpha: 0,
+              duration: 0.2,
+              delay: 0.6,
+              ease: "none",
+            });
           } else {
-            gsap.set(slot, { transition: "none" });
-            gsap.to(slot, { opacity: 0, scale: 0.95, duration: 0.2, ease: "power2.inOut", onComplete: () => gsap.set(slot, { clearProps: "transition" }) });
+            gsap.to(slot, {
+              autoAlpha: 0,
+              scale: 0.95,
+              duration: 0.2,
+              ease: "power2.inOut",
+              overwrite: "auto",
+            });
           }
         });
         rowRef.current.style.pointerEvents = "none";
       } else if (justExited) {
         slotRefs.current.forEach((slot, i) => {
           if (!slot) return;
-          gsap.set(slot, { transition: "none" });
-          
+          const isMobile = window.innerWidth <= 768;
+          const offset = i - mobileGridIndex;
+
           if (i === lastIndex) {
-            gsap.set(slot, { opacity: 1 });
-            gsap.to(slot, { x: 0, y: 0, scale: 1, duration: 0.6, ease: "power3.inOut", zIndex: 1, onComplete: () => gsap.set(slot, { clearProps: "transition" }) });
+            // Animate selected slot back from flying-thumbnail position to its grid slot
+            const gridX = isMobile ? offset * (window.innerWidth * 0.35) : 0;
+            const gridY = isMobile ? -Math.abs(offset) * 15 : 0;
+            gsap.set(slot, { autoAlpha: 1 });
+            gsap.to(slot, {
+              x: gridX,
+              y: gridY,
+              xPercent: isMobile ? -50 : 0,
+              yPercent: isMobile ? -50 : 0,
+              scale: 1,
+              duration: 0.6,
+              ease: "power3.inOut",
+              zIndex: 1,
+              overwrite: "auto",
+              onComplete: () => {
+                if (!isMobile)
+                  gsap.set(slot, {
+                    clearProps: "x,y,xPercent,yPercent,scale,zIndex",
+                  });
+              },
+            });
           } else {
-            const isMobile = window.innerWidth <= 768;
-            const offset = i - mobileGridIndex;
-            const targetScale = isMobile ? Math.max(1 - Math.abs(offset) * 0.15, 0.4) : 1;
-            const targetOpacity = isMobile ? Math.max(1 - Math.abs(offset) * 0.3, 0) : 1;
-            
-            gsap.to(slot, { x: 0, y: 0, opacity: targetOpacity, scale: targetScale, duration: 0.6, ease: "power3.inOut", onComplete: () => gsap.set(slot, { clearProps: "transition" }) });
+            const targetScale = isMobile
+              ? Math.max(1 - Math.abs(offset) * 0.15, 0.4)
+              : 1;
+            const targetOpacity = isMobile
+              ? Math.max(1 - Math.abs(offset) * 0.3, 0)
+              : 1;
+            const gridX = isMobile ? offset * (window.innerWidth * 0.35) : 0;
+            const gridY = isMobile ? -Math.abs(offset) * 15 : 0;
+            gsap.to(slot, {
+              x: gridX,
+              y: gridY,
+              xPercent: isMobile ? -50 : 0,
+              yPercent: isMobile ? -50 : 0,
+              autoAlpha: targetOpacity,
+              scale: targetScale,
+              duration: 0.6,
+              ease: "power3.inOut",
+              overwrite: "auto",
+              onComplete: () => {
+                if (!isMobile)
+                  gsap.set(slot, {
+                    clearProps: "x,y,xPercent,yPercent,scale,zIndex",
+                  });
+              },
+            });
           }
         });
         rowRef.current.style.pointerEvents = "auto";
       } else if (isDetail && firstDetailRenderRef.current) {
-        // Handle direct visit to detail page
+        // Direct deep-link visit: hide all slots immediately
         slotRefs.current.forEach((slot) => {
-          if (slot) {
-             gsap.set(slot, { opacity: 0, scale: 0.95 });
-          }
+          if (slot) gsap.set(slot, { autoAlpha: 0, scale: 0.95 });
         });
         rowRef.current.style.pointerEvents = "none";
       }
@@ -306,12 +367,12 @@ export function ScrollStage({
         setTitleMounted(true);
         gsap.fromTo(
           titleOverlayRef.current,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
+          { autoAlpha: 0, y: 10 },
+          { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" },
         );
       } else {
         gsap.to(titleOverlayRef.current, {
-          opacity: 0,
+          autoAlpha: 0,
           y: -10,
           duration: 0.3,
           ease: "power2.in",
@@ -334,7 +395,7 @@ export function ScrollStage({
 
       if (!isDetail) {
         gsap.to(detailViewRef.current, {
-          opacity: 0,
+          autoAlpha: 0,
           duration: 0.15,
           ease: "power2.out",
           onComplete: () => {
@@ -346,86 +407,113 @@ export function ScrollStage({
       }
 
       const mm = gsap.matchMedia(stageRef);
-      
-      mm.add({
-        isDesktop: "(min-width: 769px)",
-        isMobile: "(max-width: 768px)"
-      }, (context) => {
-        const { isMobile } = context.conditions as any;
-        const offsetVw = isMobile ? 45 : 42.5;
-        
-        products.forEach((_, i) => {
-           const slide = detailSlidesRefs.current[i];
-           if (!slide) return;
-           
-           const isActive = i === selectedIndex;
-           const isPrev = i === selectedIndex! - 1;
-           const isNext = i === selectedIndex! + 1;
-           const isFarPrev = i === selectedIndex! - 2;
-           const isFarNext = i === selectedIndex! + 2;
-           const isOutPrev = i < selectedIndex! - 2;
-           
-           let targetX = "0vw";
-           let targetOpacity = 0;
-           let targetScale = 0.8;
-           
-           if (isActive) {
-             targetX = "0vw";
-             targetOpacity = 1;
-             targetScale = 1;
-           } else if (isPrev) {
-             targetX = isMobile ? "-45vw" : "-28vw";
-             targetOpacity = isMobile ? 0.1 : 0.25;
-             targetScale = 0.8;
-           } else if (isNext) {
-             targetX = isMobile ? "45vw" : "28vw";
-             targetOpacity = isMobile ? 0.1 : 0.25;
-             targetScale = 0.8;
-           } else if (isFarPrev) {
-             targetX = isMobile ? "-80vw" : "-48vw";
-             targetOpacity = isMobile ? 0 : 0.08;
-             targetScale = 0.6;
-           } else if (isFarNext) {
-             targetX = isMobile ? "80vw" : "48vw";
-             targetOpacity = isMobile ? 0 : 0.08;
-             targetScale = 0.6;
-           } else if (isOutPrev) {
-             targetX = isMobile ? "-100vw" : "-80vw";
-             targetOpacity = 0;
-             targetScale = 0.5;
-           } else {
-             targetX = isMobile ? "100vw" : "80vw";
-             targetOpacity = 0;
-             targetScale = 0.5;
-           }
-           
-           if (firstDetailRenderRef.current) {
-             if (isActive) {
-               // The flying thumbnail covers the movement. 
-               // This slide waits invisibly for WebGL to init, then crossfades in!
-               gsap.set(slide, { scale: targetScale, x: targetX, y: 0, opacity: 0 });
-               gsap.to(slide, { opacity: targetOpacity, duration: 0.2, delay: 0.6, ease: "none" });
-             } else if (isPrev || isNext || isFarPrev || isFarNext) {
-               gsap.set(slide, { opacity: 0, x: targetX, scale: targetScale });
-               gsap.to(slide, { opacity: targetOpacity, duration: 0.8, ease: "power2.out", delay: 0.4 });
-             } else {
-               gsap.set(slide, { opacity: 0, x: targetX, scale: targetScale });
-             }
-           } else {
-             gsap.to(slide, {
-               x: targetX,
-               opacity: targetOpacity,
-               scale: targetScale,
-               duration: 0.8,
-               ease: "power3.inOut",
-               overwrite: "auto"
-             });
-           }
-        });
-        
-        firstDetailRenderRef.current = false;
-      });
-      
+
+      mm.add(
+        {
+          isDesktop: "(min-width: 769px)",
+          isMobile: "(max-width: 768px)",
+        },
+        (context) => {
+          const { isMobile } = context.conditions as {
+            isMobile: boolean;
+            isDesktop: boolean;
+          };
+
+          products.forEach((_, i) => {
+            const slide = detailSlidesRefs.current[i];
+            if (!slide) return;
+
+            const isActive = i === selectedIndex;
+            const isPrev = i === selectedIndex! - 1;
+            const isNext = i === selectedIndex! + 1;
+            const isFarPrev = i === selectedIndex! - 2;
+            const isFarNext = i === selectedIndex! + 2;
+            const isOutPrev = i < selectedIndex! - 2;
+
+            let targetX = "0vw";
+            let targetOpacity = 0;
+            let targetScale = 0.8;
+
+            if (isActive) {
+              targetX = "0vw";
+              targetOpacity = 1;
+              targetScale = 1;
+            } else if (isPrev) {
+              targetX = isMobile ? "-45vw" : "-28vw";
+              targetOpacity = isMobile ? 0.1 : 0.25;
+              targetScale = 0.8;
+            } else if (isNext) {
+              targetX = isMobile ? "45vw" : "28vw";
+              targetOpacity = isMobile ? 0.1 : 0.25;
+              targetScale = 0.8;
+            } else if (isFarPrev) {
+              targetX = isMobile ? "-80vw" : "-48vw";
+              targetOpacity = isMobile ? 0 : 0.08;
+              targetScale = 0.6;
+            } else if (isFarNext) {
+              targetX = isMobile ? "80vw" : "48vw";
+              targetOpacity = isMobile ? 0 : 0.08;
+              targetScale = 0.6;
+            } else if (isOutPrev) {
+              targetX = isMobile ? "-100vw" : "-80vw";
+              targetOpacity = 0;
+              targetScale = 0.5;
+            } else {
+              targetX = isMobile ? "100vw" : "80vw";
+              targetOpacity = 0;
+              targetScale = 0.5;
+            }
+
+            if (firstDetailRenderRef.current) {
+              if (isActive) {
+                // Flying thumbnail covers the slot; wait for it to fade, then crossfade in
+                gsap.set(slide, {
+                  scale: targetScale,
+                  x: targetX,
+                  y: 0,
+                  autoAlpha: 0,
+                });
+                gsap.to(slide, {
+                  autoAlpha: targetOpacity,
+                  duration: 0.2,
+                  delay: 0.6,
+                  ease: "none",
+                });
+              } else if (isPrev || isNext || isFarPrev || isFarNext) {
+                gsap.set(slide, {
+                  autoAlpha: 0,
+                  x: targetX,
+                  scale: targetScale,
+                });
+                gsap.to(slide, {
+                  autoAlpha: targetOpacity,
+                  duration: 0.8,
+                  ease: "power2.out",
+                  delay: 0.4,
+                });
+              } else {
+                gsap.set(slide, {
+                  autoAlpha: 0,
+                  x: targetX,
+                  scale: targetScale,
+                });
+              }
+            } else {
+              gsap.to(slide, {
+                x: targetX,
+                autoAlpha: targetOpacity,
+                scale: targetScale,
+                duration: 0.8,
+                ease: "power3.inOut",
+                overwrite: "auto",
+              });
+            }
+          });
+
+          firstDetailRenderRef.current = false;
+        },
+      );
+
       return () => mm.revert();
     },
     {
@@ -436,10 +524,6 @@ export function ScrollStage({
 
   function handleRowSelect(i: number) {
     if (i === selectedIndex) return;
-    const slot = slotRefs.current[i];
-    if (slot) {
-      setEntranceRect(slot.getBoundingClientRect());
-    }
     onSelect(i);
   }
 
@@ -522,15 +606,16 @@ export function ScrollStage({
             const isNext = i === selectedIndex! + 1;
             const isFarPrev = i === selectedIndex! - 2;
             const isFarNext = i === selectedIndex! + 2;
-            const isVisible = isActive || isPrev || isNext || isFarPrev || isFarNext;
-            
+            const isVisible =
+              isActive || isPrev || isNext || isFarPrev || isFarNext;
+
             return (
-              <div 
+              <div
                 key={p.id}
                 ref={(el) => {
                   detailSlidesRefs.current[i] = el;
                 }}
-                className={`${styles.detailSlide} ${isActive ? styles.detailSlideActive : (isVisible ? styles.detailSlideAdjacent : '')}`}
+                className={`${styles.detailSlide} ${isActive ? styles.detailSlideActive : isVisible ? styles.detailSlideAdjacent : ""}`}
               >
                 {isVisible && (
                   <RotatingFigure
@@ -578,4 +663,4 @@ export function ScrollStage({
       </div>
     </div>
   );
-}
+});

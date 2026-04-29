@@ -8,10 +8,11 @@ import { ScrollStage } from "components/scroll-stage";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Product } from "lib/shopify/types";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./index.module.css";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
+const EMPTY_MAP: Record<string, Product[]> = {};
 
 type Props = {
   products: Product[];
@@ -22,7 +23,7 @@ type Props = {
 
 export function HomeScene({
   products,
-  recommendationsMap = {},
+  recommendationsMap = EMPTY_MAP,
   initialHandle,
   featuredProducts,
 }: Props) {
@@ -40,21 +41,24 @@ export function HomeScene({
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  function handleSelect(index: number | null) {
-    setSelectedIndex(index);
-    setCurrentFrame(0);
-    setIsExpanded(false);
+  const handleSelect = useCallback(
+    (index: number | null) => {
+      setSelectedIndex(index);
+      setCurrentFrame(0);
+      setIsExpanded(false);
 
-    if (index !== null && products[index]) {
-      History.prototype.pushState.apply(window.history, [
-        null,
-        "",
-        `/looks/${products[index].handle}`,
-      ]);
-    } else {
-      History.prototype.pushState.apply(window.history, [null, "", `/`]);
-    }
-  }
+      if (index !== null && products[index]) {
+        History.prototype.pushState.apply(window.history, [
+          null,
+          "",
+          `/looks/${products[index].handle}`,
+        ]);
+      } else {
+        History.prototype.pushState.apply(window.history, [null, "", `/`]);
+      }
+    },
+    [products],
+  );
 
   // Prevent page scroll when in detail view
   useEffect(() => {
@@ -88,28 +92,40 @@ export function HomeScene({
     return () => window.removeEventListener("popstate", handlePopState);
   }, [products]);
 
-  // GSAP: main fades out as you scroll down to reveal content
+  // GSAP: main fades out as the scrollable content glides up over it
   useGSAP(
     () => {
       if (!mainRef.current || !contentRef.current) return;
 
-      // Main canvas fades out as the scrollable content glides up over it
       gsap.to(mainRef.current, {
-        opacity: 0,
+        autoAlpha: 0,
         ease: "none",
         scrollTrigger: {
           trigger: contentRef.current,
-          start: "top bottom", // when the top of content hits bottom of viewport
-          end: "top center", // fully faded out when content reaches the middle
-          scrub: true,
+          start: "top 90%",
+          end: "top 30%",
+          scrub: 1,
         },
       });
     },
     { scope: containerRef },
   );
 
-  const selectedProduct =
-    selectedIndex !== null ? products[selectedIndex] : undefined;
+  const selectedProduct = useMemo(
+    () => (selectedIndex !== null ? products[selectedIndex] : undefined),
+    [selectedIndex, products],
+  );
+
+  const handleModelClick = useCallback(
+    () => setIsExpanded((prev) => !prev),
+    [],
+  );
+
+  const relatedProducts = useMemo(
+    () =>
+      selectedProduct ? recommendationsMap[selectedProduct.id] : undefined,
+    [selectedProduct, recommendationsMap],
+  );
 
   return (
     <div ref={containerRef} style={{ position: "relative" }}>
@@ -123,16 +139,14 @@ export function HomeScene({
           onSelect={handleSelect}
           currentFrame={currentFrame}
           onFrameChange={setCurrentFrame}
-          onModelClick={() => setIsExpanded((prev) => !prev)}
+          onModelClick={handleModelClick}
         />
       </div>
 
       <BottomBar
         count={products.length}
         selectedProduct={selectedProduct}
-        relatedProducts={
-          selectedProduct ? recommendationsMap[selectedProduct.id] : undefined
-        }
+        relatedProducts={relatedProducts}
         isExpanded={isExpanded}
         onClose={() => setIsExpanded(false)}
       />

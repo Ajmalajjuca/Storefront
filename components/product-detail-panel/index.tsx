@@ -95,46 +95,49 @@ export function ProductDetailPanel({
   useGSAP(() => {
     const tickerCallback = (_time: number, deltaTime: number) => {
       if (isHovered) return;
-      
+
       // 6 seconds for a full loop
-      autoPlayProgress.current += (deltaTime / 1000) / 6;
+      autoPlayProgress.current += deltaTime / 1000 / 6;
       if (autoPlayProgress.current >= 1) {
-         autoPlayProgress.current = autoPlayProgress.current % 1; 
+        autoPlayProgress.current = autoPlayProgress.current % 1;
       }
-      
+
       setSmoothProgress(autoPlayProgress.current);
-      
+
       const frame = Math.min(35, Math.floor(autoPlayProgress.current * 36));
       if (frame !== lastFrameRef.current) {
-         lastFrameRef.current = frame;
-         onFrameChange(frame);
+        lastFrameRef.current = frame;
+        onFrameChange(frame);
       }
     };
-    
+
     gsap.ticker.add(tickerCallback);
     return () => gsap.ticker.remove(tickerCallback);
   }, [isHovered, onFrameChange]);
 
   useGSAP(
     () => {
-      const isMobile = window.innerWidth <= 768;
-      gsap.fromTo(
-        containerRef.current,
-        { 
-          opacity: 0, 
-          x: isMobile ? 0 : -20,
-          y: isMobile ? 20 : 0 
+      const mm = gsap.matchMedia();
+      mm.add(
+        {
+          isDesktop: "(min-width: 769px)",
+          isMobile: "(max-width: 768px)",
         },
-        { 
-          opacity: 1, 
-          x: 0, 
-          y: 0,
-          duration: 0.6, 
-          ease: "power3.out" 
-        }
+        (context) => {
+          const { isMobile } = context.conditions as {
+            isMobile: boolean;
+            isDesktop: boolean;
+          };
+          gsap.fromTo(
+            containerRef.current,
+            { autoAlpha: 0, x: isMobile ? 0 : -20, y: isMobile ? 20 : 0 },
+            { autoAlpha: 1, x: 0, y: 0, duration: 0.6, ease: "power3.out" },
+          );
+        },
       );
+      return () => mm.revert();
     },
-    { scope: containerRef, dependencies: [product.id] }
+    { scope: containerRef, dependencies: [product.id] },
   );
 
   function selectOption(optId: string, val: string) {
@@ -160,17 +163,20 @@ export function ProductDetailPanel({
             <span className={styles.filmstripLabel}>
               {Math.round((currentFrame / 35) * 360)}° / 360°
             </span>
-            <div 
+            <div
               className={styles.filmstripTrack}
               onMouseEnter={() => setIsHovered(true)}
               onMouseMove={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
-                const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+                const x = Math.max(
+                  0,
+                  Math.min(e.clientX - rect.left, rect.width),
+                );
                 const percentage = x / rect.width;
-                
+
                 autoPlayProgress.current = percentage;
                 setSmoothProgress(percentage);
-                
+
                 const frame = Math.floor(percentage * 36);
                 if (frame !== lastFrameRef.current) {
                   lastFrameRef.current = frame;
@@ -207,10 +213,13 @@ export function ProductDetailPanel({
           </div>
         )}
 
-        {product.options.filter(o => !(o.name === "Title" && o.values.includes("Default Title"))).length > 0 && (
+        {product.options.filter(
+          (o) => !(o.name === "Title" && o.values.includes("Default Title")),
+        ).length > 0 && (
           <div className={styles.optionsSection}>
             {product.options.map((opt) => {
-              if (opt.name === "Title" && opt.values.includes("Default Title")) return null;
+              if (opt.name === "Title" && opt.values.includes("Default Title"))
+                return null;
               const isColor = /colou?r/i.test(opt.name);
               return (
                 <div key={opt.id} className={styles.optionGroup}>

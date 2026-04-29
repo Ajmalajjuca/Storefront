@@ -3,6 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import { ProductDetailPanel } from "components/product-detail-panel";
 import { RotatingFigure } from "components/rotating-figure";
+import { TextShuffle } from "components/text-shuffle";
 import gsap from "gsap";
 import type { Product } from "lib/shopify/types";
 import React, { useEffect, useRef, useState } from "react";
@@ -14,8 +15,6 @@ type Props = {
   products: Product[];
   selectedIndex: number | null;
   onSelect: (index: number | null) => void;
-  currentFrame: number;
-  onFrameChange: (frame: number) => void;
   onModelClick?: () => void;
 };
 
@@ -27,8 +26,6 @@ export const ScrollStage = React.memo(function ScrollStage({
   products,
   selectedIndex,
   onSelect,
-  currentFrame,
-  onFrameChange,
   onModelClick,
 }: Props) {
   const total = products.length;
@@ -526,7 +523,7 @@ export const ScrollStage = React.memo(function ScrollStage({
     if (i === selectedIndex) return;
     onSelect(i);
   }
-
+console.log("scroll-stage rendering......");
   return (
     <div
       ref={stageRef}
@@ -539,7 +536,9 @@ export const ScrollStage = React.memo(function ScrollStage({
           <span className={styles.breadcrumb}>
             COLLECTION {pad(1)} / {pad(1)}
           </span>
-          <h1 className={styles.collectionTitle}>COLLECTION</h1>
+          <h1 className={styles.collectionTitle}>
+            <TextShuffle text="COLLECTION" triggerOnHover />
+          </h1>
           <div className={styles.productsMeta}>
             <span className={styles.productsLabel}>PRODUCTS</span>
             <span className={styles.productsCount}>{total}</span>
@@ -554,8 +553,6 @@ export const ScrollStage = React.memo(function ScrollStage({
           product={selectedProduct}
           lookIndex={selectedIndex!}
           totalLooks={total}
-          currentFrame={currentFrame}
-          onFrameChange={onFrameChange}
         />
       )}
 
@@ -582,7 +579,7 @@ export const ScrollStage = React.memo(function ScrollStage({
               <div className={`${styles.jumpThumb} ${styles.jumpThumbActive}`}>
                 <RotatingFigure
                   product={selectedProduct}
-                  externalFrame={currentFrame}
+                  listenToGlobalFrame={true}
                 />
               </div>
               {nextProduct && (
@@ -620,7 +617,7 @@ export const ScrollStage = React.memo(function ScrollStage({
                 {isVisible && (
                   <RotatingFigure
                     product={p}
-                    externalFrame={isActive ? currentFrame : undefined}
+                    listenToGlobalFrame={isActive}
                     priority={isActive}
                     onClick={() => {
                       if (isFarPrev) {

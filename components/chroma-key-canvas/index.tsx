@@ -39,7 +39,11 @@ const FS = `
   }
 `;
 
-function compileShader(gl: WebGLRenderingContext, type: number, source: string) {
+function compileShader(
+  gl: WebGLRenderingContext,
+  type: number,
+  source: string,
+) {
   const shader = gl.createShader(type);
   if (!shader) return null;
   gl.shaderSource(shader, source);
@@ -75,9 +79,9 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
     canvas.style.height = "100%";
     canvas.style.objectFit = "contain";
     canvas.style.objectPosition = "bottom center";
-    
+
     if (className) canvas.className = className;
-    
+
     container.appendChild(canvas);
 
     let animationFrameId: number;
@@ -104,8 +108,8 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
         if (fs) gl.deleteShader(fs);
         if (positionBuffer) gl.deleteBuffer(positionBuffer);
         if (texCoordBuffer) gl.deleteBuffer(texCoordBuffer);
-        
-        const loseContext = gl.getExtension('WEBGL_lose_context');
+
+        const loseContext = gl.getExtension("WEBGL_lose_context");
         if (loseContext) {
           loseContext.loseContext();
         }
@@ -116,7 +120,10 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
     };
 
     try {
-      gl = canvas.getContext("webgl", { premultipliedAlpha: true, alpha: true });
+      gl = canvas.getContext("webgl", {
+        premultipliedAlpha: true,
+        alpha: true,
+      });
       if (!gl) {
         setUseFallback(true);
         return cleanup;
@@ -127,10 +134,10 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
         setUseFallback(true);
         return cleanup;
       }
-      
+
       vs = compileShader(gl, gl.VERTEX_SHADER, VS);
       fs = compileShader(gl, gl.FRAGMENT_SHADER, FS);
-      
+
       if (!vs || !fs) {
         setUseFallback(true);
         return cleanup;
@@ -139,13 +146,13 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
       gl.attachShader(program, vs);
       gl.attachShader(program, fs);
       gl.linkProgram(program);
-      
+
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
         console.warn("Program link error", gl.getProgramInfoLog(program));
         setUseFallback(true);
         return cleanup;
       }
-      
+
       gl.useProgram(program);
 
       positionBuffer = gl.createBuffer();
@@ -153,14 +160,9 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
       gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array([
-          -1.0, -1.0,
-           1.0, -1.0,
-          -1.0,  1.0,
-          -1.0,  1.0,
-           1.0, -1.0,
-           1.0,  1.0,
+          -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
         ]),
-        gl.STATIC_DRAW
+        gl.STATIC_DRAW,
       );
 
       texCoordBuffer = gl.createBuffer();
@@ -168,14 +170,9 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
       gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array([
-          0.0, 0.0,
-          1.0, 0.0,
-          0.0, 1.0,
-          0.0, 1.0,
-          1.0, 0.0,
-          1.0, 1.0,
+          0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0,
         ]),
-        gl.STATIC_DRAW
+        gl.STATIC_DRAW,
       );
 
       const posLocation = gl.getAttribLocation(program, "a_position");
@@ -201,7 +198,7 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
 
       const render = () => {
         if (!gl || !canvas || !mediaElement) return;
-        
+
         let intrinsicWidth = 0;
         let intrinsicHeight = 0;
         if (mediaElement instanceof HTMLVideoElement) {
@@ -212,24 +209,49 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
           intrinsicHeight = mediaElement.naturalHeight;
         }
 
-        if (intrinsicWidth > 0 && intrinsicHeight > 0 && (canvas.width !== intrinsicWidth || canvas.height !== intrinsicHeight)) {
+        if (
+          intrinsicWidth > 0 &&
+          intrinsicHeight > 0 &&
+          (canvas.width !== intrinsicWidth || canvas.height !== intrinsicHeight)
+        ) {
           canvas.width = intrinsicWidth;
           canvas.height = intrinsicHeight;
           gl.viewport(0, 0, canvas.width, canvas.height);
         }
 
-        if (mediaElement instanceof HTMLVideoElement && mediaElement.readyState >= 2) {
+        if (
+          mediaElement instanceof HTMLVideoElement &&
+          mediaElement.readyState >= 2
+        ) {
           // Skip frame if video time hasn't advanced (saves GPU work)
           const currentTime = mediaElement.currentTime;
           if (currentTime !== lastVideoTimeRef.current) {
             lastVideoTimeRef.current = currentTime;
             gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, mediaElement);
+            gl.texImage2D(
+              gl.TEXTURE_2D,
+              0,
+              gl.RGBA,
+              gl.RGBA,
+              gl.UNSIGNED_BYTE,
+              mediaElement,
+            );
             gl.drawArrays(gl.TRIANGLES, 0, 6);
           }
-        } else if (mediaElement instanceof HTMLImageElement && mediaElement.complete && mediaElement.naturalWidth > 0) {
+        } else if (
+          mediaElement instanceof HTMLImageElement &&
+          mediaElement.complete &&
+          mediaElement.naturalWidth > 0
+        ) {
           gl.bindTexture(gl.TEXTURE_2D, texture);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, mediaElement);
+          gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.RGBA,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            mediaElement,
+          );
           gl.drawArrays(gl.TRIANGLES, 0, 6);
         }
 
@@ -266,7 +288,7 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
               }
             }
           },
-          { threshold: 0.05 }
+          { threshold: 0.05 },
         );
         observer.observe(canvas);
 
@@ -295,7 +317,12 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
           src={src}
           poster={poster}
           className={className}
-          style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom center" }}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            objectPosition: "bottom center",
+          }}
           autoPlay
           loop
           muted
@@ -308,10 +335,21 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
         src={src}
         alt=""
         className={className}
-        style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom center" }}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "contain",
+          objectPosition: "bottom center",
+        }}
       />
     );
   }
 
-  return <div ref={containerRef} className={className} style={{ width: '100%', height: '100%' }} />;
+  return (
+    <div
+      ref={containerRef}
+      className={className}
+      style={{ width: "100%", height: "100%" }}
+    />
+  );
 }

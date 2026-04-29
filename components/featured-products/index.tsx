@@ -47,9 +47,9 @@ export function FeaturedProducts({ products }: Props) {
     },
     { scope: sectionRef },
   );
+  console.log("featured products rendering......");
 
   if (displayProducts.length === 0) return null;
-
   return (
     <section ref={sectionRef} className={styles.section}>
       <div className={styles.header}>

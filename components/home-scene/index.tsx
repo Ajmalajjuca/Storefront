@@ -38,13 +38,11 @@ export function HomeScene({
     }
     return null;
   });
-  const [currentFrame, setCurrentFrame] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleSelect = useCallback(
     (index: number | null) => {
       setSelectedIndex(index);
-      setCurrentFrame(0);
       setIsExpanded(false);
 
       if (index !== null && products[index]) {
@@ -108,7 +106,7 @@ export function HomeScene({
         },
       });
     },
-    { scope: containerRef },
+    { scope: containerRef, dependencies: [] },
   );
 
   const selectedProduct = useMemo(
@@ -126,6 +124,7 @@ export function HomeScene({
       selectedProduct ? recommendationsMap[selectedProduct.id] : undefined,
     [selectedProduct, recommendationsMap],
   );
+  console.log("home scene rendering......", selectedIndex, isExpanded);
 
   return (
     <div ref={containerRef} style={{ position: "relative" }}>
@@ -137,8 +136,6 @@ export function HomeScene({
           products={products}
           selectedIndex={selectedIndex}
           onSelect={handleSelect}
-          currentFrame={currentFrame}
-          onFrameChange={setCurrentFrame}
           onModelClick={handleModelClick}
         />
       </div>

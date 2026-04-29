@@ -1,6 +1,7 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
+import { dispatchFrame } from "components/rotating-figure";
 import gsap from "gsap";
 import type { Product } from "lib/shopify/types";
 import Image from "next/image";
@@ -50,21 +51,13 @@ type Props = {
   product: Product;
   lookIndex: number;
   totalLooks: number;
-  currentFrame: number;
-  onFrameChange: (frame: number) => void;
 };
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export function ProductDetailPanel({
-  product,
-  lookIndex,
-  totalLooks,
-  currentFrame,
-  onFrameChange,
-}: Props) {
+export function ProductDetailPanel({ product, lookIndex, totalLooks }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const images = product.images;
   const filmstripImage = images.length > 0 ? images[images.length - 1] : null;
@@ -82,15 +75,10 @@ export function ProductDetailPanel({
 
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayProgress = useRef(0);
-  const lastFrameRef = useRef(currentFrame);
-  const [smoothProgress, setSmoothProgress] = useState(0);
-
-  // Sync if external reset (like selecting a new model)
-  if (currentFrame === 0 && lastFrameRef.current !== 0) {
-    autoPlayProgress.current = 0;
-    setSmoothProgress(0);
-    lastFrameRef.current = 0;
-  }
+  const lastFrameRef = useRef(0);
+  const highlightRef = useRef<HTMLDivElement>(null);
+  const rawImgRef = useRef<HTMLImageElement>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
 
   useGSAP(() => {
     const tickerCallback = (_time: number, deltaTime: number) => {
@@ -102,18 +90,25 @@ export function ProductDetailPanel({
         autoPlayProgress.current = autoPlayProgress.current % 1;
       }
 
-      setSmoothProgress(autoPlayProgress.current);
+      const p = autoPlayProgress.current;
+      if (highlightRef.current)
+        highlightRef.current.style.transform = `translateX(${p * 36 * 100}%)`;
+      if (rawImgRef.current)
+        rawImgRef.current.style.transform = `translateX(-${p * 100}%)`;
 
-      const frame = Math.min(35, Math.floor(autoPlayProgress.current * 36));
+      const frame = Math.min(35, Math.floor(p * 36));
       if (frame !== lastFrameRef.current) {
         lastFrameRef.current = frame;
-        onFrameChange(frame);
+        dispatchFrame(frame);
+        if (labelRef.current) {
+          labelRef.current.textContent = `${Math.round((frame / 35) * 360)}° / 360°`;
+        }
       }
     };
 
     gsap.ticker.add(tickerCallback);
     return () => gsap.ticker.remove(tickerCallback);
-  }, [isHovered, onFrameChange]);
+  }, [isHovered]);
 
   useGSAP(
     () => {
@@ -143,7 +138,7 @@ export function ProductDetailPanel({
   function selectOption(optId: string, val: string) {
     setSelectedOptions((prev) => ({ ...prev, [optId]: val }));
   }
-
+  console.log("product detail panel rendering......", lookIndex, totalLooks);
   return (
     <>
       <div
@@ -160,8 +155,8 @@ export function ProductDetailPanel({
 
         {filmstripImage && (
           <div className={styles.filmstripSection}>
-            <span className={styles.filmstripLabel}>
-              {Math.round((currentFrame / 35) * 360)}° / 360°
+            <span ref={labelRef} className={styles.filmstripLabel}>
+              0° / 360°
             </span>
             <div
               className={styles.filmstripTrack}
@@ -175,12 +170,19 @@ export function ProductDetailPanel({
                 const percentage = x / rect.width;
 
                 autoPlayProgress.current = percentage;
-                setSmoothProgress(percentage);
+                if (highlightRef.current)
+                  highlightRef.current.style.transform = `translateX(${percentage * 36 * 100}%)`;
+                if (rawImgRef.current)
+                  rawImgRef.current.style.transform = `translateX(-${percentage * 100}%)`;
 
                 const frame = Math.floor(percentage * 36);
                 if (frame !== lastFrameRef.current) {
                   lastFrameRef.current = frame;
-                  onFrameChange(Math.max(0, Math.min(35, frame)));
+                  const finalFrame = Math.max(0, Math.min(35, frame));
+                  dispatchFrame(finalFrame);
+                  if (labelRef.current) {
+                    labelRef.current.textContent = `${Math.round((finalFrame / 35) * 360)}° / 360°`;
+                  }
                 }
               }}
               onMouseLeave={() => setIsHovered(false)}
@@ -192,20 +194,22 @@ export function ProductDetailPanel({
                 style={{ opacity: 0.15 }}
               />
               <div
+                ref={highlightRef}
                 className={styles.filmstripHighlight}
                 style={{
                   width: `${100 / 36}%`,
-                  transform: `translateX(${smoothProgress * 36 * 100}%)`,
+                  transform: `translateX(${autoPlayProgress.current * 36 * 100}%)`,
                 }}
               >
                 <img
+                  ref={rawImgRef}
                   src={filmstripImage.url}
                   alt=""
                   className={styles.filmstripRawImg}
                   style={{
                     width: `${36 * 100}%`,
                     maxWidth: "none",
-                    transform: `translateX(-${smoothProgress * 100}%)`,
+                    transform: `translateX(-${autoPlayProgress.current * 100}%)`,
                   }}
                 />
               </div>

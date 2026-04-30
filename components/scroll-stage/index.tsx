@@ -107,6 +107,9 @@ export const ScrollStage = React.memo(function ScrollStage({
   // Grow the sticky-mount set whenever the live center moves into a new
   // window. Idempotent — only allocates a new Set if there's something to add.
   useEffect(() => {
+    const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+    if (isMobile) return; // Prevent context exhaustion on mobile
+    
     const c = liveCenter ?? selectedIndex ?? 0;
     setStickyMounted((prev) => {
       let next: Set<number> | null = null;
@@ -672,10 +675,12 @@ export const ScrollStage = React.memo(function ScrollStage({
             // Mount based on live scroll center so neighbors are warm
             // before snap commits — fixes the cold-mount flicker.
             const center = liveCenter ?? selectedIndex ?? 0;
-            const isNearby = Math.abs(i - center) <= 2;
+            const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+            const range = isMobile ? 1 : 2;
+            const isNearby = Math.abs(i - center) <= range;
             // Sticky mount: keep slides alive once they've been in range,
             // so revisits in the same detail session are flicker-free.
-            const shouldMount = isNearby || stickyMounted.has(i);
+            const shouldMount = isNearby || (!isMobile && stickyMounted.has(i));
 
             return (
               <div
@@ -711,7 +716,7 @@ export const ScrollStage = React.memo(function ScrollStage({
         className={styles.figuresRow}
         style={{ display: isDetail ? "none" : undefined }}
       >
-        {products.map((product, i) => (
+        {!isDetail && products.map((product, i) => (
           <div
             key={product.id}
             ref={(el) => {

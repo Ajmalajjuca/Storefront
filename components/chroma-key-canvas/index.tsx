@@ -105,6 +105,9 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
         video.pause();
         video.removeAttribute("src");
         video.load();
+        if (video.parentNode) {
+          video.parentNode.removeChild(video);
+        }
       }
       if (gl) {
         if (texture) gl.deleteTexture(texture);
@@ -279,9 +282,32 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
         video.src = getPreloadedVideoSrc(src) ?? src;
         video.loop = true;
         video.muted = true;
+        video.defaultMuted = true;
         video.playsInline = true;
         video.autoplay = true;
         video.preload = "auto";
+        video.setAttribute("muted", "");
+        video.setAttribute("playsinline", "");
+        video.setAttribute("webkit-playsinline", "");
+        
+        // Mobile Safari strongly prefers the <video> to be in the DOM to autoplay
+        video.style.position = "absolute";
+        video.style.width = "1px";
+        video.style.height = "1px";
+        video.style.opacity = "0";
+        video.style.pointerEvents = "none";
+        document.body.appendChild(video);
+
+        // iOS Safari sometimes fails to decode large blob URLs. Fallback to raw CDN URL if it errors.
+        video.onerror = () => {
+          if (video && video.src.startsWith("blob:")) {
+            console.warn("Blob video failed on iOS, falling back to network src:", src);
+            video.src = src;
+            video.load();
+            video.play().catch(() => {});
+          }
+        };
+
         // Decode at normal speed — avoids GPU spike on first frame
         video.playbackRate = 1;
         // Set mediaElement = video synchronously so the rAF loop stays alive
@@ -316,30 +342,11 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
 
         video.play().catch(() => {});
 
-        // Capture a non-null local for the IntersectionObserver closure.
-        const videoLocal = video;
-        // Pause rendering when off-screen to save GPU/CPU
-        const observer = new IntersectionObserver(
-          (entries) => {
-            for (const entry of entries) {
-              if (entry.isIntersecting) {
-                videoLocal.play().catch(() => {});
-                // Force the next render() to re-upload + redraw the
-                // current frame, even if currentTime hasn't advanced
-                // since pause. Without this, the first tick after
-                // resume hits the "skip draw" branch and the canvas
-                // stays blank for one composite.
-                lastVideoTimeRef.current = -1;
-                animationFrameId = requestAnimationFrame(render);
-              } else {
-                videoLocal.pause();
-                cancelAnimationFrame(animationFrameId);
-              }
-            }
-          },
-          { threshold: 0.05 },
-        );
-        observer.observe(canvas);
+        // On iOS Safari, IntersectionObserver can incorrectly report isIntersecting: false
+        // when inside complex GSAP-controlled absolute positioned containers with opacity.
+        // For now, we will let the video play. Since we limit active videos to <5,
+        // battery impact is minimal.
+        // (Removed IntersectionObserver to fix mobile blank issue)
 
         animationFrameId = requestAnimationFrame(render);
       } else {

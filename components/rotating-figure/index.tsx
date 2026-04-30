@@ -27,6 +27,7 @@ type Props = {
   onClick?: () => void;
   externalFrame?: number;
   listenToGlobalFrame?: boolean;
+  noWebGL?: boolean;
 };
 
 type VideoMedia = Extract<ProductMedia, { mediaContentType: "VIDEO" }>;
@@ -39,6 +40,7 @@ export function RotatingFigure({
   onClick,
   externalFrame,
   listenToGlobalFrame,
+  noWebGL,
 }: Props) {
   const rawVideo = product.media?.find((m) => m.mediaContentType === "VIDEO");
   const videoMedia = rawVideo as VideoMedia | undefined;
@@ -130,12 +132,24 @@ export function RotatingFigure({
             aria-label={product.title}
           >
             <div className={styles.mediaWrap}>
-              <ChromaKeyCanvas
-                src={mp4.url}
-                isVideo={true}
-                poster={videoMedia.previewImage?.url}
-                className={styles.media}
-              />
+              {noWebGL ? (
+                <video
+                  src={mp4.url}
+                  className={styles.media}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom center" }}
+                />
+              ) : (
+                <ChromaKeyCanvas
+                  src={mp4.url}
+                  isVideo={true}
+                  poster={videoMedia.previewImage?.url}
+                  className={styles.media}
+                />
+              )}
             </div>
           </button>
         );
@@ -147,12 +161,24 @@ export function RotatingFigure({
           aria-label={product.title}
         >
           <div className={styles.mediaWrap}>
-            <ChromaKeyCanvas
-              src={mp4.url}
-              isVideo={true}
-              poster={videoMedia.previewImage?.url}
-              className={styles.media}
-            />
+            {noWebGL ? (
+              <video
+                src={mp4.url}
+                className={styles.media}
+                autoPlay
+                loop
+                muted
+                playsInline
+                style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom center" }}
+              />
+            ) : (
+              <ChromaKeyCanvas
+                src={mp4.url}
+                isVideo={true}
+                poster={videoMedia.previewImage?.url}
+                className={styles.media}
+              />
+            )}
           </div>
         </Link>
       );
@@ -176,7 +202,11 @@ export function RotatingFigure({
         aria-label={product.title}
       >
         <div className={styles.mediaWrap}>
-          <ChromaKeyCanvas src={currentImage.url} className={styles.media} />
+          {noWebGL ? (
+            <img src={currentImage.url} alt="" className={styles.media} style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom center" }} />
+          ) : (
+            <ChromaKeyCanvas src={currentImage.url} className={styles.media} />
+          )}
         </div>
       </button>
     );
@@ -191,7 +221,11 @@ export function RotatingFigure({
       aria-label={product.title}
     >
       <div className={styles.mediaWrap}>
-        <ChromaKeyCanvas src={currentImage.url} className={styles.media} />
+        {noWebGL ? (
+          <img src={currentImage.url} alt="" className={styles.media} style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom center" }} />
+        ) : (
+          <ChromaKeyCanvas src={currentImage.url} className={styles.media} />
+        )}
       </div>
     </Link>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { getPreloadedVideoSrc } from "lib/video-preload";
 import { useEffect, useRef, useState } from "react";
 
 const VS = `
@@ -86,6 +87,10 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
 
     let animationFrameId: number;
     let mediaElement: HTMLVideoElement | HTMLImageElement;
+    // Video element kept on the outer scope (separate from mediaElement) so
+    // cleanup can pause/release it even while we're displaying the poster.
+    let video: HTMLVideoElement | null = null;
+    let videoFirstFrameReady = false;
     let gl: WebGLRenderingContext | null = null;
     let program: WebGLProgram | null = null;
     let texture: WebGLTexture | null = null;
@@ -96,10 +101,10 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
 
     const cleanup = () => {
       cancelAnimationFrame(animationFrameId);
-      if (mediaElement instanceof HTMLVideoElement) {
-        mediaElement.pause();
-        mediaElement.removeAttribute("src");
-        mediaElement.load();
+      if (video) {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
       }
       if (gl) {
         if (texture) gl.deleteTexture(texture);
@@ -123,6 +128,12 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
       gl = canvas.getContext("webgl", {
         premultipliedAlpha: true,
         alpha: true,
+        // Keep the last-drawn frame across composites so the canvas never
+        // goes transparent between draws (e.g., the 1-frame gap after the
+        // IntersectionObserver resumes rAF). Default false would briefly
+        // clear the canvas while a paused video has not yet advanced
+        // currentTime — the visible blank flicker on scroll-in.
+        preserveDrawingBuffer: true,
       });
       if (!gl) {
         setUseFallback(true);
@@ -261,9 +272,11 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
       };
 
       if (isVideo) {
-        const video = document.createElement("video");
+        video = document.createElement("video");
         video.crossOrigin = "anonymous";
-        video.src = src;
+        // Use the in-memory blob URL when available — bypasses the network
+        // round-trip on swap and eliminates the cold-mount blank flicker.
+        video.src = getPreloadedVideoSrc(src) ?? src;
         video.loop = true;
         video.muted = true;
         video.playsInline = true;
@@ -271,19 +284,55 @@ export function ChromaKeyCanvas({ src, isVideo, className, poster }: Props) {
         video.preload = "auto";
         // Decode at normal speed — avoids GPU spike on first frame
         video.playbackRate = 1;
-        if (poster) video.poster = poster;
-        video.play().catch(() => {});
+        // Set mediaElement = video synchronously so the rAF loop stays alive
+        // even before the poster or first video frame is ready.
         mediaElement = video;
 
+        // Paint the poster through the same chroma-key shader until the
+        // video has actually decoded its first frame. Closes the
+        // ~50–150 ms decode gap that remains after blob preload.
+        if (poster) {
+          const posterImg = new Image();
+          posterImg.crossOrigin = "anonymous";
+          posterImg.src = poster;
+          posterImg.onload = () => {
+            if (!videoFirstFrameReady) mediaElement = posterImg;
+          };
+        }
+
+        type RVFCVideo = HTMLVideoElement & {
+          requestVideoFrameCallback?: (cb: () => void) => number;
+        };
+        const v = video as RVFCVideo;
+        const markReady = () => {
+          videoFirstFrameReady = true;
+          if (video) mediaElement = video;
+        };
+        if (typeof v.requestVideoFrameCallback === "function") {
+          v.requestVideoFrameCallback(markReady);
+        } else {
+          video.addEventListener("loadeddata", markReady, { once: true });
+        }
+
+        video.play().catch(() => {});
+
+        // Capture a non-null local for the IntersectionObserver closure.
+        const videoLocal = video;
         // Pause rendering when off-screen to save GPU/CPU
         const observer = new IntersectionObserver(
           (entries) => {
             for (const entry of entries) {
               if (entry.isIntersecting) {
-                video.play().catch(() => {});
+                videoLocal.play().catch(() => {});
+                // Force the next render() to re-upload + redraw the
+                // current frame, even if currentTime hasn't advanced
+                // since pause. Without this, the first tick after
+                // resume hits the "skip draw" branch and the canvas
+                // stays blank for one composite.
+                lastVideoTimeRef.current = -1;
                 animationFrameId = requestAnimationFrame(render);
               } else {
-                video.pause();
+                videoLocal.pause();
                 cancelAnimationFrame(animationFrameId);
               }
             }

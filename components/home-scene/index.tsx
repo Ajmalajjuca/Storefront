@@ -77,7 +77,7 @@ export function HomeScene({
       if (target === pathname) return;
 
       // push only when entering detail from listing; replace for closing back to "/"
-      // For look-to-look in-scene navigation, bypass Next.js router entirely to 
+      // For look-to-look in-scene navigation, bypass Next.js router entirely to
       // avoid server data fetching delays that cause jumpy/laggy scrubbing.
       if (pathname === "/" && target !== "/") {
         router.push(target, { scroll: false });
@@ -94,12 +94,16 @@ export function HomeScene({
   // ScrollTrigger maps scrollY to a continuous model index: index = scrollY / innerHeight
   const prevSelectedRef = useRef<number | null>(null);
   useEffect(() => {
-    const justEntered = selectedIndex !== null && prevSelectedRef.current === null;
+    const justEntered =
+      selectedIndex !== null && prevSelectedRef.current === null;
     prevSelectedRef.current = selectedIndex;
     if (justEntered) {
       // Use rAF to ensure the scroll proxy div is mounted first
       requestAnimationFrame(() => {
-        window.scrollTo({ top: selectedIndex * window.innerHeight, behavior: 'instant' as ScrollBehavior });
+        window.scrollTo({
+          top: selectedIndex * window.innerHeight,
+          behavior: "instant" as ScrollBehavior,
+        });
       });
     }
   }, [selectedIndex]);
@@ -143,11 +147,17 @@ export function HomeScene({
   return (
     <div ref={containerRef} style={{ position: "relative" }}>
       {/* Gives page scrollable height so the 3D models are shown fully before scrolling */}
-      <div className={styles.heroSpacer} style={{ display: selectedIndex !== null ? 'none' : 'block' }} />
+      <div
+        className={styles.heroSpacer}
+        style={{ display: selectedIndex !== null ? "none" : "block" }}
+      />
 
       {/* Detail View Scrolling Proxy */}
       {selectedIndex !== null && (
-        <div id="detail-scroll-proxy" style={{ height: `${products.length * 100}vh`, width: '100%' }} />
+        <div
+          id="detail-scroll-proxy"
+          style={{ height: `${products.length * 100}vh`, width: "100%" }}
+        />
       )}
 
       <div ref={mainRef} className={styles.mainFixed}>

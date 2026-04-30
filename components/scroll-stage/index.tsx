@@ -7,7 +7,10 @@ import { TextShuffle } from "components/text-shuffle";
 import gsap from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import type { Product } from "lib/shopify/types";
+import type { Product, ProductMedia } from "lib/shopify/types";
+import { preloadVideos } from "lib/video-preload";
+
+type VideoMedia = Extract<ProductMedia, { mediaContentType: "VIDEO" }>;
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./index.module.css";
 
@@ -50,6 +53,20 @@ export const ScrollStage = React.memo(function ScrollStage({
   const [detailMounted, setDetailMounted] = useState(isDetail);
   const [titleMounted, setTitleMounted] = useState(!isDetail);
 
+  // Live integer scroll center, updated from ScrollTrigger.onUpdate.
+  // Drives slide mounting so neighbors are warm before snap commits.
+  // Falls back to selectedIndex when null (pre-scroll / outside detail mode).
+  const [liveCenter, setLiveCenter] = useState<number | null>(null);
+  const liveCenterRef = useRef<number | null>(null);
+
+  // Sticky mount: once a slide has been within the lookahead window, keep it
+  // mounted for the rest of the detail session. Pairs with the blob preload
+  // and poster fallback — together they make the second pass past any look
+  // strictly flicker-free, regardless of scroll velocity.
+  const [stickyMounted, setStickyMounted] = useState<Set<number>>(
+    () => new Set(),
+  );
+
   const selectedProduct =
     selectedIndex !== null ? products[selectedIndex]! : null;
   const prevProduct =
@@ -60,6 +77,48 @@ export const ScrollStage = React.memo(function ScrollStage({
     selectedIndex !== null && selectedIndex < total - 1
       ? products[selectedIndex + 1]!
       : null;
+
+  // Preload all product videos into memory on mount.
+  // Concurrency-capped so the active swap network slot isn't starved;
+  // priorityIndex orders the queue around the current selection so
+  // neighbors of the active look land first.
+  useEffect(() => {
+    const videoUrls: string[] = [];
+    for (const p of products) {
+      const raw = p.media?.find((m) => m.mediaContentType === "VIDEO");
+      const video = raw as VideoMedia | undefined;
+      if (!video?.sources?.length) continue;
+      const src =
+        video.sources.find((s) => s.mimeType === "video/mp4") ??
+        video.sources[0];
+      if (src?.url) videoUrls.push(src.url);
+    }
+    if (videoUrls.length === 0) return;
+    void preloadVideos(videoUrls, {
+      concurrency: 2,
+      priorityIndex: selectedIndex ?? 0,
+    });
+    // Intentionally only re-runs when the product set changes.
+    // selectedIndex re-orders priority but preloadVideo is idempotent
+    // per-URL, so a re-run on every selection would be wasteful.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products]);
+
+  // Grow the sticky-mount set whenever the live center moves into a new
+  // window. Idempotent — only allocates a new Set if there's something to add.
+  useEffect(() => {
+    const c = liveCenter ?? selectedIndex ?? 0;
+    setStickyMounted((prev) => {
+      let next: Set<number> | null = null;
+      for (let i = 0; i < total; i++) {
+        if (Math.abs(i - c) <= 2 && !prev.has(i)) {
+          if (!next) next = new Set(prev);
+          next.add(i);
+        }
+      }
+      return next ?? prev;
+    });
+  }, [liveCenter, selectedIndex, total]);
 
   const [mobileGridIndex, setMobileGridIndex] = useState(0);
 
@@ -174,12 +233,16 @@ export const ScrollStage = React.memo(function ScrollStage({
       } else if (abs < 1.5) {
         opacity = Math.max(1 - abs * 0.85, 0.15);
         if (abs > 1) {
-          opacity = 0.15 - ((abs - 1) * 0.3);
+          opacity = 0.15 - (abs - 1) * 0.3;
         }
       }
       if (abs >= 1.5) opacity = 0;
 
-      gsap.set(slide, { x: `${diff * spacing}vw`, scale, autoAlpha: Math.max(opacity, 0) });
+      gsap.set(slide, {
+        x: `${diff * spacing}vw`,
+        scale,
+        autoAlpha: Math.max(opacity, 0),
+      });
     });
     return painted;
   }).current;
@@ -194,6 +257,10 @@ export const ScrollStage = React.memo(function ScrollStage({
       if (stRef.current) {
         stRef.current.kill();
         stRef.current = null;
+      }
+      if (liveCenterRef.current !== null) {
+        liveCenterRef.current = null;
+        setLiveCenter(null);
       }
       return;
     }
@@ -231,13 +298,22 @@ export const ScrollStage = React.memo(function ScrollStage({
             },
           },
           onUpdate: (self) => {
-            paintSlides(self.progress * (count - 1));
+            const raw = self.progress * (count - 1);
+            paintSlides(raw);
+            const center = Math.round(raw);
+            if (center !== liveCenterRef.current) {
+              liveCenterRef.current = center;
+              setLiveCenter(center);
+            }
           },
         });
 
         // Initial paint at the current model position
         paintSlides(selectedIndexRef.current ?? 0);
-        console.log('[ST] Created. slides:', detailSlidesRefs.current.filter(Boolean).length);
+        console.log(
+          "[ST] Created. slides:",
+          detailSlidesRefs.current.filter(Boolean).length,
+        );
       });
     });
 
@@ -593,7 +669,13 @@ export const ScrollStage = React.memo(function ScrollStage({
           {/* Main Stage Track */}
           {products.map((p, i) => {
             const isActive = i === selectedIndex;
-            const isNearby = Math.abs(i - (selectedIndex ?? 0)) <= 2;
+            // Mount based on live scroll center so neighbors are warm
+            // before snap commits — fixes the cold-mount flicker.
+            const center = liveCenter ?? selectedIndex ?? 0;
+            const isNearby = Math.abs(i - center) <= 2;
+            // Sticky mount: keep slides alive once they've been in range,
+            // so revisits in the same detail session are flicker-free.
+            const shouldMount = isNearby || stickyMounted.has(i);
 
             return (
               <div
@@ -603,7 +685,7 @@ export const ScrollStage = React.memo(function ScrollStage({
                 }}
                 className={`${styles.detailSlide} ${isActive ? styles.detailSlideActive : styles.detailSlideAdjacent}`}
               >
-                {isNearby && (
+                {shouldMount && (
                   <RotatingFigure
                     product={p}
                     listenToGlobalFrame={isActive}
@@ -624,7 +706,11 @@ export const ScrollStage = React.memo(function ScrollStage({
       )}
 
       {/* Figures row — hidden via display:none in detail mode as primary mechanism */}
-      <div ref={rowRef} className={styles.figuresRow} style={{ display: isDetail ? 'none' : undefined }}>
+      <div
+        ref={rowRef}
+        className={styles.figuresRow}
+        style={{ display: isDetail ? "none" : undefined }}
+      >
         {products.map((product, i) => (
           <div
             key={product.id}

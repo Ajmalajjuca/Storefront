@@ -1150,8 +1150,61 @@
     top: 60svh;
   }
 
-  .floatingRail::before,
+  .floatingRail::before {
+    display: none;
+  }
+
   .tooltipCard {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: auto;
+    width: min(240rem, calc(100% - var(--grid-margin) * 2));
+    margin-inline: auto;
+    grid-template-columns: 44rem minmax(0, 1fr);
+    gap: 7rem 9rem;
+    padding: 8rem 10rem;
+  }
+
+  .tooltipTop,
+  .tooltipBottom {
+    top: auto;
+    bottom: 8rem;
+  }
+
+  .tooltipHudHeader {
+    font-size: 8rem;
+    gap: 5rem;
+  }
+
+  .tooltipPulse {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .tooltipMeta {
+    gap: 3rem;
+  }
+
+  .tooltipMeta h3 {
+    font-size: 11rem;
+  }
+
+  .tooltipMeta strong {
+    font-size: 10rem;
+  }
+
+  .tooltipLink,
+  .tooltipBadge {
+    font-size: 8rem;
+  }
+
+  .tooltipBadge {
+    padding: 3rem 7rem;
+  }
+
+  .tooltipConnector,
+  .tooltipBottom .tooltipConnector {
     display: none;
   }
 

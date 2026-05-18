@@ -410,11 +410,8 @@
   left: 0;
   right: 0;
   z-index: 10;
-  display: grid;
-  grid-template-columns: 180rem minmax(0, 1fr);
-  gap: 18rem;
-  align-items: center;
-  padding: 0 8vw 0 5.8vw;
+  display: block;
+  padding: 0 8vw;
   pointer-events: none;
   transition:
     opacity var(--transition-base),
@@ -433,7 +430,7 @@
 .floatingRail::before {
   content: "";
   position: absolute;
-  left: calc(5.8vw + 210rem);
+  left: calc(8vw + 62rem);
   right: calc(8vw + 62rem);
   top: 50%;
   height: 1rem;
@@ -489,13 +486,15 @@
   z-index: 2;
   display: grid;
   grid-template-columns: 48rem minmax(0, 1fr) 48rem;
-  gap: 16rem;
+  gap: clamp(32rem, 5vw, 84rem);
   align-items: center;
   min-width: 0;
   pointer-events: none;
 }
 
 .carouselArrow {
+  position: relative;
+  z-index: 101;
   display: grid;
   width: 48rem;
   height: 48rem;
@@ -539,7 +538,7 @@
 
 .floatingProductList {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(520rem, 36vw, 700rem) minmax(
+  grid-template-columns: minmax(0, 1fr) clamp(340rem, 24vw, 480rem) minmax(
       0,
       1fr
     );
@@ -555,7 +554,7 @@
 .productCluster {
   display: flex;
   align-items: center;
-  gap: clamp(20rem, 2.6vw, 48rem);
+  gap: clamp(12rem, 2vw, 36rem);
   pointer-events: none;
 }
 

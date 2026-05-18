@@ -97,13 +97,6 @@ export function FloatingProductCarousel({
       data-tryon-wheel-zone={type}
       data-switching={isSwitching ? "true" : "false"}
     >
-      <header className={styles.railHudLabel}>
-        <h2>{title}</h2>
-        <span>
-          {selectedPosition} / {visibleProducts.length}
-        </span>
-      </header>
-
       <div className={styles.floatingRailTrack}>
         <button
           type="button"

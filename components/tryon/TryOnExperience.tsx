@@ -417,7 +417,7 @@ export function TryOnExperience({
 
   return (
     <TryOnErrorBoundary>
-      <GlobalTryOnLoader />
+      <GlobalTryOnLoader key={selectedAvatarGender} />
       <main
         ref={mainRef}
         className={`${styles.experience} relative min-h-[100svh] overflow-hidden`}
@@ -498,7 +498,8 @@ export function TryOnExperience({
           className="pointer-events-none"
           style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', pointerEvents: 'none', zIndex: 100 }}
           eventSource={mainRef as React.RefObject<HTMLElement>}
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
+          performance={{ min: 0.5 }}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           onCreated={({ gl, scene }) => {
             gl.toneMapping = THREE.ACESFilmicToneMapping;

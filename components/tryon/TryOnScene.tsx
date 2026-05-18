@@ -264,7 +264,8 @@ export function TryOnScene(props: Props) {
       ) : null}
       <Canvas
         camera={{ position: [0, 1.08, 5.78], fov: 34 }}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
+        performance={{ min: 0.5 }}
         gl={{
           antialias: true,
           alpha: true,

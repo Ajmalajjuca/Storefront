@@ -1283,11 +1283,15 @@
   }
 
   .switchLayer {
-    top: 60rem;
+    top: 88rem;
   }
 
   .genderOption {
     min-height: 38rem;
+  }
+
+  .skinPanel {
+    top: 150rem;
   }
 
   .skinSwatches {

@@ -282,6 +282,7 @@ export function TryOnScene(props: Props) {
           powerPreference: "high-performance",
         }}
         onCreated={({ gl, scene }) => {
+          gl.setClearColor(0x000000, 0);
           gl.toneMapping = THREE.ACESFilmicToneMapping;
           gl.toneMappingExposure = 1.0;
           gl.outputColorSpace = THREE.SRGBColorSpace;

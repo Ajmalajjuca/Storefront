@@ -116,7 +116,7 @@ function SingleGarmentSlot({
     cloned.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
       object.frustumCulled = false;
-      
+
       const saveMaterialProps = (mat: THREE.Material) => {
         const m = mat.clone();
         m.userData.originalTransparent = m.transparent;
@@ -156,8 +156,9 @@ function SingleGarmentSlot({
       const inSpeed = 1 / (FADE_IN_DURATION_MS / 1000);
       opacityRef.current = Math.min(1, opacityRef.current + delta * inSpeed);
       setSceneOpacity(garmentScene, opacityRef.current);
-      if (!settledRef.current.incoming && opacityRef.current >= 0.92) {
+      if (!settledRef.current.incoming && opacityRef.current >= 1) {
         settledRef.current.incoming = true;
+        setSceneOpacity(garmentScene, 1);
         onPhaseSettled(slot.key, "incoming");
       }
     } else if (phase === "outgoing") {

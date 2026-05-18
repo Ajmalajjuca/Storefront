@@ -44,6 +44,46 @@ const ROOT_WHEEL_COOLDOWN_MS = 340;
 // Anything beyond this is a deferred preload, not a priority one.
 const VISIBLE_PREVIEW_NEIGHBORS = 2;
 
+function useCanvasRevivalKey() {
+  const [key, setKey] = useState(0);
+  const scheduleRevive = useCallback(() => {
+    setKey((current) => current + 1);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let frame = 0;
+
+    const reviveOnNextFrame = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        scheduleRevive();
+      });
+    };
+
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) reviveOnNextFrame();
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") reviveOnNextFrame();
+    };
+
+    window.addEventListener("pageshow", handlePageShow);
+    window.addEventListener("popstate", reviveOnNextFrame);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("pageshow", handlePageShow);
+      window.removeEventListener("popstate", reviveOnNextFrame);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [scheduleRevive]);
+
+  return [key, scheduleRevive] as const;
+}
+
 function firstCompatibleProduct(
   products: TryOnUiProduct[],
   avatar: AvatarGender,
@@ -113,6 +153,7 @@ export function TryOnExperience({
   const rootWheelDeltaRef = useRef(0);
   const rootLastWheelSwitchRef = useRef(0);
   const mainRef = useRef<HTMLElement>(null);
+  const [canvasRevivalKey, reviveCanvases] = useCanvasRevivalKey();
 
   const compatibleTopwear = useMemo(
     () =>
@@ -336,13 +377,14 @@ export function TryOnExperience({
         currentTarget.querySelector<HTMLElement>(
           `[data-tryon-wheel-zone="${type}"]`,
         );
-      
+
       const isPointerInsideZone = (element: HTMLElement | null) => {
         if (!element) return false;
 
         const bounds = element.getBoundingClientRect();
         return (
-          event.clientY >= bounds.top - 44 && event.clientY <= bounds.bottom + 44
+          event.clientY >= bounds.top - 44 &&
+          event.clientY <= bounds.bottom + 44
         );
       };
 
@@ -387,7 +429,7 @@ export function TryOnExperience({
       passive: false,
       capture: true,
     });
-    
+
     return () => {
       el.removeEventListener("wheel", handleExperienceWheel, {
         capture: true,
@@ -440,6 +482,7 @@ export function TryOnExperience({
         </div>
 
         <TryOnScene
+          key={`scene-${canvasRevivalKey}`}
           avatar={selectedAvatarGender}
           topwear={selectedTopwear}
           bottomwear={selectedBottomwear}
@@ -451,20 +494,40 @@ export function TryOnExperience({
         <SkinToneSelector />
 
         <div className={`${styles.categoryArrows} ${styles.topwear}`}>
-          <button className={styles.cycleArrow} disabled={isTopwearSwitching} onClick={() => cycleProduct('topwear', -1)} aria-label="Previous Topwear">
-            {'<'}
+          <button
+            className={styles.cycleArrow}
+            disabled={isTopwearSwitching}
+            onClick={() => cycleProduct("topwear", -1)}
+            aria-label="Previous Topwear"
+          >
+            {"<"}
           </button>
-          <button className={styles.cycleArrow} disabled={isTopwearSwitching} onClick={() => cycleProduct('topwear', 1)} aria-label="Next Topwear">
-            {'>'}
+          <button
+            className={styles.cycleArrow}
+            disabled={isTopwearSwitching}
+            onClick={() => cycleProduct("topwear", 1)}
+            aria-label="Next Topwear"
+          >
+            {">"}
           </button>
         </div>
 
         <div className={`${styles.categoryArrows} ${styles.bottomwear}`}>
-          <button className={styles.cycleArrow} disabled={isBottomwearSwitching} onClick={() => cycleProduct('bottomwear', -1)} aria-label="Previous Bottomwear">
-            {'<'}
+          <button
+            className={styles.cycleArrow}
+            disabled={isBottomwearSwitching}
+            onClick={() => cycleProduct("bottomwear", -1)}
+            aria-label="Previous Bottomwear"
+          >
+            {"<"}
           </button>
-          <button className={styles.cycleArrow} disabled={isBottomwearSwitching} onClick={() => cycleProduct('bottomwear', 1)} aria-label="Next Bottomwear">
-            {'>'}
+          <button
+            className={styles.cycleArrow}
+            disabled={isBottomwearSwitching}
+            onClick={() => cycleProduct("bottomwear", 1)}
+            aria-label="Next Bottomwear"
+          >
+            {">"}
           </button>
         </div>
 
@@ -495,16 +558,40 @@ export function TryOnExperience({
         />
 
         <Canvas
+          key={`previews-${canvasRevivalKey}`}
           className="pointer-events-none"
-          style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', pointerEvents: 'none', zIndex: 100 }}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            pointerEvents: "none",
+            zIndex: 100,
+            background: "transparent",
+          }}
           eventSource={mainRef as React.RefObject<HTMLElement>}
           dpr={[1, 1.5]}
           performance={{ min: 0.5 }}
-          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+          gl={{
+            antialias: true,
+            alpha: true,
+            powerPreference: "high-performance",
+          }}
           onCreated={({ gl, scene }) => {
+            gl.setClearColor(0x000000, 0);
             gl.toneMapping = THREE.ACESFilmicToneMapping;
             gl.toneMappingExposure = 1.0;
             gl.outputColorSpace = THREE.SRGBColorSpace;
+
+            gl.domElement.addEventListener(
+              "webglcontextlost",
+              (event) => {
+                event.preventDefault();
+                reviveCanvases();
+              },
+              false,
+            );
 
             const pmrem = new THREE.PMREMGenerator(gl);
             scene.environment = pmrem.fromScene(

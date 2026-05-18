@@ -1,12 +1,15 @@
 "use client";
 
 import {
+  Bars3Icon,
   MagnifyingGlassIcon,
   ShoppingBagIcon,
   UserIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { CurrencySelector } from "./currency-selector";
 import styles from "./index.module.css";
 
@@ -94,8 +97,35 @@ export function Header({
   logoSrc = "/logo-lockup-white.png",
   logoAlt = "BLCKHOLE",
 }: Props) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <header className={styles.header}>
+      <button
+        type="button"
+        className={styles.mobileMenuBtn}
+        onClick={() => setIsMobileMenuOpen(true)}
+        aria-label="Open menu"
+      >
+        <Bars3Icon className={styles.navIcon} aria-hidden />
+      </button>
+
       <nav className={styles.zoneLeft} aria-label="Primary">
         {leftNavItems.map((item) => (
           <NavLink key={`${item.title}-${item.href}`} item={item} />
@@ -107,7 +137,9 @@ export function Header({
       </Link>
 
       <div className={styles.zoneRight}>
-        <CurrencySelector />
+        <div className={styles.currencySelectorWrap}>
+          <CurrencySelector />
+        </div>
         <nav aria-label="Secondary" className={styles.zoneRightNav}>
           {rightNavItems.map((item) => (
             <NavLink key={`${item.title}-${item.href}`} item={item} />
@@ -124,6 +156,32 @@ export function Header({
           <span className={styles.navCount}>({cartCount})</span>
         </button>
       </div>
+
+      {isMobileMenuOpen && (
+        <div className={styles.mobileMenuOverlay}>
+          <div className={styles.mobileMenuHeader}>
+            <button
+              type="button"
+              className={styles.mobileMenuBtn}
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label="Close menu"
+            >
+              <XMarkIcon className={styles.navIcon} aria-hidden />
+            </button>
+          </div>
+          <nav className={styles.mobileMenuNav}>
+            {leftNavItems.map((item) => (
+              <NavLink key={`mobile-left-${item.title}`} item={item} />
+            ))}
+          </nav>
+          <div className={styles.mobileMenuFooter}>
+            {rightNavItems.map((item) => (
+              <NavLink key={`mobile-right-${item.title}`} item={item} />
+            ))}
+            <CurrencySelector />
+          </div>
+        </div>
+      )}
     </header>
   );
 }

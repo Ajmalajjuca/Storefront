@@ -199,6 +199,11 @@
   box-shadow: 0 12rem 32rem rgba(0, 0, 0, 0.4);
 }
 
+.mobileMenuFooter .currencyMenu {
+  top: auto;
+  bottom: calc(100% + 12rem);
+}
+
 .currencyOption {
   display: flex;
   align-items: center;
@@ -260,6 +265,108 @@
   }
 }
 
+.mobileMenuBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.84);
+  padding: 12rem 0;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color var(--transition-base);
+}
+
+.mobileMenuBtn:hover {
+  color: #fff;
+}
+
+.mobileMenuOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(8, 0, 0, 0.96);
+  display: flex;
+  flex-direction: column;
+  padding: 0 24rem;
+  pointer-events: auto;
+  backdrop-filter: blur(12rem);
+  animation: menuFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes menuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobileMenuHeader {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 82rem;
+  border-bottom: 1rem solid rgba(255, 255, 255, 0.08);
+}
+
+.mobileMenuHeader .mobileMenuBtn {
+  padding: 12rem;
+  margin-right: -12rem;
+}
+
+.mobileMenuHeader .navIcon {
+  width: 32rem;
+  height: 32rem;
+}
+
+.mobileMenuNav {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  gap: 48rem;
+  padding: 40rem 0;
+}
+
+.mobileMenuNav :global(.navLink) {
+  font-size: 32rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #ffffff;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.mobileMenuNav :global(.navLink):hover,
+.mobileMenuNav :global(.navLinkActive) {
+  color: #ff2a2a;
+  transform: scale(1.05);
+}
+
+.mobileMenuFooter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rem 0;
+  border-top: 1rem solid rgba(255, 255, 255, 0.08);
+  gap: 20rem;
+}
+
+.mobileMenuFooter :global(.navLink) {
+  font-size: 14rem;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.currencySelectorWrap {
+  display: contents;
+}
+
 @media (max-width: 900px) {
   .header {
     grid-template-columns: 1fr auto 1fr;
@@ -271,12 +378,21 @@
   .zoneRightNav {
     display: none;
   }
+  .mobileMenuBtn {
+    display: inline-flex;
+    align-items: center;
+    grid-column: 1;
+    justify-self: start;
+  }
   .logoLink {
     grid-column: 2;
   }
   .zoneRight {
     grid-column: 3;
     justify-self: end;
+  }
+  .currencySelectorWrap {
+    display: none;
   }
   .navLink,
   .cartBtn {
@@ -286,3 +402,4 @@
     height: 44rem;
   }
 }
+

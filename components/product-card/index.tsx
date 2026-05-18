@@ -1,7 +1,6 @@
 "use client";
 
 import { useDisplayMoney } from "components/currency/use-display-money";
-import { HeartIcon } from "@heroicons/react/24/outline";
 import { motion, useInView } from "framer-motion";
 import type { Product } from "lib/shopify/types";
 import Image from "next/image";
@@ -63,9 +62,6 @@ export function ProductCard({ product, index, priority = false }: Props) {
         aria-label={`View ${product.title}`}
       >
         <div className={styles.frame}>
-          <span className={styles.wishlist} aria-hidden="true">
-            <HeartIcon />
-          </span>
           {discount ? (
             <span className={styles.badge}>{discount}% Off</span>
           ) : null}

@@ -15,7 +15,7 @@
 }
 
 .category {
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 11rem;
   font-weight: 500;
   letter-spacing: 0.28em;
@@ -24,7 +24,7 @@
 }
 
 .title {
-  font-family: var(--font-family-mono) !important;
+  font-family: var(--font-family-serif) !important;
   font-size: clamp(38rem, 4vw, 56rem) !important;
   font-weight: 700 !important;
   font-style: normal !important;
@@ -43,7 +43,7 @@
 }
 
 .price {
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 18rem;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -51,7 +51,7 @@
 }
 
 .priceTax {
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 10rem;
   font-weight: 500;
   letter-spacing: 0.18em;
@@ -83,7 +83,7 @@
 }
 
 .optionLabel {
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 10rem;
   font-weight: 500;
   letter-spacing: 0.28em;
@@ -103,7 +103,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10rem;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 10rem;
   font-weight: 500;
   letter-spacing: 0.18em;
@@ -135,7 +135,7 @@
 }
 
 .sizeChip {
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 11rem;
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -173,7 +173,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8rem;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 10rem;
   font-weight: 500;
   letter-spacing: 0.22em;
@@ -216,7 +216,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 11rem;
   font-weight: 500;
   letter-spacing: 0.22em;
@@ -230,7 +230,7 @@
 }
 
 .accordionIcon {
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 14rem;
   color: var(--color-medium-grey);
 }
@@ -303,7 +303,7 @@
   align-items: center;
   justify-content: center;
   gap: 10rem;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 12rem;
   font-weight: 500;
   letter-spacing: 0.28em;
@@ -334,7 +334,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10rem;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 10rem;
   font-weight: 500;
   letter-spacing: 0.22em;
@@ -350,7 +350,7 @@
 }
 
 .errorMsg {
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 11rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -402,7 +402,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 18rem;
   color: var(--color-off-black);
   background: rgba(0, 0, 0, 0.5);

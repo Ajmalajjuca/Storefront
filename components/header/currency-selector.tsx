@@ -1,5 +1,6 @@
 "use client";
 
+import { GlobeAltIcon } from "@heroicons/react/24/outline";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import {
@@ -91,6 +92,7 @@ export function CurrencySelector({
         aria-label="Select currency"
         onClick={() => setOpen((value) => !value)}
       >
+        <GlobeAltIcon className={styles.currencyIcon} aria-hidden />
         <span>{activeCurrency.label}</span>
         <span className={styles.currencyChevron} aria-hidden="true">
           ▾

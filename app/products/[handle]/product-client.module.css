@@ -43,7 +43,7 @@
 }
 
 .price {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 18rem;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -326,6 +326,7 @@
 }
 
 .addToBagPrice {
+  font-family: var(--font-family-sans);
   font-weight: 500;
   letter-spacing: 0.22em;
 }

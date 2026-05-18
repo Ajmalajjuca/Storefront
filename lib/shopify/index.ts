@@ -24,10 +24,9 @@ import { customerCreateMutation } from "./mutations/customer";
 import { getCartQuery } from "./queries/cart";
 import {
   getCollectionProductsQuery,
-  getCollectionQuery,
   getCollectionsQuery,
 } from "./queries/collection";
-import { getMenuQuery } from "./queries/menu";
+
 import { getPageQuery, getPagesQuery } from "./queries/page";
 import { getShopPoliciesQuery } from "./queries/policy";
 import {
@@ -49,12 +48,10 @@ import {
   ShopifyCartBuyerIdentityUpdateOperation,
   ShopifyCartOperation,
   ShopifyCollection,
-  ShopifyCollectionOperation,
   ShopifyCollectionProductsOperation,
   ShopifyCollectionsOperation,
   ShopifyCreateCartOperation,
   ShopifyCustomerCreateOperation,
-  ShopifyMenuOperation,
   ShopifyPageOperation,
   ShopifyPagesOperation,
   ShopifyProduct,
@@ -382,22 +379,7 @@ export async function getCart(): Promise<Cart | undefined> {
   return reshapeCart(res.body.data.cart);
 }
 
-export async function getCollection(
-  handle: string,
-): Promise<Collection | undefined> {
-  "use cache";
-  cacheTag(TAGS.collections);
-  cacheLife("days");
 
-  const res = await shopifyFetch<ShopifyCollectionOperation>({
-    query: getCollectionQuery,
-    variables: {
-      handle,
-    },
-  });
-
-  return reshapeCollection(res.body.data.collection);
-}
 
 export async function getCollectionProducts({
   collection,
@@ -490,33 +472,7 @@ export async function getCollections(): Promise<Collection[]> {
   return collections;
 }
 
-export async function getMenu(handle: string): Promise<Menu[]> {
-  "use cache";
-  cacheTag(TAGS.collections);
-  cacheLife("days");
 
-  if (!endpoint) {
-    console.log(`Skipping getMenu for '${handle}' - Shopify not configured`);
-    return [];
-  }
-
-  const res = await shopifyFetch<ShopifyMenuOperation>({
-    query: getMenuQuery,
-    variables: {
-      handle,
-    },
-  });
-
-  return (
-    res.body?.data?.menu?.items.map((item: { title: string; url: string }) => ({
-      title: item.title,
-      path: item.url
-        .replace(domain, "")
-        .replace("/collections", "/search")
-        .replace("/pages", ""),
-    })) || []
-  );
-}
 
 export async function getPage(handle: string): Promise<Page> {
   const res = await shopifyFetch<ShopifyPageOperation>({

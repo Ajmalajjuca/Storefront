@@ -4,7 +4,7 @@ export interface ShopifyErrorLike {
   cause?: Error;
 }
 
-export const isObject = (
+const isObject = (
   object: unknown,
 ): object is Record<string, unknown> => {
   return (

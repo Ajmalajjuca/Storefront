@@ -1,12 +1,11 @@
 import type { SupportedCountryCode } from "lib/currency";
 
-export type Maybe<T> = T | null;
 
 export type Connection<T> = {
   edges: Array<Edge<T>>;
 };
 
-export type Edge<T> = {
+type Edge<T> = {
   node: T;
 };
 
@@ -14,7 +13,7 @@ export type Cart = Omit<ShopifyCart, "lines"> & {
   lines: CartItem[];
 };
 
-export type CartProduct = {
+type CartProduct = {
   id: string;
   handle: string;
   title: string;
@@ -49,7 +48,7 @@ export type Image = {
   height: number;
 };
 
-export type VideoSource = {
+type VideoSource = {
   url: string;
   mimeType: string;
 };
@@ -100,7 +99,7 @@ export type Product = Omit<ShopifyProduct, "variants" | "images" | "media"> & {
   media: ProductMedia[];
 };
 
-export type ProductOption = {
+type ProductOption = {
   id: string;
   name: string;
   values: string[];
@@ -117,7 +116,7 @@ export type ProductVariant = {
   price: Money;
 };
 
-export type SEO = {
+type SEO = {
   title: string;
   description: string;
 };
@@ -248,14 +247,7 @@ export type ShopifyCartBuyerIdentityUpdateOperation = {
   };
 };
 
-export type ShopifyCollectionOperation = {
-  data: {
-    collection: ShopifyCollection;
-  };
-  variables: {
-    handle: string;
-  };
-};
+
 
 export type ShopifyCollectionProductsOperation = {
   data: {
@@ -277,19 +269,7 @@ export type ShopifyCollectionsOperation = {
   };
 };
 
-export type ShopifyMenuOperation = {
-  data: {
-    menu?: {
-      items: {
-        title: string;
-        url: string;
-      }[];
-    };
-  };
-  variables: {
-    handle: string;
-  };
-};
+
 
 export type ShopifyPageOperation = {
   data: { pageByHandle: Page };
@@ -310,7 +290,7 @@ export type ShopifyProductOperation = {
   };
 };
 
-export type ProductRecommendationIntent = "RELATED" | "COMPLEMENTARY";
+type ProductRecommendationIntent = "RELATED" | "COMPLEMENTARY";
 
 export type ShopifyProductRecommendationsOperation = {
   data: {
@@ -354,7 +334,7 @@ export type ShopifyShopPoliciesOperation = {
   };
 };
 
-export type ShopifyCustomerUserError = {
+type ShopifyCustomerUserError = {
   code:
     | "BLANK"
     | "INVALID"

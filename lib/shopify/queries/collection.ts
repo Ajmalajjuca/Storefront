@@ -14,14 +14,7 @@ const collectionFragment = /* GraphQL */ `
   ${seoFragment}
 `;
 
-export const getCollectionQuery = /* GraphQL */ `
-  query getCollection($handle: String!) {
-    collection(handle: $handle) {
-      ...collection
-    }
-  }
-  ${collectionFragment}
-`;
+
 
 export const getCollectionsQuery = /* GraphQL */ `
   query getCollections {

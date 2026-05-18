@@ -18,11 +18,11 @@ function stripPort(host: string) {
   return host.split(":")[0]?.toLowerCase() ?? "";
 }
 
-export function isShopHost(request: NextRequest) {
+function isShopHost(request: NextRequest) {
   return stripPort(getHostname(request)) === SHOP_HOST;
 }
 
-export function isCheckoutPath(pathname: string) {
+function isCheckoutPath(pathname: string) {
   return CHECKOUT_PATH_PATTERNS.some((pattern) => pattern.test(pathname));
 }
 

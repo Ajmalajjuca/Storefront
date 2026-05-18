@@ -38,7 +38,7 @@
   align-items: baseline;
   gap: 10rem;
   margin: 0 0 56rem;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: clamp(36rem, 4.4vw, 64rem);
   font-weight: 900;
   line-height: 0.95;
@@ -90,7 +90,7 @@
 .valueText {
   max-width: 350rem;
   margin: 0 0 42rem;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: clamp(16rem, 1.2vw, 21rem);
   font-weight: 700;
   line-height: 1.25;
@@ -102,7 +102,7 @@
 .valueTitle {
   max-width: 430rem;
   margin: 0;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: clamp(32rem, 3vw, 50rem);
   font-weight: 900;
   line-height: 0.88;
@@ -113,7 +113,7 @@
 
 .valueMeta {
   margin: 10rem 0 0;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: clamp(12rem, 1vw, 16rem);
   font-weight: 700;
   line-height: 1;

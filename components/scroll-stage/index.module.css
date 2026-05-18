@@ -140,7 +140,7 @@
 
 .heroEyebrow {
   margin: 0 0 2rem;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: clamp(10rem, 0.82vw, 13rem);
   font-weight: 800;
   line-height: 1;
@@ -154,7 +154,7 @@
   display: grid;
   gap: clamp(6rem, 1.1vh, 10rem);
   margin: 0;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: clamp(40rem, 3.55vw, 64rem);
   font-weight: 500;
   line-height: 1.08;
@@ -193,7 +193,7 @@
   align-items: center;
   gap: 12rem;
   margin-top: 6rem;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 11rem;
   font-weight: 800;
   line-height: 1;
@@ -282,7 +282,7 @@
   border: 1rem solid var(--border-soft);
   background: rgba(3, 3, 3, 0.24);
   color: var(--text-main);
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 10rem;
   font-weight: 800;
   line-height: 1;
@@ -530,7 +530,7 @@
 .scrollCue {
   display: flex;
   align-items: center;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-serif);
   font-size: 9rem;
   font-weight: 800;
   line-height: 1;

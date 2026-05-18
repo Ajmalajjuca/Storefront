@@ -21,6 +21,11 @@ export function GlobalTryOnLoader() {
   // the overlay instantly.
   useEffect(() => {
     if (total > 0) setFirstPaintReady(true);
+
+    // Fallback: if models are already cached (e.g. switching back to a previously loaded avatar),
+    // total might stay 0. Force ready after a short delay so the loader doesn't get stuck.
+    const t = window.setTimeout(() => setFirstPaintReady(true), 150);
+    return () => window.clearTimeout(t);
   }, [total]);
 
   useEffect(() => {

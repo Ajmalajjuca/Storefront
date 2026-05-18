@@ -122,6 +122,9 @@ function SingleGarmentSlot({
         m.userData.originalTransparent = m.transparent;
         m.userData.originalOpacity = m.opacity;
         m.userData.originalDepthWrite = m.depthWrite;
+        m.polygonOffset = true;
+        m.polygonOffsetFactor = -1;
+        m.polygonOffsetUnits = -1;
         return m;
       };
 

@@ -8,13 +8,6 @@ const BODY_SECTION_NAMES: Record<BodyMaskPart, string[]> = {
   feet: ["Body_Feet"],
 };
 
-export function getCombinedBodyMask(
-  products: Array<TryOnProduct | null | undefined>,
-): BodyMaskPart[] {
-  return Array.from(
-    new Set(products.flatMap((product) => product?.bodyMask ?? [])),
-  );
-}
 
 export function applyBodyMask(
   avatarScene: THREE.Object3D,

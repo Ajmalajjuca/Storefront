@@ -14,7 +14,7 @@ function getFractionDigits(currencyCode: string) {
   return currencyCode === "INR" ? 0 : 2;
 }
 
-export function convertMoneyAmount({
+function convertMoneyAmount({
   amount,
   fromCurrency,
   toCurrency,

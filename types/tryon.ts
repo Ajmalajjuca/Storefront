@@ -14,7 +14,7 @@ export type WearableCategory = "top" | "bottom" | "shoes" | "accessory";
 
 export type BodyMaskPart = "torso" | "arms" | "legs" | "feet";
 
-export type TryOnVariant = {
+type TryOnVariant = {
   id: string;
   title: string;
   availableForSale: boolean;

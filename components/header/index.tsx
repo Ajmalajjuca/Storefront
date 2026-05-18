@@ -7,6 +7,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { CurrencySelector } from "./currency-selector";
 import styles from "./index.module.css";
 
 type NavItem = {
@@ -106,6 +107,7 @@ export function Header({
       </Link>
 
       <div className={styles.zoneRight}>
+        <CurrencySelector />
         <nav aria-label="Secondary" className={styles.zoneRightNav}>
           {rightNavItems.map((item) => (
             <NavLink key={`${item.title}-${item.href}`} item={item} />

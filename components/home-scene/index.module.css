@@ -1,7 +1,7 @@
 .mainFixed {
   position: relative;
   width: 100%;
-  height: 340vh;
+  height: 100vh;
   z-index: 1;
 }
 
@@ -11,7 +11,7 @@
 
 @media (max-width: 768px) {
   .mainFixed {
-    height: 280vh;
+    height: 100svh;
   }
 
   .mainFixed[data-detail-open="true"] {

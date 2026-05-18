@@ -41,31 +41,9 @@
   background-size: cover;
   background-repeat: no-repeat;
   filter: brightness(1.14) contrast(1.08) saturate(1.03);
-  transform: scale(7.012);
+  transform: scale(1.012);
   animation: heroImageBreath 18s ease-in-out infinite alternate;
   will-change: transform;
-}
-
-.sequenceCanvas {
-  position: absolute;
-  inset: 0;
-  z-index: -3;
-  width: 100%;
-  height: 100%;
-  display: block;
-  opacity: 0;
-  background: var(--bg-dark);
-  transition: opacity 360ms var(--ease-out-expo);
-}
-
-.sequenceCanvas[data-ready="true"] {
-  opacity: 1;
-}
-
-.sequenceCanvas[data-ready="true"] ~ .leftPanel,
-.sequenceCanvas[data-ready="true"] ~ .rightPanel,
-.sequenceCanvas[data-ready="true"] ~ .landingFooter {
-  transform: translateY(calc(var(--sequence-progress, 0) * -18rem));
 }
 
 .stage::after {

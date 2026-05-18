@@ -31,8 +31,13 @@ type Props = {
   onWebGLError?: (message: string) => void;
 };
 
-function avatarUrl(avatar: AvatarGender) {
-  return `/models/avatar/${avatar}-avatar.glb`;
+function isMobileViewport() {
+  return typeof window !== "undefined" && window.innerWidth < 768;
+}
+
+function avatarUrl(avatar: AvatarGender, mobile: boolean) {
+  const variant = mobile ? "mobile" : "optimized";
+  return `/models/avatar/${avatar}-avatar.${variant}.glb`;
 }
 
 function cloneSceneMaterials(scene: THREE.Object3D) {
@@ -105,7 +110,11 @@ function AvatarRoot({
   onTopwearReady,
   onBottomwearReady,
 }: Props) {
-  const gltf = useGLTF(avatarUrl(avatar));
+  const resolvedAvatarUrl = useMemo(
+    () => avatarUrl(avatar, isMobileViewport()),
+    [avatar],
+  );
+  const gltf = useGLTF(resolvedAvatarUrl);
   const selectedSkinTone = useTryOnStore((state) => state.selectedSkinTone);
 
   const avatarScene = useMemo(() => {
@@ -241,8 +250,9 @@ export function TryOnScene(props: Props) {
   const [contextLost, setContextLost] = useState(false);
 
   useEffect(() => {
-    useGLTF.preload("/models/avatar/female-avatar.glb");
-    useGLTF.preload("/models/avatar/male-avatar.glb");
+    const mobile = isMobileViewport();
+    useGLTF.preload(avatarUrl("female", mobile));
+    useGLTF.preload(avatarUrl("male", mobile));
   }, []);
 
   return (

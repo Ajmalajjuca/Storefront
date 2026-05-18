@@ -148,6 +148,7 @@ export function TryOnExperience({
   const [activeTooltipProduct, setActiveTooltipProduct] =
     useState<TryOnUiProduct | null>(null);
   const [isProductAlreadyWorn, setIsProductAlreadyWorn] = useState(false);
+  const [showTryOnHint, setShowTryOnHint] = useState(true);
 
   const switching = useTryOnSwitching({ cooldownMs: ROOT_WHEEL_COOLDOWN_MS });
   const rootWheelDeltaRef = useRef(0);
@@ -297,6 +298,8 @@ export function TryOnExperience({
 
   const handleProductClick = useCallback(
     (product: TryOnUiProduct) => {
+      setShowTryOnHint(false);
+
       const active =
         product.type === "topwear"
           ? selectedTopwear?.id === product.id
@@ -323,6 +326,8 @@ export function TryOnExperience({
   );
 
   const handleWornProductClick = (product: TryOnUiProduct) => {
+    setShowTryOnHint(false);
+
     const alreadyShowing =
       isProductAlreadyWorn && activeTooltipProduct?.id === product.id;
 
@@ -556,6 +561,12 @@ export function TryOnExperience({
         <ProductTooltipCard
           product={isProductAlreadyWorn ? activeTooltipProduct : null}
         />
+
+        {showTryOnHint && (
+          <p className={styles.tryOnHint}>
+            Select a worn piece on the avatar to view item details.
+          </p>
+        )}
 
         <Canvas
           key={`previews-${canvasRevivalKey}`}

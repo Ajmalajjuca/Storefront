@@ -736,6 +736,11 @@
   backdrop-filter: blur(15rem);
 }
 
+.tooltipCardLink {
+  cursor: pointer;
+  text-decoration: none;
+}
+
 .tooltipTop {
   left: 22vw;
   top: clamp(176rem, 23svh, 228rem);
@@ -1032,6 +1037,29 @@
   color: #ff2638;
 }
 
+.tryOnHint {
+  position: absolute;
+  left: 50%;
+  bottom: 30rem;
+  z-index: 18;
+  width: min(420rem, calc(100% - var(--grid-margin) * 2));
+  padding: 9rem 14rem;
+  border: 1rem solid rgba(255, 255, 255, 0.14);
+  border-radius: 999rem;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(12rem);
+  color: rgba(255, 255, 255, 0.72);
+  font-family: var(--font-family-serif);
+  font-size: 9rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  pointer-events: none;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+}
+
 @media (max-width: 1180px) {
   .skinPanel {
     right: 28rem;
@@ -1292,6 +1320,13 @@
 
   .skinPanel {
     top: 150rem;
+  }
+
+  .tryOnHint {
+    bottom: 30rem;
+    width: min(320rem, calc(100% - var(--grid-margin) * 2));
+    padding: 8rem 12rem;
+    font-size: 8rem;
   }
 
   .skinSwatches {

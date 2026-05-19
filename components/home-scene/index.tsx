@@ -8,7 +8,12 @@ import { Principles } from "components/principles";
 import { ProductRail } from "components/product-rail";
 import { ScrollStage } from "components/scroll-stage";
 import { TrustBar } from "components/trust-bar";
-import type { HomeContent, Product, ServiceBarItem } from "lib/shopify/types";
+import type {
+  HomeContent,
+  Product,
+  ServiceBarItem,
+  WhyChooseItem,
+} from "lib/shopify/types";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./index.module.css";
@@ -19,32 +24,43 @@ type Props = {
   featuredProducts: Product[];
   content?: HomeContent;
   serviceBarItems?: ServiceBarItem[];
+  whyChooseItems?: WhyChooseItem[];
 };
 
-const brandValues = [
+const brandValues: WhyChooseItem[] = [
   {
     title: "Premium Fabrics",
-    text: "Built from elevated hand-feel materials chosen for comfort, structure, and daily wear.",
-    meta: "Selected textures",
+    description:
+      "Built from elevated hand-feel materials chosen for comfort, structure, and daily wear.",
+    subtitle: "Selected textures",
+    sortOrder: 1,
   },
   {
     title: "Distinctive Designs",
-    text: "Sharp silhouettes, graphic details, and statement pieces made to stand apart.",
-    meta: "Blckole identity",
+    description:
+      "Sharp silhouettes, graphic details, and statement pieces made to stand apart.",
+    subtitle: "Blckole identity",
+    sortOrder: 2,
   },
   {
     title: "Limited Drops",
-    text: "Small-batch releases keep every drop focused, intentional, and harder to find twice.",
-    meta: "Limited quantities",
+    description:
+      "Small-batch releases keep every drop focused, intentional, and harder to find twice.",
+    subtitle: "Limited quantities",
+    sortOrder: 3,
   },
   {
     title: "Personalized Virtual Try-On",
-    text: "Preview the look on your selected avatar before you move from browse to bag.",
-    meta: "Try before checkout",
+    description:
+      "Preview the look on your selected avatar before you move from browse to bag.",
+    subtitle: "Try before checkout",
+    sortOrder: 4,
   },
 ];
 
-function WhyBlckole() {
+function WhyBlckole({ items }: { items?: WhyChooseItem[] }) {
+  const displayItems = items && items.length > 0 ? items : brandValues;
+
   return (
     <section className={styles.whySection} aria-labelledby="why-blckole-title">
       <h2 id="why-blckole-title" className={styles.whyTitle}>
@@ -52,11 +68,11 @@ function WhyBlckole() {
       </h2>
 
       <div className={styles.valueGrid}>
-        {brandValues.map((item) => (
+        {displayItems.map((item) => (
           <article key={item.title} className={styles.valueItem}>
-            <p className={styles.valueText}>{item.text}</p>
+            <p className={styles.valueText}>{item.description}</p>
             <h3 className={styles.valueTitle}>{item.title}</h3>
-            <p className={styles.valueMeta}>{item.meta}</p>
+            <p className={styles.valueMeta}>{item.subtitle}</p>
           </article>
         ))}
       </div>
@@ -70,6 +86,7 @@ export function HomeScene({
   featuredProducts,
   content,
   serviceBarItems,
+  whyChooseItems,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -231,7 +248,7 @@ export function HomeScene({
             viewAllLabel={content?.shopButtonText ?? "Shop entire line"}
           />
           <PressQuote />
-          <WhyBlckole />
+          <WhyBlckole items={whyChooseItems} />
           <Newsletter />
           <Principles />
           <Manifesto />

@@ -72,6 +72,13 @@ export type ServiceBarItem = {
   sortOrder: number;
 };
 
+export type WhyChooseItem = {
+  title: string;
+  subtitle: string;
+  description: string;
+  sortOrder: number;
+};
+
 type VideoSource = {
   url: string;
   mimeType: string;
@@ -224,6 +231,15 @@ export type ShopifyHomeMetaobjectsByTypeOperation = {
 };
 
 export type ShopifyServiceBarItemsOperation = {
+  data: {
+    metaobjects: Connection<ShopifyMetaobject>;
+  };
+  variables: {
+    type: string;
+  };
+};
+
+export type ShopifyWhyChooseItemsOperation = {
   data: {
     metaobjects: Connection<ShopifyMetaobject>;
   };

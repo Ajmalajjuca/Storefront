@@ -5,6 +5,7 @@ import {
   getHomeContent,
   getProductRecommendations,
   getProducts,
+  getServiceBarItems,
 } from "lib/shopify";
 import type { Product } from "lib/shopify/types";
 import { Suspense, type ReactNode } from "react";
@@ -33,6 +34,7 @@ async function BrowserShell({ children }: { children: ReactNode }) {
 
   const featuredProducts = await getProducts({ countryCode }).catch(() => []);
   const homeContent = await getHomeContent().catch(() => undefined);
+  const serviceBarItems = await getServiceBarItems().catch(() => []);
 
   return (
     <>
@@ -41,6 +43,7 @@ async function BrowserShell({ children }: { children: ReactNode }) {
         recommendationsMap={recommendationsMap}
         featuredProducts={featuredProducts}
         content={homeContent}
+        serviceBarItems={serviceBarItems}
       />
       {children}
     </>

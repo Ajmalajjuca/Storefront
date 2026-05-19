@@ -8,7 +8,7 @@ import { Principles } from "components/principles";
 import { ProductRail } from "components/product-rail";
 import { ScrollStage } from "components/scroll-stage";
 import { TrustBar } from "components/trust-bar";
-import type { HomeContent, Product } from "lib/shopify/types";
+import type { HomeContent, Product, ServiceBarItem } from "lib/shopify/types";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./index.module.css";
@@ -18,6 +18,7 @@ type Props = {
   recommendationsMap?: Record<string, Product[]>;
   featuredProducts: Product[];
   content?: HomeContent;
+  serviceBarItems?: ServiceBarItem[];
 };
 
 const brandValues = [
@@ -68,6 +69,7 @@ export function HomeScene({
   recommendationsMap,
   featuredProducts,
   content,
+  serviceBarItems,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -216,7 +218,7 @@ export function HomeScene({
 
       {!detailOpen && (
         <div className={styles.scrollableContent}>
-          <TrustBar />
+          <TrustBar items={serviceBarItems} />
           <ProductRail
             eyebrow={content?.shopLabel ?? "Shop"}
             title={content?.shopTitle ?? "In the studio now"}

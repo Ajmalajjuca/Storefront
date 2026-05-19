@@ -324,6 +324,39 @@ const reshapeHomeContent = (
   };
 };
 
+const reshapeServiceBarItem = (
+  metaobject: ShopifyMetaobject,
+  index: number,
+): ServiceBarItem | undefined => {
+  const title = getMetaobjectFieldValue(metaobject.fields, "title");
+  const description = getMetaobjectFieldValue(metaobject.fields, "description");
+
+  if (!title || !description) {
+    return undefined;
+  }
+
+  const sortOrderValue = getMetaobjectFieldValue(
+    metaobject.fields,
+    "sort_order",
+  );
+  const sortOrder = Number.parseInt(sortOrderValue ?? "", 10);
+
+  return {
+    title,
+    description,
+    sortOrder: Number.isFinite(sortOrder) ? sortOrder : index,
+  };
+};
+
+const reshapeServiceBarItems = (
+  metaobjects: ShopifyMetaobject[],
+): ServiceBarItem[] => {
+  return metaobjects
+    .map((metaobject, index) => reshapeServiceBarItem(metaobject, index))
+    .filter((item): item is ServiceBarItem => Boolean(item))
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+};
+
 export async function createCart(
   lines?: { merchandiseId: string; quantity: number }[],
   countryCode: SupportedCountryCode = SHOPIFY_CHECKOUT_COUNTRY,
@@ -492,6 +525,26 @@ export async function getHomeContent(): Promise<HomeContent | undefined> {
   }
 
   return undefined;
+}
+
+export async function getServiceBarItems(): Promise<ServiceBarItem[]> {
+  "use cache";
+  cacheTag(TAGS.metaobjects);
+  cacheLife("hours");
+
+  if (!endpoint) {
+    console.log("Skipping getServiceBarItems - Shopify not configured");
+    return [];
+  }
+
+  const res = await shopifyFetch<ShopifyServiceBarItemsOperation>({
+    query: getServiceBarItemsQuery,
+    variables: {
+      type: "service_bar_item",
+    },
+  });
+
+  return reshapeServiceBarItems(removeEdgesAndNodes(res.body.data.metaobjects));
 }
 
 export async function getCollectionProducts({

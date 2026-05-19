@@ -62,22 +62,19 @@ function useCanvasRevivalKey() {
       });
     };
 
+    // Only force a remount when the page is restored from the bfcache —
+    // there the GL context is genuinely gone. Real WebGL context loss
+    // during normal tab use is handled by the explicit `webglcontextlost`
+    // listener which calls `scheduleRevive` directly.
     const handlePageShow = (event: PageTransitionEvent) => {
       if (event.persisted) reviveOnNextFrame();
     };
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") reviveOnNextFrame();
-    };
 
     window.addEventListener("pageshow", handlePageShow);
-    window.addEventListener("popstate", reviveOnNextFrame);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("pageshow", handlePageShow);
-      window.removeEventListener("popstate", reviveOnNextFrame);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [scheduleRevive]);
 
@@ -583,7 +580,6 @@ export function TryOnExperience({
         <Canvas
           key={`previews-${canvasRevivalKey}`}
           className="pointer-events-none"
-          frameloop="demand"
           style={{
             position: "fixed",
             top: 0,

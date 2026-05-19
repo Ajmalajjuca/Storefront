@@ -138,7 +138,7 @@ function CameraRig() {
       minPolarAngle={LOCKED_POLAR_ANGLE}
       maxPolarAngle={LOCKED_POLAR_ANGLE}
       autoRotate={autoRotateActive}
-      autoRotateSpeed={5}
+      autoRotateSpeed={3.5}
     />
   );
 }

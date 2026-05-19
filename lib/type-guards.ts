@@ -4,9 +4,7 @@ export interface ShopifyErrorLike {
   cause?: Error;
 }
 
-const isObject = (
-  object: unknown,
-): object is Record<string, unknown> => {
+const isObject = (object: unknown): object is Record<string, unknown> => {
   return (
     typeof object === "object" && object !== null && !Array.isArray(object)
   );

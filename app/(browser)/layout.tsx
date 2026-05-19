@@ -13,33 +13,49 @@ import { Suspense, type ReactNode } from "react";
 
 async function BrowserShell({ children }: { children: ReactNode }) {
   const countryCode = await getSelectedCountryCode();
-  const products = await getCollectionProducts({
-    collection: "hidden-homepage-featured-items",
-    countryCode,
-  })
-    .catch(() => [])
-    .then((items) =>
-      items.length > 0 ? items : getProducts({ countryCode }).catch(() => []),
-    );
+
+  const [
+    featuredCollection,
+    featuredProducts,
+    homeContent,
+    serviceBarItems,
+    whyChooseItems,
+  ] = await Promise.all([
+    getCollectionProducts({
+      collection: "hidden-homepage-featured-items",
+      countryCode,
+    }).catch(() => []),
+    getProducts({ countryCode }).catch(() => []),
+    getHomeContent().catch(() => undefined),
+    getServiceBarItems().catch(() => []),
+    getWhyChooseItems().catch(() => []),
+  ]);
+
+  const products =
+    featuredCollection.length > 0 ? featuredCollection : featuredProducts;
 
   const recommendationsMap: Record<string, Product[]> = {};
-  await Promise.all(
-    products.map(async (p) => {
-      recommendationsMap[p.id] = await getProductRecommendations(
-        p.id,
-        "RELATED",
-        countryCode,
-      ).catch(() => []);
-    }),
+  const recommendationResults = await Promise.all(
+    products.map((p) =>
+      getProductRecommendations(p.id, "RELATED", countryCode).catch(() => []),
+    ),
   );
+  products.forEach((p, i) => {
+    recommendationsMap[p.id] = recommendationResults[i] ?? [];
+  });
 
-  const featuredProducts = await getProducts({ countryCode }).catch(() => []);
-  const homeContent = await getHomeContent().catch(() => undefined);
-  const serviceBarItems = await getServiceBarItems().catch(() => []);
-  const whyChooseItems = await getWhyChooseItems().catch(() => []);
+  const heroImageUrl = homeContent?.heroImage?.url;
 
   return (
     <>
+      {heroImageUrl && (
+        <link
+          rel="preload"
+          as="image"
+          href={heroImageUrl}
+          fetchPriority="high"
+        />
+      )}
       <HomeScene
         products={products}
         recommendationsMap={recommendationsMap}

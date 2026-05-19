@@ -8,7 +8,6 @@ const BODY_SECTION_NAMES: Record<BodyMaskPart, string[]> = {
   feet: ["Body_Feet"],
 };
 
-
 export function applyBodyMask(
   avatarScene: THREE.Object3D,
   bodyMask: BodyMaskPart[],

@@ -14,8 +14,6 @@ const collectionFragment = /* GraphQL */ `
   ${seoFragment}
 `;
 
-
-
 export const getCollectionsQuery = /* GraphQL */ `
   query getCollections {
     collections(first: 100, sortKey: TITLE) {

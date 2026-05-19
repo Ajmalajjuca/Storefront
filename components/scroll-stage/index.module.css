@@ -36,7 +36,7 @@
 
 .stage::before {
   z-index: -3;
-  background-image: url("/void-entry-bgg.png");
+  background-image: var(--hero-image, url("/void-entry-bgg.png"));
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;

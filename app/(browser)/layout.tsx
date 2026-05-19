@@ -2,6 +2,7 @@ import { HomeScene } from "components/home-scene";
 import { getSelectedCountryCode } from "lib/currency-server";
 import {
   getCollectionProducts,
+  getHomeContent,
   getProductRecommendations,
   getProducts,
 } from "lib/shopify";
@@ -31,6 +32,7 @@ async function BrowserShell({ children }: { children: ReactNode }) {
   );
 
   const featuredProducts = await getProducts({ countryCode }).catch(() => []);
+  const homeContent = await getHomeContent().catch(() => undefined);
 
   return (
     <>
@@ -38,6 +40,7 @@ async function BrowserShell({ children }: { children: ReactNode }) {
         products={products}
         recommendationsMap={recommendationsMap}
         featuredProducts={featuredProducts}
+        content={homeContent}
       />
       {children}
     </>

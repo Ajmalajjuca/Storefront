@@ -1,7 +1,7 @@
-
 export const TAGS = {
   collections: "collections",
   products: "products",
+  metaobjects: "metaobjects",
   cart: "cart",
 };
 

@@ -8,7 +8,7 @@ import { Principles } from "components/principles";
 import { ProductRail } from "components/product-rail";
 import { ScrollStage } from "components/scroll-stage";
 import { TrustBar } from "components/trust-bar";
-import type { Product } from "lib/shopify/types";
+import type { HomeContent, Product } from "lib/shopify/types";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./index.module.css";
@@ -17,6 +17,7 @@ type Props = {
   products: Product[];
   recommendationsMap?: Record<string, Product[]>;
   featuredProducts: Product[];
+  content?: HomeContent;
 };
 
 const brandValues = [
@@ -66,6 +67,7 @@ export function HomeScene({
   products,
   recommendationsMap,
   featuredProducts,
+  content,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -208,6 +210,7 @@ export function HomeScene({
           onSelect={handleSelect}
           onClose={handleClose}
           onToggleRecs={handleToggleRecs}
+          content={content}
         />
       </div>
 
@@ -215,12 +218,15 @@ export function HomeScene({
         <div className={styles.scrollableContent}>
           <TrustBar />
           <ProductRail
-            eyebrow="Shop"
-            title="In the studio now"
-            description="Tap a piece to pick size and colour — add to bag from the product page."
+            eyebrow={content?.shopLabel ?? "Shop"}
+            title={content?.shopTitle ?? "In the studio now"}
+            description={
+              content?.shopDescription ??
+              "Tap a piece to pick size and colour — add to bag from the product page."
+            }
             products={featuredProducts}
-            viewAllHref="/indexes/products"
-            viewAllLabel="Shop entire line"
+            viewAllHref={content?.shopButtonLink ?? "/indexes/products"}
+            viewAllLabel={content?.shopButtonText ?? "Shop entire line"}
           />
           <PressQuote />
           <WhyBlckole />

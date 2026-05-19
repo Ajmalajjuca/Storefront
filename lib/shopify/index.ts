@@ -26,6 +26,11 @@ import {
   getCollectionProductsQuery,
   getCollectionsQuery,
 } from "./queries/collection";
+import {
+  getHomeMetaobjectByHandleQuery,
+  getHomeMetaobjectsByTypeQuery,
+  getServiceBarItemsQuery,
+} from "./queries/metaobject";
 
 import { getPageQuery, getPagesQuery } from "./queries/page";
 import { getShopPoliciesQuery } from "./queries/policy";
@@ -38,11 +43,13 @@ import {
   Cart,
   Collection,
   Connection,
+  HomeContent,
   Image,
   Menu,
   Page,
   Product,
   ProductMedia,
+  ServiceBarItem,
   ShopifyAddToCartOperation,
   ShopifyCart,
   ShopifyCartBuyerIdentityUpdateOperation,
@@ -52,6 +59,10 @@ import {
   ShopifyCollectionsOperation,
   ShopifyCreateCartOperation,
   ShopifyCustomerCreateOperation,
+  ShopifyHomeMetaobjectByHandleOperation,
+  ShopifyHomeMetaobjectsByTypeOperation,
+  ShopifyMetaobject,
+  ShopifyMetaobjectField,
   ShopifyPageOperation,
   ShopifyPagesOperation,
   ShopifyProduct,
@@ -60,6 +71,7 @@ import {
   ShopifyProductRecommendationsOperation,
   ShopifyProductsOperation,
   ShopifyRemoveFromCartOperation,
+  ShopifyServiceBarItemsOperation,
   ShopifyShopPoliciesOperation,
   ShopifyUpdateCartOperation,
   ShopPolicy,
@@ -253,6 +265,65 @@ const reshapeProducts = (
   return reshapedProducts;
 };
 
+const HOME_METAOBJECT_TYPE_CANDIDATES = [
+  process.env.SHOPIFY_HOME_METAOBJECT_TYPE,
+  "home_page",
+  "homepage",
+  "home_content",
+  "home_page_content",
+  "homepage_content",
+  "home",
+].filter(Boolean) as string[];
+
+const getMetaobjectFieldValue = (
+  fields: ShopifyMetaobjectField[],
+  key: string,
+): string | undefined => {
+  const value = fields.find((field) => field.key === key)?.value?.trim();
+  return value ? value : undefined;
+};
+
+const getMetaobjectImage = (
+  fields: ShopifyMetaobjectField[],
+  key: string,
+): Image | undefined => {
+  const image = fields.find((field) => field.key === key)?.reference?.image;
+  return image?.url ? image : undefined;
+};
+
+const reshapeHomeContent = (
+  metaobject: ShopifyMetaobject | null | undefined,
+): HomeContent | undefined => {
+  if (!metaobject) return undefined;
+
+  const { fields } = metaobject;
+
+  return {
+    heroEyebrow: getMetaobjectFieldValue(fields, "hero_eyebrow"),
+    heroTitle: getMetaobjectFieldValue(fields, "hero_title"),
+    heroSubtitle: getMetaobjectFieldValue(fields, "hero_subtitle"),
+    primaryButtonText: getMetaobjectFieldValue(fields, "primary_button_text"),
+    primaryButtonLink: getMetaobjectFieldValue(fields, "primary_button_link"),
+    secondaryButtonText: getMetaobjectFieldValue(
+      fields,
+      "secondary_button_text",
+    ),
+    secondaryButtonLink: getMetaobjectFieldValue(
+      fields,
+      "secondary_button_link",
+    ),
+    thirdButtonText: getMetaobjectFieldValue(fields, "third_button_text"),
+    thirdButtonLink: getMetaobjectFieldValue(fields, "third_button_link"),
+    scrollText: getMetaobjectFieldValue(fields, "scroll_text"),
+    heroImage: getMetaobjectImage(fields, "hero_image"),
+    shopLabel: getMetaobjectFieldValue(fields, "shop_label"),
+    shopTitle: getMetaobjectFieldValue(fields, "shop_title"),
+    shopDescription: getMetaobjectFieldValue(fields, "shop_description"),
+    shopButtonText: getMetaobjectFieldValue(fields, "shop_button_text"),
+    shopButtonLink: getMetaobjectFieldValue(fields, "shop_button_link"),
+  };
+};
+
 export async function createCart(
   lines?: { merchandiseId: string; quantity: number }[],
   countryCode: SupportedCountryCode = SHOPIFY_CHECKOUT_COUNTRY,
@@ -379,7 +450,49 @@ export async function getCart(): Promise<Cart | undefined> {
   return reshapeCart(res.body.data.cart);
 }
 
+export async function getHomeContent(): Promise<HomeContent | undefined> {
+  "use cache";
+  cacheTag(TAGS.metaobjects);
+  cacheLife("hours");
 
+  if (!endpoint) {
+    console.log("Skipping getHomeContent - Shopify not configured");
+    return undefined;
+  }
+
+  const configuredHandle = process.env.SHOPIFY_HOME_METAOBJECT_HANDLE;
+
+  for (const type of HOME_METAOBJECT_TYPE_CANDIDATES) {
+    try {
+      if (configuredHandle) {
+        const res = await shopifyFetch<ShopifyHomeMetaobjectByHandleOperation>({
+          query: getHomeMetaobjectByHandleQuery,
+          variables: {
+            handle: {
+              handle: configuredHandle,
+              type,
+            },
+          },
+        });
+        const content = reshapeHomeContent(res.body.data.metaobject);
+        if (content) return content;
+      }
+
+      const res = await shopifyFetch<ShopifyHomeMetaobjectsByTypeOperation>({
+        query: getHomeMetaobjectsByTypeQuery,
+        variables: { type },
+      });
+      const content = reshapeHomeContent(
+        removeEdgesAndNodes(res.body.data.metaobjects)[0],
+      );
+      if (content) return content;
+    } catch {
+      continue;
+    }
+  }
+
+  return undefined;
+}
 
 export async function getCollectionProducts({
   collection,
@@ -471,8 +584,6 @@ export async function getCollections(): Promise<Collection[]> {
 
   return collections;
 }
-
-
 
 export async function getPage(handle: string): Promise<Page> {
   const res = await shopifyFetch<ShopifyPageOperation>({

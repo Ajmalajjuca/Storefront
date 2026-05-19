@@ -1,6 +1,5 @@
 import type { SupportedCountryCode } from "lib/currency";
 
-
 export type Connection<T> = {
   edges: Array<Edge<T>>;
 };
@@ -46,6 +45,31 @@ export type Image = {
   altText: string;
   width: number;
   height: number;
+};
+
+export type HomeContent = {
+  heroEyebrow?: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  primaryButtonText?: string;
+  primaryButtonLink?: string;
+  secondaryButtonText?: string;
+  secondaryButtonLink?: string;
+  thirdButtonText?: string;
+  thirdButtonLink?: string;
+  scrollText?: string;
+  heroImage?: Image;
+  shopLabel?: string;
+  shopTitle?: string;
+  shopDescription?: string;
+  shopButtonText?: string;
+  shopButtonLink?: string;
+};
+
+export type ServiceBarItem = {
+  title: string;
+  description: string;
+  sortOrder: number;
 };
 
 type VideoSource = {
@@ -166,6 +190,48 @@ export type ShopifyProduct = {
   updatedAt: string;
 };
 
+export type ShopifyMetaobjectField = {
+  key: string;
+  value: string | null;
+  reference?: {
+    image?: Image | null;
+  } | null;
+};
+
+export type ShopifyMetaobject = {
+  fields: ShopifyMetaobjectField[];
+};
+
+export type ShopifyHomeMetaobjectByHandleOperation = {
+  data: {
+    metaobject: ShopifyMetaobject | null;
+  };
+  variables: {
+    handle: {
+      handle: string;
+      type: string;
+    };
+  };
+};
+
+export type ShopifyHomeMetaobjectsByTypeOperation = {
+  data: {
+    metaobjects: Connection<ShopifyMetaobject>;
+  };
+  variables: {
+    type: string;
+  };
+};
+
+export type ShopifyServiceBarItemsOperation = {
+  data: {
+    metaobjects: Connection<ShopifyMetaobject>;
+  };
+  variables: {
+    type: string;
+  };
+};
+
 export type ShopifyCartOperation = {
   data: {
     cart: ShopifyCart;
@@ -247,8 +313,6 @@ export type ShopifyCartBuyerIdentityUpdateOperation = {
   };
 };
 
-
-
 export type ShopifyCollectionProductsOperation = {
   data: {
     collection: {
@@ -268,8 +332,6 @@ export type ShopifyCollectionsOperation = {
     collections: Connection<ShopifyCollection>;
   };
 };
-
-
 
 export type ShopifyPageOperation = {
   data: { pageByHandle: Page };

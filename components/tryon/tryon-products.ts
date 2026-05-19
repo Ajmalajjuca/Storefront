@@ -142,7 +142,7 @@ export function mapShopifyTryOnProduct(product: TryOnProduct): TryOnUiProduct {
     price: Number(product.price),
     currencyCode: product.currencyCode,
     type,
-    thumbnail: product.imageUrl || "/logo.svg",
+    thumbnail: product.imageUrl,
     modelUrl,
     wearableModelUrl: modelUrl,
     maleModelUrl: maleUrl,

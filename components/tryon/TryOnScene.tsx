@@ -25,10 +25,33 @@ type Props = {
   avatar: AvatarGender;
   topwear: TryOnUiProduct | null;
   bottomwear: TryOnUiProduct | null;
+  helmetEnabled?: boolean;
   onWornProductClick: (product: TryOnUiProduct) => void;
   onTopwearReady?: (product: TryOnUiProduct) => void;
   onBottomwearReady?: (product: TryOnUiProduct) => void;
   onWebGLError?: (message: string) => void;
+};
+
+const HELMET_MODEL_URL = "/models/avatar/helmate.glb";
+
+const HELMET_TRANSFORM: Record<
+  AvatarGender,
+  {
+    position: [number, number, number];
+    rotation: [number, number, number];
+    scale: number;
+  }
+> = {
+  female: {
+    position: [0, 0, 0],
+    rotation: [0, 0, 0],
+    scale: 1,
+  },
+  male: {
+    position: [0, 0, 0],
+    rotation: [0, 0, 0],
+    scale: 1,
+  },
 };
 
 function isMobileViewport() {
@@ -106,6 +129,7 @@ function AvatarRoot({
   avatar,
   topwear,
   bottomwear,
+  helmetEnabled = false,
   onWornProductClick,
   onTopwearReady,
   onBottomwearReady,
@@ -191,6 +215,7 @@ function AvatarRoot({
       scale={fitTransform.scale}
     >
       <primitive object={avatarScene} dispose={null} />
+      {helmetEnabled ? <HelmetModel avatar={avatar} /> : null}
       <GarmentTransitionLayer
         avatar={avatar}
         avatarScene={avatarScene}
@@ -207,6 +232,26 @@ function AvatarRoot({
         onReadyForCategory={onBottomwearReady}
         onActiveProductsChange={handleBottomwearLiveChange}
       />
+    </group>
+  );
+}
+
+function HelmetModel({ avatar }: { avatar: AvatarGender }) {
+  const gltf = useGLTF(HELMET_MODEL_URL);
+  const helmetScene = useMemo(() => {
+    const scene = cloneSkeleton(gltf.scene);
+    cloneSceneMaterials(scene);
+    return scene;
+  }, [gltf.scene]);
+  const transform = HELMET_TRANSFORM[avatar];
+
+  return (
+    <group
+      position={transform.position}
+      rotation={transform.rotation}
+      scale={transform.scale}
+    >
+      <primitive object={helmetScene} dispose={null} />
     </group>
   );
 }
@@ -253,6 +298,7 @@ export function TryOnScene(props: Props) {
     const mobile = isMobileViewport();
     useGLTF.preload(avatarUrl("female", mobile));
     useGLTF.preload(avatarUrl("male", mobile));
+    useGLTF.preload(HELMET_MODEL_URL);
   }, []);
 
   return (

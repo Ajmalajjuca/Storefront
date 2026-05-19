@@ -149,6 +149,7 @@ export function TryOnExperience({
     useState<TryOnUiProduct | null>(null);
   const [isProductAlreadyWorn, setIsProductAlreadyWorn] = useState(false);
   const [showTryOnHint, setShowTryOnHint] = useState(true);
+  const [helmetEnabled, setHelmetEnabled] = useState(false);
 
   const switching = useTryOnSwitching({ cooldownMs: ROOT_WHEEL_COOLDOWN_MS });
   const rootWheelDeltaRef = useRef(0);
@@ -486,11 +487,24 @@ export function TryOnExperience({
           />
         </div>
 
+        <div className={styles.helmetPanel}>
+          <button
+            type="button"
+            className={styles.helmetToggle}
+            data-active={helmetEnabled ? "true" : "false"}
+            aria-pressed={helmetEnabled}
+            onClick={() => setHelmetEnabled((value) => !value)}
+          >
+            Helmet
+          </button>
+        </div>
+
         <TryOnScene
           key={`scene-${canvasRevivalKey}`}
           avatar={selectedAvatarGender}
           topwear={selectedTopwear}
           bottomwear={selectedBottomwear}
+          helmetEnabled={helmetEnabled}
           onWornProductClick={handleWornProductClick}
           onTopwearReady={handleTopwearReady}
           onBottomwearReady={handleBottomwearReady}

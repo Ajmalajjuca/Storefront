@@ -181,7 +181,13 @@ export function TryOnExperience({
   // Deferred preloads: the rest of both compatible catalogs, fired in idle.
   const { priorityUrls, deferredUrls } = useMemo(() => {
     const priority = new Set<string>();
-    priority.add(`/models/avatar/${selectedAvatarGender}-avatar.glb`);
+    const variant =
+      typeof window !== "undefined" && window.innerWidth < 768
+        ? "mobile"
+        : "optimized";
+    priority.add(
+      `/models/avatar/${selectedAvatarGender}-avatar.${variant}.glb`,
+    );
 
     if (selectedTopwear) {
       priority.add(
@@ -475,6 +481,7 @@ export function TryOnExperience({
           src="/tryon-stage-bg.png"
           alt=""
           aria-hidden="true"
+          fetchPriority="high"
         />
         <div className={styles.stageAtmosphere} aria-hidden="true" />
 
@@ -585,6 +592,7 @@ export function TryOnExperience({
         <Canvas
           key={`previews-${canvasRevivalKey}`}
           className="pointer-events-none"
+          frameloop="demand"
           style={{
             position: "fixed",
             top: 0,

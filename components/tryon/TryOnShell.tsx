@@ -1,4 +1,4 @@
-import { TryOnExperience } from "components/tryon/TryOnExperience";
+import { TryOnExperienceClient } from "components/tryon/TryOnExperienceClient";
 import {
   mapShopifyTryOnProduct,
   sampleBottomwearProducts,
@@ -31,7 +31,7 @@ export function TryOnShell({ products }: Props) {
     .map(mapShopifyTryOnProduct);
 
   return (
-    <TryOnExperience
+    <TryOnExperienceClient
       topwearProducts={
         topwearProducts.length > 0 ? topwearProducts : sampleTopwearProducts
       }

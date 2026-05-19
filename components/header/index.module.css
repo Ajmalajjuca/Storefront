@@ -338,7 +338,9 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #ffffff;
-  transition: color 0.3s ease, transform 0.3s ease;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .mobileMenuNav :global(.navLink):hover,
@@ -402,4 +404,3 @@
     height: 44rem;
   }
 }
-

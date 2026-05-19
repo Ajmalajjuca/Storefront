@@ -30,6 +30,7 @@ import {
   getHomeMetaobjectByHandleQuery,
   getHomeMetaobjectsByTypeQuery,
   getServiceBarItemsQuery,
+  getWhyChooseItemsQuery,
 } from "./queries/metaobject";
 
 import { getPageQuery, getPagesQuery } from "./queries/page";
@@ -74,7 +75,9 @@ import {
   ShopifyServiceBarItemsOperation,
   ShopifyShopPoliciesOperation,
   ShopifyUpdateCartOperation,
+  ShopifyWhyChooseItemsOperation,
   ShopPolicy,
+  WhyChooseItem,
 } from "./types";
 
 const domain = process.env.SHOPIFY_STORE_DOMAIN
@@ -357,6 +360,41 @@ const reshapeServiceBarItems = (
     .sort((a, b) => a.sortOrder - b.sortOrder);
 };
 
+const reshapeWhyChooseItem = (
+  metaobject: ShopifyMetaobject,
+  index: number,
+): WhyChooseItem | undefined => {
+  const title = getMetaobjectFieldValue(metaobject.fields, "title");
+  const subtitle = getMetaobjectFieldValue(metaobject.fields, "subtitle");
+  const description = getMetaobjectFieldValue(metaobject.fields, "description");
+
+  if (!title || !subtitle || !description) {
+    return undefined;
+  }
+
+  const sortOrderValue = getMetaobjectFieldValue(
+    metaobject.fields,
+    "sort_order",
+  );
+  const sortOrder = Number.parseInt(sortOrderValue ?? "", 10);
+
+  return {
+    title,
+    subtitle,
+    description,
+    sortOrder: Number.isFinite(sortOrder) ? sortOrder : index,
+  };
+};
+
+const reshapeWhyChooseItems = (
+  metaobjects: ShopifyMetaobject[],
+): WhyChooseItem[] => {
+  return metaobjects
+    .map((metaobject, index) => reshapeWhyChooseItem(metaobject, index))
+    .filter((item): item is WhyChooseItem => Boolean(item))
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+};
+
 export async function createCart(
   lines?: { merchandiseId: string; quantity: number }[],
   countryCode: SupportedCountryCode = SHOPIFY_CHECKOUT_COUNTRY,
@@ -545,6 +583,26 @@ export async function getServiceBarItems(): Promise<ServiceBarItem[]> {
   });
 
   return reshapeServiceBarItems(removeEdgesAndNodes(res.body.data.metaobjects));
+}
+
+export async function getWhyChooseItems(): Promise<WhyChooseItem[]> {
+  "use cache";
+  cacheTag(TAGS.metaobjects);
+  cacheLife("hours");
+
+  if (!endpoint) {
+    console.log("Skipping getWhyChooseItems - Shopify not configured");
+    return [];
+  }
+
+  const res = await shopifyFetch<ShopifyWhyChooseItemsOperation>({
+    query: getWhyChooseItemsQuery,
+    variables: {
+      type: "why_choose_item",
+    },
+  });
+
+  return reshapeWhyChooseItems(removeEdgesAndNodes(res.body.data.metaobjects));
 }
 
 export async function getCollectionProducts({

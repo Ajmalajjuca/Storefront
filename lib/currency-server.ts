@@ -7,7 +7,6 @@ import {
 } from "lib/currency";
 import { cookies } from "next/headers";
 
-
 export async function getSelectedCountryCode(
   currencyOrCountry?: string,
 ): Promise<SupportedCountryCode> {

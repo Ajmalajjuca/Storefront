@@ -59,7 +59,6 @@ export async function addItem(
   }
 }
 
-
 export async function removeItem(prevState: any, merchandiseId: string) {
   try {
     const cart = await getCart();
@@ -139,4 +138,3 @@ export async function redirectToCheckout() {
   }
   redirect(cart!.checkoutUrl);
 }
-

@@ -102,12 +102,30 @@ const LOCKED_POLAR_ANGLE = Math.acos(
 function CameraRig() {
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
+  const [autoRotateActive, setAutoRotateActive] = useState(false);
 
   useEffect(() => {
     camera.position.set(0, 1.08, 5.78);
     camera.lookAt(0, 0.48, 0);
     controlsRef.current?.update();
   }, [camera]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (prefersReducedMotion) return;
+
+    let timer = 0;
+    const frame = window.requestAnimationFrame(() => {
+      timer = window.setTimeout(() => setAutoRotateActive(true), 1800);
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      if (timer) window.clearTimeout(timer);
+    };
+  }, []);
 
   return (
     <OrbitControls
@@ -119,8 +137,8 @@ function CameraRig() {
       target={[0, 0.48, 0]}
       minPolarAngle={LOCKED_POLAR_ANGLE}
       maxPolarAngle={LOCKED_POLAR_ANGLE}
-      autoRotate
-      autoRotateSpeed={5}
+      autoRotate={autoRotateActive}
+      autoRotateSpeed={3.5}
     />
   );
 }

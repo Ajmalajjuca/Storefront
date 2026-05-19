@@ -62,22 +62,19 @@ function useCanvasRevivalKey() {
       });
     };
 
+    // Only force a remount when the page is restored from the bfcache —
+    // there the GL context is genuinely gone. Real WebGL context loss
+    // during normal tab use is handled by the explicit `webglcontextlost`
+    // listener which calls `scheduleRevive` directly.
     const handlePageShow = (event: PageTransitionEvent) => {
       if (event.persisted) reviveOnNextFrame();
     };
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") reviveOnNextFrame();
-    };
 
     window.addEventListener("pageshow", handlePageShow);
-    window.addEventListener("popstate", reviveOnNextFrame);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("pageshow", handlePageShow);
-      window.removeEventListener("popstate", reviveOnNextFrame);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [scheduleRevive]);
 
@@ -181,7 +178,13 @@ export function TryOnExperience({
   // Deferred preloads: the rest of both compatible catalogs, fired in idle.
   const { priorityUrls, deferredUrls } = useMemo(() => {
     const priority = new Set<string>();
-    priority.add(`/models/avatar/${selectedAvatarGender}-avatar.glb`);
+    const variant =
+      typeof window !== "undefined" && window.innerWidth < 768
+        ? "mobile"
+        : "optimized";
+    priority.add(
+      `/models/avatar/${selectedAvatarGender}-avatar.${variant}.glb`,
+    );
 
     if (selectedTopwear) {
       priority.add(
@@ -470,14 +473,6 @@ export function TryOnExperience({
         ref={mainRef}
         className={`${styles.experience} relative min-h-[100svh] overflow-hidden`}
       >
-        <img
-          className={styles.stageBackgroundImage}
-          src="/tryon-stage-bg.png"
-          alt=""
-          aria-hidden="true"
-        />
-        <div className={styles.stageAtmosphere} aria-hidden="true" />
-
         <div
           className={`${styles.switchLayer} absolute left-0 right-0 flex justify-center`}
         >

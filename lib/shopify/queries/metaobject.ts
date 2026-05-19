@@ -50,3 +50,18 @@ export const getServiceBarItemsQuery = /* GraphQL */ `
     }
   }
 `;
+
+export const getWhyChooseItemsQuery = /* GraphQL */ `
+  query getWhyChooseItems($type: String!) {
+    metaobjects(type: $type, first: 20) {
+      edges {
+        node {
+          fields {
+            key
+            value
+          }
+        }
+      }
+    }
+  }
+`;

@@ -1,9 +1,10 @@
-import { TryOnExperience } from "components/tryon/TryOnExperience";
+import { TryOnExperienceClient } from "components/tryon/TryOnExperienceClient";
 import {
   mapShopifyTryOnProduct,
   sampleBottomwearProducts,
   sampleTopwearProducts,
 } from "components/tryon/tryon-products";
+import styles from "components/tryon/tryon.module.css";
 import { getProductGlbUrlForAvatar } from "lib/tryon/getProductGlbUrl";
 import type { TryOnProduct } from "types/tryon";
 
@@ -31,15 +32,26 @@ export function TryOnShell({ products }: Props) {
     .map(mapShopifyTryOnProduct);
 
   return (
-    <TryOnExperience
-      topwearProducts={
-        topwearProducts.length > 0 ? topwearProducts : sampleTopwearProducts
-      }
-      bottomwearProducts={
-        bottomwearProducts.length > 0
-          ? bottomwearProducts
-          : sampleBottomwearProducts
-      }
-    />
+    <>
+      <div className={styles.stageBackgroundLayer} aria-hidden="true">
+        <img
+          className={styles.stageBackgroundImage}
+          src="/tryon-stage-bg.png"
+          alt=""
+          fetchPriority="high"
+        />
+        <div className={styles.stageAtmosphere} />
+      </div>
+      <TryOnExperienceClient
+        topwearProducts={
+          topwearProducts.length > 0 ? topwearProducts : sampleTopwearProducts
+        }
+        bottomwearProducts={
+          bottomwearProducts.length > 0
+            ? bottomwearProducts
+            : sampleBottomwearProducts
+        }
+      />
+    </>
   );
 }

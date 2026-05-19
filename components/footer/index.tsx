@@ -1,3 +1,4 @@
+import type { FooterContent } from "lib/shopify/types";
 import Link from "next/link";
 import styles from "./index.module.css";
 
@@ -15,7 +16,15 @@ const SOCIAL = [
 
 const YEAR = new Date().getFullYear();
 
-export function Footer() {
+export function Footer({ content }: { content?: FooterContent }) {
+  console.log("footer content:", content);
+  const social = [
+    {
+      label: content?.instagramLabel ?? SOCIAL[0]!.label,
+      href: content?.instagramLink ?? SOCIAL[0]!.href,
+    },
+  ];
+
   return (
     <footer className={styles.footer}>
       <div className={styles.lockup}>
@@ -25,7 +34,9 @@ export function Footer() {
           className={styles.logo}
         />
       </div>
-      <p className={styles.tag}>You always find your way back</p>
+      <p className={styles.tag}>
+        {content?.tagline ?? "You always find your way back"}
+      </p>
 
       <nav className={styles.legal} aria-label="Legal">
         {LEGAL.map((l) => (
@@ -36,7 +47,7 @@ export function Footer() {
       </nav>
 
       <nav className={styles.social} aria-label="Social">
-        {SOCIAL.map((l) => (
+        {social.map((l) => (
           <a
             key={l.label}
             href={l.href}
@@ -50,7 +61,8 @@ export function Footer() {
       </nav>
 
       <p className={styles.copyright}>
-        © {YEAR} BLCKHOLE STUDIO · ALL RIGHTS RESERVED
+        {content?.copyright ??
+          `© ${YEAR} BLCKHOLE STUDIO · ALL RIGHTS RESERVED`}
       </p>
     </footer>
   );

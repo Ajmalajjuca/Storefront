@@ -1,7 +1,10 @@
 import { HomeScene } from "components/home-scene";
 import { getSelectedCountryCode } from "lib/currency-server";
 import {
+  getBrandQuoteContent,
+  getBrandValueItems,
   getCollectionProducts,
+  getFooterContent,
   getHomeContent,
   getProductRecommendations,
   getProducts,
@@ -20,6 +23,9 @@ async function BrowserShell({ children }: { children: ReactNode }) {
     homeContent,
     serviceBarItems,
     whyChooseItems,
+    brandQuoteContent,
+    brandValueItems,
+    footerContent,
   ] = await Promise.all([
     getCollectionProducts({
       collection: "hidden-homepage-featured-items",
@@ -29,6 +35,9 @@ async function BrowserShell({ children }: { children: ReactNode }) {
     getHomeContent().catch(() => undefined),
     getServiceBarItems().catch(() => []),
     getWhyChooseItems().catch(() => []),
+    getBrandQuoteContent().catch(() => undefined),
+    getBrandValueItems().catch(() => []),
+    getFooterContent().catch(() => undefined),
   ]);
 
   const products =
@@ -63,6 +72,9 @@ async function BrowserShell({ children }: { children: ReactNode }) {
         content={homeContent}
         serviceBarItems={serviceBarItems}
         whyChooseItems={whyChooseItems}
+        brandQuoteContent={brandQuoteContent}
+        brandValueItems={brandValueItems}
+        footerContent={footerContent}
       />
       {children}
     </>

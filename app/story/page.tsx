@@ -1,4 +1,9 @@
 import { Footer } from "components/footer";
+import {
+  getFooterContent,
+  getStoryPageContent,
+  getTimelineItems,
+} from "lib/shopify";
 import type { Metadata } from "next";
 import Image from "next/image";
 import styles from "./page.module.css";
@@ -60,7 +65,18 @@ const TIMELINE: { year: string; body: string }[] = [
   },
 ];
 
-export default function StoryPage() {
+export default async function StoryPage() {
+  const [content, timelineItems, footerContent] = await Promise.all([
+    getStoryPageContent().catch(() => undefined),
+    getTimelineItems().catch(() => []),
+    getFooterContent().catch(() => undefined),
+  ]);
+  console.log("storypage metaobject:", content, timelineItems, footerContent);
+  const displayTimeline =
+    timelineItems.length > 0
+      ? timelineItems
+      : TIMELINE.map((item, index) => ({ ...item, sortOrder: index }));
+
   return (
     <>
       <main className={styles.page}>
@@ -71,24 +87,31 @@ export default function StoryPage() {
             {/* ── Hero ────────────────────────────────────────────── */}
             <section id="intro" className={styles.hero}>
               <div className={styles.heroText}>
-                <p className={styles.eyebrow}>Story</p>
+                <p className={styles.eyebrow}>{content?.eyebrow ?? "Story"}</p>
                 <h1 className={styles.headline}>
-                  You always
-                  <br />
-                  find your way back.
+                  {content?.title ? (
+                    content.title
+                  ) : (
+                    <>
+                      You always
+                      <br />
+                      find your way back.
+                    </>
+                  )}
                 </h1>
                 <p className={styles.intro}>
-                  That line started as a note on a scrap of pattern paper — not
-                  a slogan meeting. It is the rule we cut to: if the garment
-                  does not feel inevitable when you put it on, we do not ship
-                  it.
+                  {content?.intro ??
+                    "That line started as a note on a scrap of pattern paper — not a slogan meeting. It is the rule we cut to: if the garment does not feel inevitable when you put it on, we do not ship it."}
                 </p>
               </div>
 
               <div className={styles.heroVisual}>
                 <Image
-                  src="/Story_1.png"
-                  alt="BLCKHOLE figure in a heavyweight leather coat"
+                  src={content?.heroImage?.url ?? "/Story_1.png"}
+                  alt={
+                    content?.heroImageAlt ??
+                    "BLCKHOLE figure in a heavyweight leather coat"
+                  }
                   width={1086}
                   height={1448}
                   priority
@@ -96,12 +119,16 @@ export default function StoryPage() {
                   className={styles.heroImage}
                 />
                 <aside className={styles.founderNote} aria-label="Founder note">
-                  <p className={styles.founderEyebrow}>Founder note</p>
-                  <p className={styles.founderQuote}>
-                    BLCKHOLE exists because we wanted clothes with weight — not
-                    just in fabric, but in intent.
+                  <p className={styles.founderEyebrow}>
+                    {content?.founderEyebrow ?? "Founder note"}
                   </p>
-                  <p className={styles.founderSign}>— A.</p>
+                  <p className={styles.founderQuote}>
+                    {content?.founderQuote ??
+                      "BLCKHOLE exists because we wanted clothes with weight — not just in fabric, but in intent."}
+                  </p>
+                  <p className={styles.founderSign}>
+                    {content?.founderSign ?? "— A."}
+                  </p>
                 </aside>
               </div>
             </section>
@@ -137,10 +164,12 @@ export default function StoryPage() {
               className={styles.timeline}
               aria-label="Our evolution"
             >
-              <p className={styles.timelineEyebrow}>Our evolution</p>
+              <p className={styles.timelineEyebrow}>
+                {content?.timelineEyebrow ?? "Our evolution"}
+              </p>
               <div className={styles.timelineRail} aria-hidden="true" />
               <ol className={styles.timelineList}>
-                {TIMELINE.map((row) => (
+                {displayTimeline.map((row) => (
                   <li key={row.year} className={styles.timelineCell}>
                     <span className={styles.timelineDot} aria-hidden="true" />
                     <span className={styles.timelineYear}>{row.year}</span>
@@ -152,16 +181,16 @@ export default function StoryPage() {
 
             {/* ── Bottom strip ────────────────────────────────────── */}
             <div className={styles.bottomStrip} aria-hidden="true">
-              <span>BLCKHOLE — EST. 2026</span>
+              <span>{content?.bottomLeft ?? "BLCKHOLE — EST. 2026"}</span>
               <span className={styles.bottomCenter}>
-                NOT TRENDING. JUST TRUE.
+                {content?.bottomCenter ?? "NOT TRENDING. JUST TRUE."}
               </span>
-              <span>© BLCKHOLE STUDIO</span>
+              <span>{content?.bottomRight ?? "© BLCKHOLE STUDIO"}</span>
             </div>
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer content={footerContent} />
     </>
   );
 }

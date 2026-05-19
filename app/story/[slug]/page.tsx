@@ -1,5 +1,5 @@
 import { Footer } from "components/footer";
-import { getPage, getPages } from "lib/shopify";
+import { getFooterContent, getPage, getPages } from "lib/shopify";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import styles from "./page.module.css";
@@ -22,9 +22,10 @@ export default async function StoryPage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const params = await props.params;
-  const [page, allPages] = await Promise.all([
+  const [page, allPages, footerContent] = await Promise.all([
     getPage(`story-${params.slug}`).catch(() => null),
     getPages().catch(() => []),
+    getFooterContent().catch(() => undefined),
   ]);
 
   if (!page) return notFound();
@@ -57,7 +58,7 @@ export default async function StoryPage(props: {
         <span className={styles.creditItem}>Bécane Paris</span>
       </div>
 
-      <Footer />
+      <Footer content={footerContent} />
     </div>
   );
 }

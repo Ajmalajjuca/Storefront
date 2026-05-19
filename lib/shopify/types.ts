@@ -79,6 +79,52 @@ export type WhyChooseItem = {
   sortOrder: number;
 };
 
+export type BrandQuoteContent = {
+  quote?: string;
+  cite?: string;
+};
+
+export type BrandValueItem = {
+  num: string;
+  name: string;
+  desc: string;
+  sortOrder: number;
+};
+
+export type FooterContent = {
+  tagline?: string;
+  copyright?: string;
+  instagramLabel?: string;
+  instagramLink?: string;
+};
+
+export type ShopPageContent = {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+};
+
+export type StoryPageContent = {
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  heroImage?: Image;
+  heroImageAlt?: string;
+  founderEyebrow?: string;
+  founderQuote?: string;
+  founderSign?: string;
+  timelineEyebrow?: string;
+  bottomLeft?: string;
+  bottomCenter?: string;
+  bottomRight?: string;
+};
+
+export type TimelineItem = {
+  year: string;
+  body: string;
+  sortOrder: number;
+};
+
 type VideoSource = {
   url: string;
   mimeType: string;
@@ -236,6 +282,7 @@ export type ShopifyServiceBarItemsOperation = {
   };
   variables: {
     type: string;
+    first: number;
   };
 };
 
@@ -245,6 +292,17 @@ export type ShopifyWhyChooseItemsOperation = {
   };
   variables: {
     type: string;
+    first: number;
+  };
+};
+
+export type ShopifyMetaobjectsByTypeOperation = {
+  data: {
+    metaobjects: Connection<ShopifyMetaobject>;
+  };
+  variables: {
+    type: string;
+    first: number;
   };
 };
 

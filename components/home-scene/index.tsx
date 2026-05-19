@@ -9,6 +9,9 @@ import { ProductRail } from "components/product-rail";
 import { ScrollStage } from "components/scroll-stage";
 import { TrustBar } from "components/trust-bar";
 import type {
+  BrandQuoteContent,
+  BrandValueItem,
+  FooterContent,
   HomeContent,
   Product,
   ServiceBarItem,
@@ -25,6 +28,9 @@ type Props = {
   content?: HomeContent;
   serviceBarItems?: ServiceBarItem[];
   whyChooseItems?: WhyChooseItem[];
+  brandQuoteContent?: BrandQuoteContent;
+  brandValueItems?: BrandValueItem[];
+  footerContent?: FooterContent;
 };
 
 const brandValues: WhyChooseItem[] = [
@@ -87,6 +93,9 @@ export function HomeScene({
   content,
   serviceBarItems,
   whyChooseItems,
+  brandQuoteContent,
+  brandValueItems,
+  footerContent,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -247,12 +256,12 @@ export function HomeScene({
             viewAllHref={content?.shopButtonLink ?? "/indexes/products"}
             viewAllLabel={content?.shopButtonText ?? "Shop entire line"}
           />
-          <PressQuote />
+          <PressQuote content={brandQuoteContent} />
           <WhyBlckole items={whyChooseItems} />
           <Newsletter />
-          <Principles />
+          <Principles items={brandValueItems} />
           <Manifesto />
-          <Footer />
+          <Footer content={footerContent} />
         </div>
       )}
     </div>

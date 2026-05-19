@@ -1,6 +1,6 @@
 import imageFragment from "../fragments/image";
 
-const homeMetaobjectFields = /* GraphQL */ `
+const metaobjectFields = /* GraphQL */ `
   fields {
     key
     value
@@ -17,7 +17,7 @@ const homeMetaobjectFields = /* GraphQL */ `
 export const getHomeMetaobjectByHandleQuery = /* GraphQL */ `
   query getHomeMetaobjectByHandle($handle: MetaobjectHandleInput!) {
     metaobject(handle: $handle) {
-      ${homeMetaobjectFields}
+      ${metaobjectFields}
     }
   }
   ${imageFragment}
@@ -28,7 +28,7 @@ export const getHomeMetaobjectsByTypeQuery = /* GraphQL */ `
     metaobjects(type: $type, first: 1) {
       edges {
         node {
-          ${homeMetaobjectFields}
+          ${metaobjectFields}
         }
       }
     }
@@ -36,32 +36,15 @@ export const getHomeMetaobjectsByTypeQuery = /* GraphQL */ `
   ${imageFragment}
 `;
 
-export const getServiceBarItemsQuery = /* GraphQL */ `
-  query getServiceBarItems($type: String!) {
-    metaobjects(type: $type, first: 20) {
+export const getMetaobjectsByTypeQuery = /* GraphQL */ `
+  query getMetaobjectsByType($type: String!, $first: Int!) {
+    metaobjects(type: $type, first: $first) {
       edges {
         node {
-          fields {
-            key
-            value
-          }
+          ${metaobjectFields}
         }
       }
     }
   }
-`;
-
-export const getWhyChooseItemsQuery = /* GraphQL */ `
-  query getWhyChooseItems($type: String!) {
-    metaobjects(type: $type, first: 20) {
-      edges {
-        node {
-          fields {
-            key
-            value
-          }
-        }
-      }
-    }
-  }
+  ${imageFragment}
 `;

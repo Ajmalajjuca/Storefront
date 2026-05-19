@@ -29,8 +29,7 @@ import {
 import {
   getHomeMetaobjectByHandleQuery,
   getHomeMetaobjectsByTypeQuery,
-  getServiceBarItemsQuery,
-  getWhyChooseItemsQuery,
+  getMetaobjectsByTypeQuery,
 } from "./queries/metaobject";
 
 import { getPageQuery, getPagesQuery } from "./queries/page";
@@ -44,6 +43,9 @@ import {
   Cart,
   Collection,
   Connection,
+  BrandQuoteContent,
+  BrandValueItem,
+  FooterContent,
   HomeContent,
   Image,
   Menu,
@@ -51,6 +53,7 @@ import {
   Product,
   ProductMedia,
   ServiceBarItem,
+  ShopPageContent,
   ShopifyAddToCartOperation,
   ShopifyCart,
   ShopifyCartBuyerIdentityUpdateOperation,
@@ -62,6 +65,7 @@ import {
   ShopifyCustomerCreateOperation,
   ShopifyHomeMetaobjectByHandleOperation,
   ShopifyHomeMetaobjectsByTypeOperation,
+  ShopifyMetaobjectsByTypeOperation,
   ShopifyMetaobject,
   ShopifyMetaobjectField,
   ShopifyPageOperation,
@@ -72,11 +76,11 @@ import {
   ShopifyProductRecommendationsOperation,
   ShopifyProductsOperation,
   ShopifyRemoveFromCartOperation,
-  ShopifyServiceBarItemsOperation,
   ShopifyShopPoliciesOperation,
   ShopifyUpdateCartOperation,
-  ShopifyWhyChooseItemsOperation,
+  StoryPageContent,
   ShopPolicy,
+  TimelineItem,
   WhyChooseItem,
 } from "./types";
 
@@ -286,12 +290,55 @@ const getMetaobjectFieldValue = (
   return value ? value : undefined;
 };
 
+const getFirstMetaobjectFieldValue = (
+  fields: ShopifyMetaobjectField[],
+  keys: string[],
+): string | undefined => {
+  for (const key of keys) {
+    const value = getMetaobjectFieldValue(fields, key);
+    if (value) return value;
+  }
+  return undefined;
+};
+
+const getMetaobjectSortOrder = (
+  fields: ShopifyMetaobjectField[],
+  fallback: number,
+): number => {
+  const sortOrderValue = getMetaobjectFieldValue(fields, "sort_order");
+  const sortOrder = Number.parseInt(sortOrderValue ?? "", 10);
+  return Number.isFinite(sortOrder) ? sortOrder : fallback;
+};
+
 const getMetaobjectImage = (
   fields: ShopifyMetaobjectField[],
   key: string,
 ): Image | undefined => {
   const image = fields.find((field) => field.key === key)?.reference?.image;
   return image?.url ? image : undefined;
+};
+
+const getFirstMetaobject = async (
+  type: string,
+): Promise<ShopifyMetaobject | undefined> => {
+  const res = await shopifyFetch<ShopifyMetaobjectsByTypeOperation>({
+    query: getMetaobjectsByTypeQuery,
+    variables: { type, first: 1 },
+  });
+
+  return removeEdgesAndNodes(res.body.data.metaobjects)[0];
+};
+
+const getMetaobjects = async (
+  type: string,
+  first: number = 20,
+): Promise<ShopifyMetaobject[]> => {
+  const res = await shopifyFetch<ShopifyMetaobjectsByTypeOperation>({
+    query: getMetaobjectsByTypeQuery,
+    variables: { type, first },
+  });
+
+  return removeEdgesAndNodes(res.body.data.metaobjects);
 };
 
 const reshapeHomeContent = (
@@ -338,16 +385,10 @@ const reshapeServiceBarItem = (
     return undefined;
   }
 
-  const sortOrderValue = getMetaobjectFieldValue(
-    metaobject.fields,
-    "sort_order",
-  );
-  const sortOrder = Number.parseInt(sortOrderValue ?? "", 10);
-
   return {
     title,
     description,
-    sortOrder: Number.isFinite(sortOrder) ? sortOrder : index,
+    sortOrder: getMetaobjectSortOrder(metaobject.fields, index),
   };
 };
 
@@ -372,17 +413,11 @@ const reshapeWhyChooseItem = (
     return undefined;
   }
 
-  const sortOrderValue = getMetaobjectFieldValue(
-    metaobject.fields,
-    "sort_order",
-  );
-  const sortOrder = Number.parseInt(sortOrderValue ?? "", 10);
-
   return {
     title,
     subtitle,
     description,
-    sortOrder: Number.isFinite(sortOrder) ? sortOrder : index,
+    sortOrder: getMetaobjectSortOrder(metaobject.fields, index),
   };
 };
 
@@ -392,6 +427,187 @@ const reshapeWhyChooseItems = (
   return metaobjects
     .map((metaobject, index) => reshapeWhyChooseItem(metaobject, index))
     .filter((item): item is WhyChooseItem => Boolean(item))
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+};
+
+const reshapeBrandQuoteContent = (
+  metaobject: ShopifyMetaobject | null | undefined,
+): BrandQuoteContent | undefined => {
+  if (!metaobject) return undefined;
+  const { fields } = metaobject;
+
+  return {
+    quote: getFirstMetaobjectFieldValue(fields, [
+      "quote",
+      "quote_text",
+      "text",
+      "content",
+    ]),
+    cite: getFirstMetaobjectFieldValue(fields, [
+      "cite",
+      "quote_author",
+      "source",
+      "author",
+    ]),
+  };
+};
+
+const reshapeBrandValueItem = (
+  metaobject: ShopifyMetaobject,
+  index: number,
+): BrandValueItem | undefined => {
+  const name = getFirstMetaobjectFieldValue(metaobject.fields, [
+    "name",
+    "title",
+  ]);
+  const desc = getFirstMetaobjectFieldValue(metaobject.fields, [
+    "desc",
+    "description",
+  ]);
+
+  if (!name || !desc) return undefined;
+
+  return {
+    num:
+      getFirstMetaobjectFieldValue(metaobject.fields, ["num", "number"]) ??
+      String(index + 1).padStart(2, "0"),
+    name,
+    desc,
+    sortOrder: getMetaobjectSortOrder(metaobject.fields, index),
+  };
+};
+
+const reshapeBrandValueItems = (
+  metaobjects: ShopifyMetaobject[],
+): BrandValueItem[] => {
+  return metaobjects
+    .map((metaobject, index) => reshapeBrandValueItem(metaobject, index))
+    .filter((item): item is BrandValueItem => Boolean(item))
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+};
+
+const reshapeFooterContent = (
+  metaobject: ShopifyMetaobject | null | undefined,
+): FooterContent | undefined => {
+  if (!metaobject) return undefined;
+  const { fields } = metaobject;
+
+  return {
+    tagline: getFirstMetaobjectFieldValue(fields, [
+      "tagline",
+      "footer_tagline",
+      "tag",
+    ]),
+    copyright: getFirstMetaobjectFieldValue(fields, [
+      "copyright",
+      "copyright_text",
+    ]),
+    instagramLabel: getFirstMetaobjectFieldValue(fields, [
+      "instagram_label",
+      "social_label",
+    ]),
+    instagramLink: getFirstMetaobjectFieldValue(fields, [
+      "instagram_link",
+      "instagram_url",
+      "social_link",
+      "social_url",
+    ]),
+  };
+};
+
+const reshapeShopPageContent = (
+  metaobject: ShopifyMetaobject | null | undefined,
+): ShopPageContent | undefined => {
+  if (!metaobject) return undefined;
+  const { fields } = metaobject;
+
+  return {
+    eyebrow: getFirstMetaobjectFieldValue(fields, [
+      "eyebrow",
+      "page_label",
+      "label",
+    ]),
+    title: getFirstMetaobjectFieldValue(fields, [
+      "title",
+      "page_title",
+      "heading",
+    ]),
+    description: getFirstMetaobjectFieldValue(fields, [
+      "description",
+      "page_description",
+      "subtitle",
+      "body",
+    ]),
+  };
+};
+
+const reshapeStoryPageContent = (
+  metaobject: ShopifyMetaobject | null | undefined,
+): StoryPageContent | undefined => {
+  if (!metaobject) return undefined;
+  const { fields } = metaobject;
+
+  return {
+    eyebrow: getFirstMetaobjectFieldValue(fields, ["eyebrow", "label"]),
+    title: getFirstMetaobjectFieldValue(fields, ["title", "heading"]),
+    intro: getFirstMetaobjectFieldValue(fields, [
+      "intro",
+      "description",
+      "subtitle",
+    ]),
+    heroImage: getMetaobjectImage(fields, "hero_image"),
+    heroImageAlt: getFirstMetaobjectFieldValue(fields, [
+      "hero_image_alt",
+      "image_alt",
+    ]),
+    founderEyebrow: getFirstMetaobjectFieldValue(fields, [
+      "founder_eyebrow",
+      "founder_label",
+    ]),
+    founderQuote: getFirstMetaobjectFieldValue(fields, ["founder_quote"]),
+    founderSign: getFirstMetaobjectFieldValue(fields, [
+      "founder_sign",
+      "founder_signature",
+    ]),
+    timelineEyebrow: getFirstMetaobjectFieldValue(fields, [
+      "timeline_eyebrow",
+      "timeline_label",
+    ]),
+    bottomLeft: getFirstMetaobjectFieldValue(fields, ["bottom_left"]),
+    bottomCenter: getFirstMetaobjectFieldValue(fields, ["bottom_center"]),
+    bottomRight: getFirstMetaobjectFieldValue(fields, ["bottom_right"]),
+  };
+};
+
+const reshapeTimelineItem = (
+  metaobject: ShopifyMetaobject,
+  index: number,
+): TimelineItem | undefined => {
+  const year = getFirstMetaobjectFieldValue(metaobject.fields, [
+    "year",
+    "date",
+  ]);
+  const body = getFirstMetaobjectFieldValue(metaobject.fields, [
+    "body",
+    "description",
+    "text",
+  ]);
+
+  if (!year || !body) return undefined;
+
+  return {
+    year,
+    body,
+    sortOrder: getMetaobjectSortOrder(metaobject.fields, index),
+  };
+};
+
+const reshapeTimelineItems = (
+  metaobjects: ShopifyMetaobject[],
+): TimelineItem[] => {
+  return metaobjects
+    .map((metaobject, index) => reshapeTimelineItem(metaobject, index))
+    .filter((item): item is TimelineItem => Boolean(item))
     .sort((a, b) => a.sortOrder - b.sortOrder);
 };
 
@@ -575,14 +791,7 @@ export async function getServiceBarItems(): Promise<ServiceBarItem[]> {
     return [];
   }
 
-  const res = await shopifyFetch<ShopifyServiceBarItemsOperation>({
-    query: getServiceBarItemsQuery,
-    variables: {
-      type: "service_bar_item",
-    },
-  });
-
-  return reshapeServiceBarItems(removeEdgesAndNodes(res.body.data.metaobjects));
+  return reshapeServiceBarItems(await getMetaobjects("service_bar_item"));
 }
 
 export async function getWhyChooseItems(): Promise<WhyChooseItem[]> {
@@ -595,14 +804,93 @@ export async function getWhyChooseItems(): Promise<WhyChooseItem[]> {
     return [];
   }
 
-  const res = await shopifyFetch<ShopifyWhyChooseItemsOperation>({
-    query: getWhyChooseItemsQuery,
-    variables: {
-      type: "why_choose_item",
-    },
-  });
+  return reshapeWhyChooseItems(await getMetaobjects("why_choose_item"));
+}
 
-  return reshapeWhyChooseItems(removeEdgesAndNodes(res.body.data.metaobjects));
+export async function getBrandQuoteContent(): Promise<
+  BrandQuoteContent | undefined
+> {
+  "use cache";
+  cacheTag(TAGS.metaobjects);
+  cacheLife("hours");
+
+  if (!endpoint) {
+    console.log("Skipping getBrandQuoteContent - Shopify not configured");
+    return undefined;
+  }
+
+  return reshapeBrandQuoteContent(await getFirstMetaobject("brand_quote"));
+}
+
+export async function getBrandValueItems(): Promise<BrandValueItem[]> {
+  "use cache";
+  cacheTag(TAGS.metaobjects);
+  cacheLife("hours");
+
+  if (!endpoint) {
+    console.log("Skipping getBrandValueItems - Shopify not configured");
+    return [];
+  }
+
+  return reshapeBrandValueItems(await getMetaobjects("brand_value"));
+}
+
+export async function getFooterContent(): Promise<FooterContent | undefined> {
+  "use cache";
+  cacheTag(TAGS.metaobjects);
+  cacheLife("hours");
+
+  if (!endpoint) {
+    console.log("Skipping getFooterContent - Shopify not configured");
+    return undefined;
+  }
+
+  return reshapeFooterContent(await getFirstMetaobject("footer_content"));
+}
+
+export async function getShopPageContent(): Promise<
+  ShopPageContent | undefined
+> {
+  "use cache";
+  cacheTag(TAGS.metaobjects);
+  cacheLife("hours");
+
+  if (!endpoint) {
+    console.log("Skipping getShopPageContent - Shopify not configured");
+    return undefined;
+  }
+
+  return reshapeShopPageContent(await getFirstMetaobject("shop_page_content"));
+}
+
+export async function getStoryPageContent(): Promise<
+  StoryPageContent | undefined
+> {
+  "use cache";
+  cacheTag(TAGS.metaobjects);
+  cacheLife("hours");
+
+  if (!endpoint) {
+    console.log("Skipping getStoryPageContent - Shopify not configured");
+    return undefined;
+  }
+
+  return reshapeStoryPageContent(
+    await getFirstMetaobject("story_page_content"),
+  );
+}
+
+export async function getTimelineItems(): Promise<TimelineItem[]> {
+  "use cache";
+  cacheTag(TAGS.metaobjects);
+  cacheLife("hours");
+
+  if (!endpoint) {
+    console.log("Skipping getTimelineItems - Shopify not configured");
+    return [];
+  }
+
+  return reshapeTimelineItems(await getMetaobjects("timeline_item"));
 }
 
 export async function getCollectionProducts({

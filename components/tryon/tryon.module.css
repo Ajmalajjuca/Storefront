@@ -9,6 +9,15 @@
   padding: 104rem var(--grid-margin) 28rem;
   touch-action: none;
   color: #ffffff;
+  background: transparent;
+}
+
+.stageBackgroundLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
   background: #000000;
 }
 

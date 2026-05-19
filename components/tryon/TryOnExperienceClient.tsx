@@ -12,16 +12,8 @@ const TryOnExperience = dynamic(
     loading: () => (
       <main
         className={`${styles.experience} relative min-h-[100svh] overflow-hidden`}
-      >
-        <img
-          className={styles.stageBackgroundImage}
-          src="/tryon-stage-bg.png"
-          alt=""
-          aria-hidden="true"
-          fetchPriority="high"
-        />
-        <div className={styles.stageAtmosphere} aria-hidden="true" />
-      </main>
+        aria-hidden="true"
+      />
     ),
   },
 );

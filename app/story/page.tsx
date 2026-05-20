@@ -2,6 +2,7 @@ import { Footer } from "components/footer";
 import {
   getFooterContent,
   getStoryPageContent,
+  getStorySections,
   getTimelineItems,
 } from "lib/shopify";
 import type { Metadata } from "next";
@@ -66,12 +67,24 @@ const TIMELINE: { year: string; body: string }[] = [
 ];
 
 export default async function StoryPage() {
-  const [content, timelineItems, footerContent] = await Promise.all([
-    getStoryPageContent().catch(() => undefined),
-    getTimelineItems().catch(() => []),
-    getFooterContent().catch(() => undefined),
-  ]);
-  console.log("storypage metaobject:", content, timelineItems, footerContent);
+  const [content, storySections, timelineItems, footerContent] =
+    await Promise.all([
+      getStoryPageContent().catch(() => undefined),
+      getStorySections().catch(() => []),
+      getTimelineItems().catch(() => []),
+      getFooterContent().catch(() => undefined),
+    ]);
+  const displayChapters =
+    storySections.length > 0
+      ? storySections.map((section, index) => ({
+          ...section,
+          image: section.image?.url ?? CHAPTERS[index]?.image ?? "/Story_2.png",
+          imageAlt:
+            section.imageAlt ??
+            CHAPTERS[index]?.imageAlt ??
+            `${section.label} story image`,
+        }))
+      : CHAPTERS;
   const displayTimeline =
     timelineItems.length > 0
       ? timelineItems
@@ -81,7 +94,9 @@ export default async function StoryPage() {
     <>
       <main className={styles.page}>
         <div className={styles.layout}>
-          <StorySidebar />
+          <StorySidebar
+            sections={storySections.length > 0 ? storySections : undefined}
+          />
 
           <div className={styles.main}>
             {/* ── Hero ────────────────────────────────────────────── */}
@@ -135,7 +150,7 @@ export default async function StoryPage() {
 
             {/* ── Chapters ────────────────────────────────────────── */}
             <section className={styles.chapters} aria-label="Story chapters">
-              {CHAPTERS.map((c) => (
+              {displayChapters.map((c) => (
                 <article key={c.id} id={c.id} className={styles.chapter}>
                   <header className={styles.chapterHead}>
                     <span className={styles.chapterNum}>{c.num}.</span>

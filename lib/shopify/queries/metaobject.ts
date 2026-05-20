@@ -1,6 +1,8 @@
 import imageFragment from "../fragments/image";
 
 const metaobjectFields = /* GraphQL */ `
+  handle
+  type
   fields {
     key
     value

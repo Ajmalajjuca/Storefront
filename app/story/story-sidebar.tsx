@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import type { StorySection } from "lib/shopify/types";
+import { useEffect, useMemo, useState } from "react";
 import styles from "./page.module.css";
 
-const ITEMS = [
+const DEFAULT_ITEMS = [
   { id: "intro", label: "Intro" },
   { id: "how-this-started", label: "How this started" },
   { id: "what-we-actually-make", label: "What we actually make" },
@@ -11,13 +12,27 @@ const ITEMS = [
   { id: "timeline", label: "Timeline" },
 ];
 
-export function StorySidebar() {
+export function StorySidebar({ sections }: { sections?: StorySection[] }) {
+  const items = useMemo(
+    () =>
+      sections && sections.length > 0
+        ? [
+            { id: "intro", label: "Intro" },
+            ...sections.map((section) => ({
+              id: section.id,
+              label: section.navLabel,
+            })),
+            { id: "timeline", label: "Timeline" },
+          ]
+        : DEFAULT_ITEMS,
+    [sections],
+  );
   const [active, setActive] = useState<string>("intro");
 
   useEffect(() => {
-    const els = ITEMS.map((it) => document.getElementById(it.id)).filter(
-      (el): el is HTMLElement => el !== null,
-    );
+    const els = items
+      .map((it) => document.getElementById(it.id))
+      .filter((el): el is HTMLElement => el !== null);
     if (els.length === 0) return;
 
     const observer = new IntersectionObserver(
@@ -36,12 +51,12 @@ export function StorySidebar() {
 
     els.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [items]);
 
   return (
     <aside className={styles.sidebar} aria-label="Story sections">
       <ol className={styles.sidebarList}>
-        {ITEMS.map((it) => {
+        {items.map((it) => {
           const isActive = active === it.id;
           return (
             <li key={it.id}>

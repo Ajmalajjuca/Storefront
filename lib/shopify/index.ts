@@ -77,6 +77,7 @@ import {
   ShopifyProductsOperation,
   ShopifyRemoveFromCartOperation,
   ShopifyShopPoliciesOperation,
+  StorySection,
   ShopifyUpdateCartOperation,
   StoryPageContent,
   ShopPolicy,
@@ -309,6 +310,13 @@ const getMetaobjectSortOrder = (
   const sortOrder = Number.parseInt(sortOrderValue ?? "", 10);
   return Number.isFinite(sortOrder) ? sortOrder : fallback;
 };
+
+const slugifyMetaobjectId = (value: string): string =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 const getMetaobjectImage = (
   fields: ShopifyMetaobjectField[],
@@ -611,6 +619,55 @@ const reshapeTimelineItems = (
     .sort((a, b) => a.sortOrder - b.sortOrder);
 };
 
+const reshapeStorySection = (
+  metaobject: ShopifyMetaobject,
+  index: number,
+): StorySection | undefined => {
+  const isActive = getMetaobjectFieldValue(metaobject.fields, "is_active");
+  if (isActive && isActive.toLowerCase() !== "true") return undefined;
+
+  const label = getFirstMetaobjectFieldValue(metaobject.fields, [
+    "title",
+    "label",
+  ]);
+  const body = getFirstMetaobjectFieldValue(metaobject.fields, [
+    "body",
+    "description",
+    "text",
+  ]);
+  if (!label || !body) return undefined;
+
+  const navLabel =
+    getFirstMetaobjectFieldValue(metaobject.fields, ["nav_label"]) ?? label;
+  const num =
+    getFirstMetaobjectFieldValue(metaobject.fields, ["number", "num"]) ??
+    String(index + 1).padStart(2, "0");
+  const id = slugifyMetaobjectId(metaobject.handle ?? navLabel ?? label);
+
+  return {
+    id,
+    num,
+    label,
+    navLabel,
+    body,
+    image: getMetaobjectImage(metaobject.fields, "image"),
+    imageAlt: getFirstMetaobjectFieldValue(metaobject.fields, [
+      "image_alt",
+      "image_alt_text",
+    ]),
+    sortOrder: getMetaobjectSortOrder(metaobject.fields, index),
+  };
+};
+
+const reshapeStorySections = (
+  metaobjects: ShopifyMetaobject[],
+): StorySection[] => {
+  return metaobjects
+    .map((metaobject, index) => reshapeStorySection(metaobject, index))
+    .filter((item): item is StorySection => Boolean(item))
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+};
+
 export async function createCart(
   lines?: { merchandiseId: string; quantity: number }[],
   countryCode: SupportedCountryCode = SHOPIFY_CHECKOUT_COUNTRY,
@@ -891,6 +948,19 @@ export async function getTimelineItems(): Promise<TimelineItem[]> {
   }
 
   return reshapeTimelineItems(await getMetaobjects("timeline_item"));
+}
+
+export async function getStorySections(): Promise<StorySection[]> {
+  "use cache";
+  cacheTag(TAGS.metaobjects);
+  cacheLife("hours");
+
+  if (!endpoint) {
+    console.log("Skipping getStorySections - Shopify not configured");
+    return [];
+  }
+
+  return reshapeStorySections(await getMetaobjects("story_section"));
 }
 
 export async function getCollectionProducts({

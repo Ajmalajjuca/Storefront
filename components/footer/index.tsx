@@ -17,7 +17,6 @@ const SOCIAL = [
 const YEAR = new Date().getFullYear();
 
 export function Footer({ content }: { content?: FooterContent }) {
-  console.log("footer content:", content);
   const social = [
     {
       label: content?.instagramLabel ?? SOCIAL[0]!.label,

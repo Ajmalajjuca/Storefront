@@ -119,6 +119,17 @@ export type StoryPageContent = {
   bottomRight?: string;
 };
 
+export type StorySection = {
+  id: string;
+  num: string;
+  label: string;
+  navLabel: string;
+  body: string;
+  image?: Image;
+  imageAlt?: string;
+  sortOrder: number;
+};
+
 export type TimelineItem = {
   year: string;
   body: string;
@@ -252,6 +263,8 @@ export type ShopifyMetaobjectField = {
 };
 
 export type ShopifyMetaobject = {
+  handle?: string;
+  type?: string;
   fields: ShopifyMetaobjectField[];
 };
 

@@ -10,6 +10,7 @@ import { ScrollStage } from "components/scroll-stage";
 import { TrustBar } from "components/trust-bar";
 import type {
   BrandQuoteContent,
+  BrandStatementContent,
   BrandValueItem,
   FooterContent,
   HomeContent,
@@ -29,6 +30,7 @@ type Props = {
   serviceBarItems?: ServiceBarItem[];
   whyChooseItems?: WhyChooseItem[];
   brandQuoteContent?: BrandQuoteContent;
+  brandStatementContent?: BrandStatementContent;
   brandValueItems?: BrandValueItem[];
   footerContent?: FooterContent;
 };
@@ -69,16 +71,28 @@ function WhyBlckole({ items }: { items?: WhyChooseItem[] }) {
 
   return (
     <section className={styles.whySection} aria-labelledby="why-blckole-title">
-      <h2 id="why-blckole-title" className={styles.whyTitle}>
-        <span>why</span> BLCKOLE?
-      </h2>
+      <div className={styles.whyIntro}>
+        <p className={styles.whyEyebrow}>System values</p>
+        <h2 id="why-blckole-title" className={styles.whyTitle}>
+          <span>why</span> BLCKOLE?
+        </h2>
+        <p className={styles.whyLead}>
+          Built for people who want the garment, the fit, and the ritual to feel
+          intentional before it reaches the bag.
+        </p>
+      </div>
 
       <div className={styles.valueGrid}>
-        {displayItems.map((item) => (
+        {displayItems.map((item, index) => (
           <article key={item.title} className={styles.valueItem}>
-            <p className={styles.valueText}>{item.description}</p>
-            <h3 className={styles.valueTitle}>{item.title}</h3>
-            <p className={styles.valueMeta}>{item.subtitle}</p>
+            <div className={styles.valueMarker} aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </div>
+            <div className={styles.valueContent}>
+              <p className={styles.valueMeta}>{item.subtitle}</p>
+              <h3 className={styles.valueTitle}>{item.title}</h3>
+              <p className={styles.valueText}>{item.description}</p>
+            </div>
           </article>
         ))}
       </div>
@@ -94,6 +108,7 @@ export function HomeScene({
   serviceBarItems,
   whyChooseItems,
   brandQuoteContent,
+  brandStatementContent,
   brandValueItems,
   footerContent,
 }: Props) {
@@ -260,7 +275,7 @@ export function HomeScene({
           <WhyBlckole items={whyChooseItems} />
           <Newsletter />
           <Principles items={brandValueItems} />
-          <Manifesto />
+          <Manifesto content={brandStatementContent} />
           <Footer content={footerContent} />
         </div>
       )}

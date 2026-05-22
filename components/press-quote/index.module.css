@@ -18,7 +18,7 @@
   margin: 0;
   max-width: 1080rem;
   letter-spacing: -0.005em;
-  text-transform: uppercase;
+  text-transform: lowercase;
 }
 
 .cite {

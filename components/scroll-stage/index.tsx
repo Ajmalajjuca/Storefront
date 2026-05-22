@@ -23,11 +23,10 @@ type Props = {
 const SWIPE_MIN_DISTANCE = 50;
 const SWIPE_MAX_DURATION = 600;
 
-const defaultHeroTitle = ["You always", "find your", "way back."];
+const defaultHeroTitle = ["You always", "find your way", "back"];
 const defaultHeroSubtitle = [
-  "The void has chosen.",
-  "Two remain.",
-  "This is the final pull.",
+  "Preview streetwear on a 3D avatar, switch styles",
+  "instantly, and choose your fit with confidence.",
 ];
 
 const splitContentLines = (value: string | undefined, fallback: string[]) => {
@@ -39,7 +38,11 @@ const splitContentLines = (value: string | undefined, fallback: string[]) => {
   return lines.length > 0 ? lines : fallback;
 };
 
-function HeroLeftContent({ content }: { content?: HomeContent }) {
+function HeroBackground({ style }: { style: CSSProperties | undefined }) {
+  return <div className={styles.heroBackground} style={style} aria-hidden />;
+}
+
+function HeroCopy({ content }: { content?: HomeContent }) {
   const titleLines = splitContentLines(content?.heroTitle, defaultHeroTitle);
   const subtitleLines = splitContentLines(
     content?.heroSubtitle,
@@ -49,7 +52,7 @@ function HeroLeftContent({ content }: { content?: HomeContent }) {
   return (
     <section className={styles.textContent} aria-labelledby="hero-title">
       <p className={styles.heroEyebrow}>
-        {content?.heroEyebrow ?? "You are being pulled in."}
+        {content?.heroEyebrow ?? "You are being pulled in"}
       </p>
       <h1 id="hero-title" className={styles.heroHeadline}>
         {titleLines.map((line, index) => (
@@ -69,14 +72,22 @@ function HeroLeftContent({ content }: { content?: HomeContent }) {
   );
 }
 
-function HeroRightActions({
+function HeroCharacters() {
+  return <div className={styles.heroCharacters} aria-hidden />;
+}
+
+function HeroCTA({
   content,
 }: {
   content?: HomeContent;
   onSelectAvatar: () => void;
 }) {
   return (
-    <div className={styles.actionStack} data-no-swipe>
+    <nav
+      className={styles.heroHeadline}
+      data-no-swipe
+      aria-label="Hero actions"
+    >
       <a
         href={content?.primaryButtonLink ?? "/indexes/products"}
         className={styles.secondaryAction}
@@ -95,11 +106,11 @@ function HeroRightActions({
       >
         {content?.thirdButtonText ?? "Explore catalog"}
       </a>
-    </div>
+    </nav>
   );
 }
 
-function HeroBottomBar({
+function ScrollIndicator({
   soundOn,
   onToggleSound,
   scrollText,
@@ -211,21 +222,24 @@ export const ScrollStage = React.memo(function ScrollStage({
       data-recs-open={recsOpen ? "true" : "false"}
     >
       <div className={styles.leftPanel}>
-        <HeroLeftContent content={content} />
+        <HeroCopy content={content} />
       </div>
 
-      <div className={styles.rightPanel}>
-        {!detailOpen && (
-          <HeroRightActions
+      <HeroBackground style={stageStyle} />
+      <HeroCharacters />
+
+      {!detailOpen && (
+        <div className={styles.ctaPanel}>
+          <HeroCTA
             content={content}
             onSelectAvatar={() => {
               onSelect(currentIndex, { open: true, userInitiated: true });
             }}
           />
-        )}
-      </div>
+        </div>
+      )}
 
-      <HeroBottomBar
+      <ScrollIndicator
         soundOn={soundOn}
         scrollText={content?.scrollText}
         onToggleSound={() => setSoundOn((v) => !v)}

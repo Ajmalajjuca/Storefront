@@ -1,209 +1,88 @@
 import { Footer } from "components/footer";
-import {
-  getFooterContent,
-  getStoryPageContent,
-  getStorySections,
-  getTimelineItems,
-} from "lib/shopify";
+import { getFooterContent } from "lib/shopify";
 import type { Metadata } from "next";
-import Image from "next/image";
 import styles from "./page.module.css";
-import { StorySidebar } from "./story-sidebar";
 
 export const metadata: Metadata = {
-  title: "Story",
+  title: "Our Story",
   description:
-    "You always find your way back. The story behind BLCKHOLE — heavy denim, deliberate hardware, and clothes that survive your real week.",
+    "BLCKOLE was never created to fit in. It was created for the ones who never did.",
   openGraph: { type: "article" },
 };
 
-const CHAPTERS: {
-  num: string;
-  id: string;
-  label: string;
-  body: string;
-  image: string;
-  imageAlt: string;
-}[] = [
-  {
-    num: "01",
-    id: "how-this-started",
-    label: "How this started",
-    body: "BLCKHOLE grew out of late nights in the studio — arguing about pocket depth, watching denim crease wrong until it finally creased right, and deciding we would rather sell fewer pieces than explain bad ones. The name stuck because everyone already knew what a black hole does: it pulls until you stop fighting it.",
-    image: "/Story_2.png",
-    imageAlt: "Studio sketchbook with denim sketches and fabric swatches",
-  },
-  {
-    num: "02",
-    id: "what-we-actually-make",
-    label: "What we actually make",
-    body: "Heavy denim that keeps its line. Fleece with weight. Graphics you notice from across the room, then discover detail when you step closer. Hardware that feels cold in your palm on purpose. We are not chasing drops every week — we chase the version that survives your real week.",
-    image: "/Story_3.png",
-    imageAlt: "Close-up of stitched leather and heavy denim seam",
-  },
-  {
-    num: "03",
-    id: "how-we-use-colour",
-    label: "How we use colour",
-    body: "Most of the wardrobe is black and off-black because that is what we live in. White shows up where contrast buys clarity. Red is rare — saved for where it should read like a signal, not wallpaper. If you only remember one thing: we treat colour like punctuation, not filler.",
-    image: "/Story_4.png",
-    imageAlt: "Embossed leather patch on dark denim",
-  },
-];
-
-const TIMELINE: { year: string; body: string }[] = [
-  {
-    year: "2024",
-    body: "First patterns, first wrong samples, first orders from friends who refused a discount",
-  },
-  {
-    year: "2025",
-    body: "Denim program tightens · hardware and print vendors locked in",
-  },
-  {
-    year: "2026",
-    body: "Collection 01 online · same-day dispatch on in-stock pieces where noted",
-  },
+const STORY_PARAGRAPHS = [
+  <>
+    <span className={styles.highlight}>BLCKOLE</span> was never created to fit
+    in. It was created for the ones who never did.
+  </>,
+  <>
+    In a world obsessed with perfection, we found beauty in the{" "}
+    <span className={styles.highlight}>unfinished</span>, the imperfect, and the
+    untold. BLCKOLE is built on the belief that every scar, every setback, every
+    detour, and every blank space carries a story worth wearing.
+  </>,
+  <>
+    The name represents more than a brand. It represents the{" "}
+    <span className={styles.highlight}>unknown spaces</span> we all carry within
+    us—the dreams we haven’t chased yet, the risks we’re afraid to take, the
+    versions of ourselves waiting to be discovered. What some see as emptiness,
+    we see as <span className={styles.highlight}>possibility</span>.
+  </>,
+  <>
+    Every piece we create is designed for the bold, the curious, the creators,
+    the outsiders, and the rule-breakers. We don’t follow trends. We build{" "}
+    <span className={styles.highlight}>expressions</span>. Through oversized
+    silhouettes, experimental details, and unapologetic designs, we create
+    clothing that feels like confidence you can wear.
+  </>,
+  <>
+    BLCKOLE is a reminder that you don’t have to have everything figured out.{" "}
+    <span className={styles.highlight}>Growth</span> happens in the gaps. Art is
+    born from uncertainty. Greatness begins where comfort ends.
+  </>,
+  <>We are not here to tell you who to be.</>,
+  <>
+    We are here to remind you that{" "}
+    <span className={styles.highlight}>becoming</span> is the most powerful part
+    of the journey.
+  </>,
+  <>Welcome to BLCKOLE.</>,
+  <>
+    Wear your story.{" "}
+    <span className={styles.highlight}>Create your own universe.</span>
+  </>,
 ];
 
 export default async function StoryPage() {
-  const [content, storySections, timelineItems, footerContent] =
-    await Promise.all([
-      getStoryPageContent().catch(() => undefined),
-      getStorySections().catch(() => []),
-      getTimelineItems().catch(() => []),
-      getFooterContent().catch(() => undefined),
-    ]);
-  const displayChapters =
-    storySections.length > 0
-      ? storySections.map((section, index) => ({
-          ...section,
-          image: section.image?.url ?? CHAPTERS[index]?.image ?? "/Story_2.png",
-          imageAlt:
-            section.imageAlt ??
-            CHAPTERS[index]?.imageAlt ??
-            `${section.label} story image`,
-        }))
-      : CHAPTERS;
-  const displayTimeline =
-    timelineItems.length > 0
-      ? timelineItems
-      : TIMELINE.map((item, index) => ({ ...item, sortOrder: index }));
+  const footerContent = await getFooterContent().catch(() => undefined);
+  const [introParagraph, ...bodyParagraphs] = STORY_PARAGRAPHS;
 
   return (
     <>
       <main className={styles.page}>
-        <div className={styles.layout}>
-          <StorySidebar
-            sections={storySections.length > 0 ? storySections : undefined}
-          />
-
-          <div className={styles.main}>
-            {/* ── Hero ────────────────────────────────────────────── */}
-            <section id="intro" className={styles.hero}>
-              <div className={styles.heroText}>
-                <p className={styles.eyebrow}>{content?.eyebrow ?? "Story"}</p>
-                <h1 className={styles.headline}>
-                  {content?.title ? (
-                    content.title
-                  ) : (
-                    <>
-                      You always
-                      <br />
-                      find your way back.
-                    </>
-                  )}
-                </h1>
-                <p className={styles.intro}>
-                  {content?.intro ??
-                    "That line started as a note on a scrap of pattern paper — not a slogan meeting. It is the rule we cut to: if the garment does not feel inevitable when you put it on, we do not ship it."}
-                </p>
-              </div>
-
-              <div className={styles.heroVisual}>
-                <Image
-                  src={content?.heroImage?.url ?? "/Story_1.png"}
-                  alt={
-                    content?.heroImageAlt ??
-                    "BLCKHOLE figure in a heavyweight leather coat"
-                  }
-                  width={1086}
-                  height={1448}
-                  priority
-                  sizes="(max-width: 860px) 80vw, 420px"
-                  className={styles.heroImage}
-                />
-                <aside className={styles.founderNote} aria-label="Founder note">
-                  <p className={styles.founderEyebrow}>
-                    {content?.founderEyebrow ?? "Founder note"}
-                  </p>
-                  <p className={styles.founderQuote}>
-                    {content?.founderQuote ??
-                      "BLCKHOLE exists because we wanted clothes with weight — not just in fabric, but in intent."}
-                  </p>
-                  <p className={styles.founderSign}>
-                    {content?.founderSign ?? "— A."}
-                  </p>
-                </aside>
-              </div>
-            </section>
-
-            {/* ── Chapters ────────────────────────────────────────── */}
-            <section className={styles.chapters} aria-label="Story chapters">
-              {displayChapters.map((c) => (
-                <article key={c.id} id={c.id} className={styles.chapter}>
-                  <header className={styles.chapterHead}>
-                    <span className={styles.chapterNum}>{c.num}.</span>
-                    <h2 className={styles.chapterLabel}>{c.label}</h2>
-                  </header>
-                  <div className={styles.chapterBodyWrap}>
-                    <p className={styles.chapterBody}>{c.body}</p>
-                    <div className={styles.chapterThumb}>
-                      <Image
-                        src={c.image}
-                        alt={c.imageAlt}
-                        width={1448}
-                        height={1086}
-                        sizes="(max-width: 860px) 240px, 220px"
-                        className={styles.chapterImage}
-                      />
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </section>
-
-            {/* ── Timeline (horizontal) ───────────────────────────── */}
-            <section
-              id="timeline"
-              className={styles.timeline}
-              aria-label="Our evolution"
-            >
-              <p className={styles.timelineEyebrow}>
-                {content?.timelineEyebrow ?? "Our evolution"}
-              </p>
-              <div className={styles.timelineRail} aria-hidden="true" />
-              <ol className={styles.timelineList}>
-                {displayTimeline.map((row) => (
-                  <li key={row.year} className={styles.timelineCell}>
-                    <span className={styles.timelineDot} aria-hidden="true" />
-                    <span className={styles.timelineYear}>{row.year}</span>
-                    <span className={styles.timelineBody}>{row.body}</span>
-                  </li>
-                ))}
-              </ol>
-            </section>
-
-            {/* ── Bottom strip ────────────────────────────────────── */}
-            <div className={styles.bottomStrip} aria-hidden="true">
-              <span>{content?.bottomLeft ?? "BLCKHOLE — EST. 2026"}</span>
-              <span className={styles.bottomCenter}>
-                {content?.bottomCenter ?? "NOT TRENDING. JUST TRUE."}
-              </span>
-              <span>{content?.bottomRight ?? "© BLCKHOLE STUDIO"}</span>
+        <section className={styles.storySection} aria-labelledby="story-title">
+          <div className={styles.heroGrid}>
+            <div className={styles.heroCopy}>
+              <h1 id="story-title" className={styles.headline}>
+                Our Story
+              </h1>
+              <p className={styles.intro}>{introParagraph}</p>
             </div>
           </div>
-        </div>
+
+          <div className={styles.storyBody}>
+            {bodyParagraphs.map((paragraph, index) => (
+              <p
+                key={index}
+                className={`${styles.storyParagraph} ${
+                  index >= bodyParagraphs.length - 2 ? styles.closingLine : ""
+                }`}
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </section>
       </main>
       <Footer content={footerContent} />
     </>

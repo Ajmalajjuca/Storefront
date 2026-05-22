@@ -71,7 +71,6 @@ async function BrowserShell({ children }: { children: ReactNode }) {
       <HomeScene
         products={products}
         recommendationsMap={recommendationsMap}
-        featuredProducts={featuredProducts}
         content={homeContent}
         serviceBarItems={serviceBarItems}
         whyChooseItems={whyChooseItems}

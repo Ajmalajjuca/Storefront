@@ -5,7 +5,6 @@ import { Manifesto } from "components/manifesto";
 import { Newsletter } from "components/newsletter";
 import { PressQuote } from "components/press-quote";
 import { Principles } from "components/principles";
-import { ProductRail } from "components/product-rail";
 import { ScrollStage } from "components/scroll-stage";
 import { TrustBar } from "components/trust-bar";
 import type {
@@ -18,6 +17,7 @@ import type {
   ServiceBarItem,
   WhyChooseItem,
 } from "lib/shopify/types";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./index.module.css";
@@ -25,7 +25,6 @@ import styles from "./index.module.css";
 type Props = {
   products: Product[];
   recommendationsMap?: Record<string, Product[]>;
-  featuredProducts: Product[];
   content?: HomeContent;
   serviceBarItems?: ServiceBarItem[];
   whyChooseItems?: WhyChooseItem[];
@@ -34,6 +33,25 @@ type Props = {
   brandValueItems?: BrandValueItem[];
   footerContent?: FooterContent;
 };
+
+const categoryFeatures = [
+  {
+    title: "Topwear",
+    description: "Oversized silhouettes, graphic weight, and everyday edge.",
+    image: "/topwearr.png",
+    width: 1895,
+    height: 1271,
+    href: "/indexes/products",
+  },
+  {
+    title: "Bottom wear",
+    description: "Wide shapes, grounded volume, and utility-led attitude.",
+    image: "/bottomwear.png",
+    width: 928,
+    height: 1152,
+    href: "/indexes/products",
+  },
+];
 
 const brandValues: WhyChooseItem[] = [
   {
@@ -100,10 +118,40 @@ function WhyBlckole({ items }: { items?: WhyChooseItem[] }) {
   );
 }
 
+function CategoryShowcase() {
+  return (
+    <section
+      className={styles.categoryShowcase}
+      aria-label="Featured categories"
+    >
+      {categoryFeatures.map((category) => (
+        <article key={category.title} className={styles.categoryFeature}>
+          <a
+            href={category.href}
+            className={styles.categoryImageLink}
+            aria-label={`Shop ${category.title}`}
+          >
+            <Image
+              src={category.image}
+              alt={`${category.title} collection`}
+              width={category.width}
+              height={category.height}
+              sizes="100vw"
+              className={styles.categoryImage}
+            />
+          </a>
+          <div className={styles.categoryTitleTrack} aria-hidden="true">
+            <span className={styles.categoryTitle}>{category.title}</span>
+          </div>
+        </article>
+      ))}
+    </section>
+  );
+}
+
 export function HomeScene({
   products,
   recommendationsMap,
-  featuredProducts,
   content,
   serviceBarItems,
   whyChooseItems,
@@ -260,17 +308,7 @@ export function HomeScene({
       {!detailOpen && (
         <div className={styles.scrollableContent}>
           <TrustBar items={serviceBarItems} />
-          <ProductRail
-            eyebrow={content?.shopLabel ?? "Shop"}
-            title={content?.shopTitle ?? "In the studio now"}
-            description={
-              content?.shopDescription ??
-              "Tap a piece to pick size and colour — add to bag from the product page."
-            }
-            products={featuredProducts}
-            viewAllHref={content?.shopButtonLink ?? "/indexes/products"}
-            viewAllLabel={content?.shopButtonText ?? "Shop entire line"}
-          />
+          <CategoryShowcase />
           <PressQuote content={brandQuoteContent} />
           <WhyBlckole items={whyChooseItems} />
           <Newsletter />

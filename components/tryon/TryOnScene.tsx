@@ -73,6 +73,37 @@ function cloneSceneMaterials(scene: THREE.Object3D) {
   });
 }
 
+type AvatarPbrMaterial = THREE.Material & {
+  metalness?: number;
+  metalnessMap?: THREE.Texture | null;
+  roughness?: number;
+  roughnessMap?: THREE.Texture | null;
+  envMapIntensity?: number;
+  emissiveIntensity?: number;
+};
+
+function normalizeFemaleAvatarMaterials(scene: THREE.Object3D) {
+  scene.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return;
+    const materials = Array.isArray(object.material)
+      ? object.material
+      : [object.material];
+
+    for (const material of materials) {
+      const pbrMaterial = material as AvatarPbrMaterial;
+
+      if ("metalness" in pbrMaterial) pbrMaterial.metalness = 0;
+      if ("metalnessMap" in pbrMaterial) pbrMaterial.metalnessMap = null;
+      if ("roughness" in pbrMaterial) pbrMaterial.roughness = 0.82;
+      if ("roughnessMap" in pbrMaterial) pbrMaterial.roughnessMap = null;
+      if ("envMapIntensity" in pbrMaterial) pbrMaterial.envMapIntensity = 0.55;
+      if ("emissiveIntensity" in pbrMaterial) pbrMaterial.emissiveIntensity = 1;
+
+      material.needsUpdate = true;
+    }
+  });
+}
+
 function tintAvatar(scene: THREE.Object3D, tone: string) {
   const toneColor = new THREE.Color(tone);
 
@@ -162,8 +193,9 @@ function AvatarRoot({
   const avatarScene = useMemo(() => {
     const scene = cloneSkeleton(gltf.scene);
     cloneSceneMaterials(scene);
+    if (avatar === "female") normalizeFemaleAvatarMaterials(scene);
     return scene;
-  }, [gltf.scene]);
+  }, [avatar, gltf.scene]);
 
   const fitTransform = useMemo(() => {
     const bounds = new THREE.Box3().setFromObject(avatarScene);

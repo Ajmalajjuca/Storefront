@@ -8,10 +8,20 @@
 
 /* ── Left column (info) ────────────────────────────────────────── */
 .leftCol {
+  position: sticky;
+  top: 116rem;
   display: flex;
   flex-direction: column;
   gap: 22rem;
   min-width: 0;
+  max-height: calc(100svh - 140rem);
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.leftCol::-webkit-scrollbar {
+  display: none;
 }
 
 .category {
@@ -364,8 +374,30 @@
   min-width: 0;
 }
 
-.galleryGrid {
+.galleryStack {
   display: grid;
+  grid-template-columns: 1fr;
+  gap: 18rem;
+}
+
+.galleryFrame {
+  position: relative;
+  width: 100%;
+  min-height: min(78vh, 760rem);
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, #0c0c0c 0%, #050505 100%);
+  overflow: hidden;
+}
+
+.galleryImage {
+  object-fit: contain;
+  object-position: center;
+  padding: 4%;
+}
+
+.galleryGrid {
+  display: none;
   grid-template-columns: minmax(0, 1fr) 80rem;
   gap: 16rem;
   align-items: start;
@@ -481,12 +513,19 @@
     gap: 32rem;
   }
   .leftCol {
+    position: static;
+    max-height: none;
+    overflow: visible;
     order: 2;
   }
   .rightCol {
     order: 1;
   }
+  .galleryStack {
+    display: none;
+  }
   .galleryGrid {
+    display: grid;
     grid-template-columns: 1fr;
     gap: 12rem;
   }

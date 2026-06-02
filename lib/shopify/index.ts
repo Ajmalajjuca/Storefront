@@ -44,6 +44,7 @@ import {
   Collection,
   Connection,
   BrandQuoteContent,
+  BrandStatementContent,
   BrandValueItem,
   FooterContent,
   HomeContent,
@@ -494,6 +495,51 @@ const reshapeBrandValueItems = (
     .sort((a, b) => a.sortOrder - b.sortOrder);
 };
 
+const reshapeBrandStatementContent = (
+  metaobject: ShopifyMetaobject | null | undefined,
+): BrandStatementContent | undefined => {
+  if (!metaobject) return undefined;
+  const { fields } = metaobject;
+  const isActive = getMetaobjectFieldValue(fields, "is_active");
+
+  if (isActive && !["true", "1", "yes"].includes(isActive.toLowerCase())) {
+    return undefined;
+  }
+
+  return {
+    leftTitleLine1: getFirstMetaobjectFieldValue(fields, [
+      "left_title_line_1",
+      "left_title_line",
+      "title_line_1",
+      "heading_line_1",
+      "title",
+    ]),
+    leftTitleLine2: getFirstMetaobjectFieldValue(fields, [
+      "left_title_line_2",
+      "title_line_2",
+      "heading_line_2",
+      "subtitle",
+    ]),
+    badgeText: getFirstMetaobjectFieldValue(fields, [
+      "badge_text",
+      "badge",
+      "pill_text",
+    ]),
+    body: getFirstMetaobjectFieldValue(fields, [
+      "body",
+      "body_text",
+      "statement_text",
+      "description",
+      "right_body",
+    ]),
+    establishedText: getFirstMetaobjectFieldValue(fields, [
+      "established_text",
+      "meta_text",
+      "caption",
+    ]),
+  };
+};
+
 const reshapeFooterContent = (
   metaobject: ShopifyMetaobject | null | undefined,
 ): FooterContent | undefined => {
@@ -890,6 +936,23 @@ export async function getBrandValueItems(): Promise<BrandValueItem[]> {
   }
 
   return reshapeBrandValueItems(await getMetaobjects("brand_value"));
+}
+
+export async function getBrandStatementContent(): Promise<
+  BrandStatementContent | undefined
+> {
+  "use cache";
+  cacheTag(TAGS.metaobjects);
+  cacheLife("hours");
+
+  if (!endpoint) {
+    console.log("Skipping getBrandStatementContent - Shopify not configured");
+    return undefined;
+  }
+
+  return reshapeBrandStatementContent(
+    await getFirstMetaobject("brand_statement_section"),
+  );
 }
 
 export async function getFooterContent(): Promise<FooterContent | undefined> {

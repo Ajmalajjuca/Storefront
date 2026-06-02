@@ -396,9 +396,31 @@
   .currencySelectorWrap {
     display: none;
   }
-  .navLink,
-  .cartBtn {
+  .navLink {
     font-size: 10rem;
+  }
+  .cartBtn {
+    width: 42rem;
+    height: 42rem;
+    justify-content: flex-end;
+    gap: 0;
+    padding: 0;
+    font-size: 0;
+  }
+  .cartBtn::after {
+    display: none;
+  }
+  .cartBtn .navIcon {
+    width: 22rem;
+    height: 22rem;
+  }
+  .cartBtn .navCount {
+    position: absolute;
+    top: 6rem;
+    right: -4rem;
+    font-size: 9rem;
+    line-height: 1;
+    letter-spacing: 0;
   }
   .logoImg {
     height: 44rem;

@@ -346,6 +346,21 @@ export function ProductPageClient({ product }: Props) {
 
       {/* ── Right column (gallery) ───────────────────────────── */}
       <div className={styles.rightCol}>
+        <div className={styles.galleryStack} aria-label="Product gallery">
+          {galleryImages.map((img, i) => (
+            <figure key={img.url} className={styles.galleryFrame}>
+              <Image
+                src={img.url}
+                alt={img.altText ?? product.title}
+                fill
+                sizes="(max-width: 860px) 100vw, 50vw"
+                className={styles.galleryImage}
+                priority={i === 0}
+              />
+            </figure>
+          ))}
+        </div>
+
         <div className={styles.galleryGrid}>
           <div className={styles.mainImageWrap}>
             {activeImage ? (

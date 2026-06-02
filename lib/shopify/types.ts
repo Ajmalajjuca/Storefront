@@ -91,6 +91,14 @@ export type BrandValueItem = {
   sortOrder: number;
 };
 
+export type BrandStatementContent = {
+  leftTitleLine1?: string;
+  leftTitleLine2?: string;
+  badgeText?: string;
+  body?: string;
+  establishedText?: string;
+};
+
 export type FooterContent = {
   tagline?: string;
   copyright?: string;
@@ -228,6 +236,7 @@ export type ShopifyCollection = {
   handle: string;
   title: string;
   description: string;
+  image?: Image | null;
   seo: SEO;
   updatedAt: string;
 };

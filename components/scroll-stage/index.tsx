@@ -1,33 +1,18 @@
 "use client";
 
-import type { HomeContent, Product } from "lib/shopify/types";
-import React, { type CSSProperties, useRef, useState } from "react";
+import type { HomeContent } from "lib/shopify/types";
+import React, { type CSSProperties } from "react";
+import HeroImageSequence from "../HeroImageSequence";
 import styles from "./index.module.css";
 
 type Props = {
-  products: Product[];
-  recommendationsMap?: Record<string, Product[]>;
-  currentIndex: number;
-  detailOpen: boolean;
-  recsOpen: boolean;
-  paused?: boolean;
   content?: HomeContent;
-  onSelect: (
-    index: number,
-    opts?: { open?: boolean; userInitiated?: boolean },
-  ) => void;
-  onClose: () => void;
-  onToggleRecs: () => void;
 };
 
-const SWIPE_MIN_DISTANCE = 50;
-const SWIPE_MAX_DURATION = 600;
-
-const defaultHeroTitle = ["You always", "find your", "way back."];
+const defaultHeroTitle = ["You always", "find your way", "back"];
 const defaultHeroSubtitle = [
-  "The void has chosen.",
-  "Two remain.",
-  "This is the final pull.",
+  "Explore streetwear with sharp silhouettes, focused drops,",
+  "and pieces built to move from city nights to daily rituals.",
 ];
 
 const splitContentLines = (value: string | undefined, fallback: string[]) => {
@@ -39,7 +24,9 @@ const splitContentLines = (value: string | undefined, fallback: string[]) => {
   return lines.length > 0 ? lines : fallback;
 };
 
-function HeroLeftContent({ content }: { content?: HomeContent }) {
+// Removed HeroBackground component since it is replaced by HeroImageSequence
+
+function HeroCopy({ content }: { content?: HomeContent }) {
   const titleLines = splitContentLines(content?.heroTitle, defaultHeroTitle);
   const subtitleLines = splitContentLines(
     content?.heroSubtitle,
@@ -49,7 +36,7 @@ function HeroLeftContent({ content }: { content?: HomeContent }) {
   return (
     <section className={styles.textContent} aria-labelledby="hero-title">
       <p className={styles.heroEyebrow}>
-        {content?.heroEyebrow ?? "You are being pulled in."}
+        {content?.heroEyebrow ?? "You are being pulled in"}
       </p>
       <h1 id="hero-title" className={styles.heroHeadline}>
         {titleLines.map((line, index) => (
@@ -61,70 +48,17 @@ function HeroLeftContent({ content }: { content?: HomeContent }) {
           <span key={`${line}-${index}`}>{line}</span>
         ))}
       </p>
-      {/* <a href="/story" className={styles.trailerLink}>
-        <span className={styles.trailerIcon} aria-hidden="true" />
-        Watch trailer
-      </a> */}
     </section>
   );
 }
 
-function HeroRightActions({
-  content,
-}: {
-  content?: HomeContent;
-  onSelectAvatar: () => void;
-}) {
-  return (
-    <div className={styles.actionStack} data-no-swipe>
-      <a
-        href={content?.primaryButtonLink ?? "/indexes/products"}
-        className={styles.secondaryAction}
-      >
-        <span>{content?.primaryButtonText ?? "Shop now"}</span>
-      </a>
-      <a
-        href={content?.secondaryButtonLink ?? "/try-on"}
-        className={styles.secondaryAction}
-      >
-        {content?.secondaryButtonText ?? "Select avatar"}
-      </a>
-      <a
-        href={content?.thirdButtonLink ?? "/indexes/products"}
-        className={styles.secondaryAction}
-      >
-        {content?.thirdButtonText ?? "Explore catalog"}
-      </a>
-    </div>
-  );
+function HeroCharacters() {
+  return <div className={styles.heroCharacters} aria-hidden />;
 }
 
-function HeroBottomBar({
-  soundOn,
-  onToggleSound,
-  scrollText,
-}: {
-  soundOn: boolean;
-  onToggleSound: () => void;
-  scrollText?: string;
-}) {
+function ScrollIndicator({ scrollText }: { scrollText?: string }) {
   return (
     <div className={styles.landingFooter} data-no-swipe>
-      <button
-        type="button"
-        className={styles.soundStatus}
-        aria-pressed={soundOn}
-        onClick={onToggleSound}
-      >
-        {/* <span>Sound: {soundOn ? "on" : "off"}</span>
-        <span className={styles.soundBars}>
-          <span />
-          <span />
-          <span />
-          <span />
-        </span> */}
-      </button>
-
       <div className={styles.scrollCue} aria-hidden="true">
         <span className={styles.mouseCue}>
           <span />
@@ -135,66 +69,7 @@ function HeroBottomBar({
   );
 }
 
-// function DetailCharacter({
-//   layers,
-//   paused,
-//   onModelClick,
-// }: {
-//   layers: LayerEntry[];
-//   paused: boolean;
-//   onModelClick: () => void;
-// }) {
-//   return (
-//     <div className={styles.mainCharacterWrapper}>
-//       <div className={styles.floorGlow} aria-hidden="true" />
-//       <div className={styles.mainCharacter}>
-//         {layers.map((entry, i, arr) => {
-//           const isLatest = i === arr.length - 1;
-//           const cls = isLatest
-//             ? entry.dir === -1
-//               ? styles.charLayerInLeft
-//               : entry.dir === 1
-//                 ? styles.charLayerInRight
-//                 : styles.charLayerInitial
-//             : entry.dir === -1
-//               ? styles.charLayerOutRight
-//               : styles.charLayerOutLeft;
-//           return (
-//             <div
-//               key={entry.product.id}
-//               className={`${styles.charLayer} ${cls}`}
-//             >
-//               <RotatingFigure
-//                 product={entry.product}
-//                 listenToGlobalFrame={isLatest}
-//                 priority={true}
-//                 paused={paused}
-//                 onClick={isLatest ? onModelClick : undefined}
-//               />
-//             </div>
-//           );
-//         })}
-//       </div>
-//     </div>
-//   );
-// }
-
-export const ScrollStage = React.memo(function ScrollStage({
-  products,
-  recommendationsMap,
-  currentIndex,
-  detailOpen,
-  recsOpen,
-  paused = false,
-  content,
-  onSelect,
-  onClose,
-  onToggleRecs,
-}: Props) {
-  // Swipe navigation (pointer-based, both modes).
-  const stageRef = useRef<HTMLElement>(null);
-
-  const [soundOn, setSoundOn] = useState(true);
+export const ScrollStage = React.memo(function ScrollStage({ content }: Props) {
   const stageStyle = content?.heroImage?.url
     ? ({
         "--hero-image": `url("${content.heroImage.url}")`,
@@ -202,34 +77,25 @@ export const ScrollStage = React.memo(function ScrollStage({
     : undefined;
 
   return (
-    <section
-      ref={stageRef}
-      className={styles.stage}
-      style={stageStyle}
-      aria-label="BLCKOLE entry campaign"
-      data-detail-open={detailOpen ? "true" : "false"}
-      data-recs-open={recsOpen ? "true" : "false"}
+    <HeroImageSequence
+      frameCount={192}
+      framePath="/hero-sequence/ezgif-frame-"
+      frameExtension="webp"
+      fallbackImage="/hero-sequence/ezgif-frame-001.webp"
     >
-      <div className={styles.leftPanel}>
-        <HeroLeftContent content={content} />
-      </div>
+      <section
+        className={styles.stage}
+        style={{ ...stageStyle, background: "transparent", height: "100%" }}
+        aria-label="BLCKOLE entry campaign"
+      >
+        <div className={styles.leftPanel}>
+          <HeroCopy content={content} />
+        </div>
 
-      <div className={styles.rightPanel}>
-        {!detailOpen && (
-          <HeroRightActions
-            content={content}
-            onSelectAvatar={() => {
-              onSelect(currentIndex, { open: true, userInitiated: true });
-            }}
-          />
-        )}
-      </div>
+        <HeroCharacters />
 
-      <HeroBottomBar
-        soundOn={soundOn}
-        scrollText={content?.scrollText}
-        onToggleSound={() => setSoundOn((v) => !v)}
-      />
-    </section>
+        {/* <ScrollIndicator scrollText={content?.scrollText} /> */}
+      </section>
+    </HeroImageSequence>
   );
 });

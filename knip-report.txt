@@ -7,12 +7,6 @@ components/look-info/index.module.css
 components/look-info/index.tsx             
 components/rotating-figure/index.module.css
 components/rotating-figure/index.tsx       
-components/tryon/AvatarSelector.tsx        
-components/tryon/AvatarStage.tsx           
-components/tryon/ExperienceCanvas.tsx      
-components/tryon/GarmentLayer.tsx          
-components/tryon/LookSummary.tsx           
-components/tryon/ProductRail.tsx           
 lib/video-preload.ts                       
 url.js                                     
 Unused dependencies (4)
@@ -50,4 +44,3 @@ ProductOption                type  lib/shopify/types.ts:103:13
 SEO                          type  lib/shopify/types.ts:120:13
 ProductRecommendationIntent  type  lib/shopify/types.ts:313:13
 ShopifyCustomerUserError     type  lib/shopify/types.ts:357:13
-TryOnVariant                 type  types/tryon.ts:17:13       

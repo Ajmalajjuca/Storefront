@@ -166,10 +166,9 @@
   right: 0;
   bottom: clamp(24rem, 3.6vh, 42rem);
   z-index: 3;
-  display: grid;
-  grid-template-columns: minmax(250rem, 1fr) auto minmax(250rem, 1fr);
+  display: flex;
   align-items: center;
-  gap: 26rem;
+  justify-content: center;
   padding: 0 clamp(46rem, 4.2vw, 68rem);
   color: #ffffff;
 }
@@ -187,7 +186,6 @@
 }
 
 .scrollCue {
-  justify-self: center;
   flex-direction: column;
   gap: 12rem;
   color: rgba(255, 255, 255, 0.66);

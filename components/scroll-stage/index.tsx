@@ -1,18 +1,12 @@
 "use client";
 
 import type { HomeContent } from "lib/shopify/types";
-import React, { type CSSProperties, useRef, useState } from "react";
+import React, { type CSSProperties } from "react";
 import styles from "./index.module.css";
 
 type Props = {
-  detailOpen: boolean;
-  recsOpen: boolean;
-  paused?: boolean;
   content?: HomeContent;
 };
-
-const SWIPE_MIN_DISTANCE = 50;
-const SWIPE_MAX_DURATION = 600;
 
 const defaultHeroTitle = ["You always", "find your way", "back"];
 const defaultHeroSubtitle = [
@@ -55,10 +49,6 @@ function HeroCopy({ content }: { content?: HomeContent }) {
           <span key={`${line}-${index}`}>{line}</span>
         ))}
       </p>
-      {/* <a href="/story" className={styles.trailerLink}>
-        <span className={styles.trailerIcon} aria-hidden="true" />
-        Watch trailer
-      </a> */}
     </section>
   );
 }
@@ -67,32 +57,9 @@ function HeroCharacters() {
   return <div className={styles.heroCharacters} aria-hidden />;
 }
 
-function ScrollIndicator({
-  soundOn,
-  onToggleSound,
-  scrollText,
-}: {
-  soundOn: boolean;
-  onToggleSound: () => void;
-  scrollText?: string;
-}) {
+function ScrollIndicator({ scrollText }: { scrollText?: string }) {
   return (
     <div className={styles.landingFooter} data-no-swipe>
-      <button
-        type="button"
-        className={styles.soundStatus}
-        aria-pressed={soundOn}
-        onClick={onToggleSound}
-      >
-        {/* <span>Sound: {soundOn ? "on" : "off"}</span>
-        <span className={styles.soundBars}>
-          <span />
-          <span />
-          <span />
-          <span />
-        </span> */}
-      </button>
-
       <div className={styles.scrollCue} aria-hidden="true">
         <span className={styles.mouseCue}>
           <span />
@@ -103,60 +70,7 @@ function ScrollIndicator({
   );
 }
 
-// function DetailCharacter({
-//   layers,
-//   paused,
-//   onModelClick,
-// }: {
-//   layers: LayerEntry[];
-//   paused: boolean;
-//   onModelClick: () => void;
-// }) {
-//   return (
-//     <div className={styles.mainCharacterWrapper}>
-//       <div className={styles.floorGlow} aria-hidden="true" />
-//       <div className={styles.mainCharacter}>
-//         {layers.map((entry, i, arr) => {
-//           const isLatest = i === arr.length - 1;
-//           const cls = isLatest
-//             ? entry.dir === -1
-//               ? styles.charLayerInLeft
-//               : entry.dir === 1
-//                 ? styles.charLayerInRight
-//                 : styles.charLayerInitial
-//             : entry.dir === -1
-//               ? styles.charLayerOutRight
-//               : styles.charLayerOutLeft;
-//           return (
-//             <div
-//               key={entry.product.id}
-//               className={`${styles.charLayer} ${cls}`}
-//             >
-//               <RotatingFigure
-//                 product={entry.product}
-//                 listenToGlobalFrame={isLatest}
-//                 priority={true}
-//                 paused={paused}
-//                 onClick={isLatest ? onModelClick : undefined}
-//               />
-//             </div>
-//           );
-//         })}
-//       </div>
-//     </div>
-//   );
-// }
-
-export const ScrollStage = React.memo(function ScrollStage({
-  detailOpen,
-  recsOpen,
-  paused = false,
-  content,
-}: Props) {
-  // Swipe navigation (pointer-based, both modes).
-  const stageRef = useRef<HTMLElement>(null);
-
-  const [soundOn, setSoundOn] = useState(true);
+export const ScrollStage = React.memo(function ScrollStage({ content }: Props) {
   const stageStyle = content?.heroImage?.url
     ? ({
         "--hero-image": `url("${content.heroImage.url}")`,
@@ -165,12 +79,9 @@ export const ScrollStage = React.memo(function ScrollStage({
 
   return (
     <section
-      ref={stageRef}
       className={styles.stage}
       style={stageStyle}
       aria-label="BLCKOLE entry campaign"
-      data-detail-open={detailOpen ? "true" : "false"}
-      data-recs-open={recsOpen ? "true" : "false"}
     >
       <div className={styles.leftPanel}>
         <HeroCopy content={content} />
@@ -179,11 +90,7 @@ export const ScrollStage = React.memo(function ScrollStage({
       <HeroBackground style={stageStyle} />
       <HeroCharacters />
 
-      <ScrollIndicator
-        soundOn={soundOn}
-        scrollText={content?.scrollText}
-        onToggleSound={() => setSoundOn((v) => !v)}
-      />
+      <ScrollIndicator scrollText={content?.scrollText} />
     </section>
   );
 });

@@ -1,26 +1,17 @@
 import { HomeScene } from "components/home-scene";
-import { getSelectedCountryCode } from "lib/currency-server";
 import {
   getBrandQuoteContent,
   getBrandStatementContent,
   getBrandValueItems,
-  getCollectionProducts,
   getFooterContent,
   getHomeContent,
-  getProductRecommendations,
-  getProducts,
   getServiceBarItems,
   getWhyChooseItems,
 } from "lib/shopify";
-import type { Product } from "lib/shopify/types";
 import { Suspense, type ReactNode } from "react";
 
 async function BrowserShell({ children }: { children: ReactNode }) {
-  const countryCode = await getSelectedCountryCode();
-
   const [
-    featuredCollection,
-    featuredProducts,
     homeContent,
     serviceBarItems,
     whyChooseItems,
@@ -29,11 +20,6 @@ async function BrowserShell({ children }: { children: ReactNode }) {
     brandValueItems,
     footerContent,
   ] = await Promise.all([
-    getCollectionProducts({
-      collection: "hidden-homepage-featured-items",
-      countryCode,
-    }).catch(() => []),
-    getProducts({ countryCode }).catch(() => []),
     getHomeContent().catch(() => undefined),
     getServiceBarItems().catch(() => []),
     getWhyChooseItems().catch(() => []),
@@ -42,19 +28,6 @@ async function BrowserShell({ children }: { children: ReactNode }) {
     getBrandValueItems().catch(() => []),
     getFooterContent().catch(() => undefined),
   ]);
-
-  const products =
-    featuredCollection.length > 0 ? featuredCollection : featuredProducts;
-
-  const recommendationsMap: Record<string, Product[]> = {};
-  const recommendationResults = await Promise.all(
-    products.map((p) =>
-      getProductRecommendations(p.id, "RELATED", countryCode).catch(() => []),
-    ),
-  );
-  products.forEach((p, i) => {
-    recommendationsMap[p.id] = recommendationResults[i] ?? [];
-  });
 
   const heroImageUrl = homeContent?.heroImage?.url;
 
@@ -69,8 +42,6 @@ async function BrowserShell({ children }: { children: ReactNode }) {
         />
       )}
       <HomeScene
-        products={products}
-        recommendationsMap={recommendationsMap}
         content={homeContent}
         serviceBarItems={serviceBarItems}
         whyChooseItems={whyChooseItems}

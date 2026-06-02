@@ -14,11 +14,8 @@ export function PageTransition({ children }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Track the previous pathname so we only fire the fade on actual route
-  // changes — not on shallow `history.replaceState` calls (e.g. the home
-  // auto-cycle, which silently rotates /looks/<handle>). The previous
-  // implementation also re-keyed the wrapper div on pathname which caused
-  // the entire subtree (and every WebGL context underneath) to unmount
-  // and remount on every cycle.
+  // changes. The previous implementation also re-keyed the wrapper div on
+  // pathname, which caused the entire subtree to unmount and remount.
   const prevPathRef = useRef<string | null>(null);
 
   useGSAP(
@@ -27,16 +24,6 @@ export function PageTransition({ children }: Props) {
       prevPathRef.current = pathname;
       // Skip the very first paint (no previous path) and any same-path call.
       if (prev === null || prev === pathname) return;
-      // Skip /looks/<x> ↔ /looks/<y> transitions — these are character
-      // swaps within the same scene, handled by ScrollStage's crossfade.
-      const isLooks = (p: string | null) => !!p && p.startsWith("/looks/");
-      const isHome = (p: string | null) => p === "/";
-      if (
-        (isLooks(prev) || isHome(prev)) &&
-        (isLooks(pathname) || isHome(pathname))
-      ) {
-        return;
-      }
       gsap.fromTo(
         containerRef.current,
         { opacity: 0 },

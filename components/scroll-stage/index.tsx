@@ -2,6 +2,7 @@
 
 import type { HomeContent } from "lib/shopify/types";
 import React, { type CSSProperties } from "react";
+import HeroImageSequence from "../HeroImageSequence";
 import styles from "./index.module.css";
 
 type Props = {
@@ -23,9 +24,7 @@ const splitContentLines = (value: string | undefined, fallback: string[]) => {
   return lines.length > 0 ? lines : fallback;
 };
 
-function HeroBackground({ style }: { style: CSSProperties | undefined }) {
-  return <div className={styles.heroBackground} style={style} aria-hidden />;
-}
+// Removed HeroBackground component since it is replaced by HeroImageSequence
 
 function HeroCopy({ content }: { content?: HomeContent }) {
   const titleLines = splitContentLines(content?.heroTitle, defaultHeroTitle);
@@ -78,19 +77,25 @@ export const ScrollStage = React.memo(function ScrollStage({ content }: Props) {
     : undefined;
 
   return (
-    <section
-      className={styles.stage}
-      style={stageStyle}
-      aria-label="BLCKOLE entry campaign"
+    <HeroImageSequence
+      frameCount={192}
+      framePath="/hero-sequence/ezgif-frame-"
+      frameExtension="webp"
+      fallbackImage="/hero-sequence/ezgif-frame-001.webp"
     >
-      <div className={styles.leftPanel}>
-        <HeroCopy content={content} />
-      </div>
+      <section
+        className={styles.stage}
+        style={{ ...stageStyle, background: "transparent", height: "100%" }}
+        aria-label="BLCKOLE entry campaign"
+      >
+        <div className={styles.leftPanel}>
+          <HeroCopy content={content} />
+        </div>
 
-      <HeroBackground style={stageStyle} />
-      <HeroCharacters />
+        <HeroCharacters />
 
-      <ScrollIndicator scrollText={content?.scrollText} />
-    </section>
+        <ScrollIndicator scrollText={content?.scrollText} />
+      </section>
+    </HeroImageSequence>
   );
 });

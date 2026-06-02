@@ -1,23 +1,14 @@
 "use client";
 
-import type { HomeContent, Product } from "lib/shopify/types";
+import type { HomeContent } from "lib/shopify/types";
 import React, { type CSSProperties, useRef, useState } from "react";
 import styles from "./index.module.css";
 
 type Props = {
-  products: Product[];
-  recommendationsMap?: Record<string, Product[]>;
-  currentIndex: number;
   detailOpen: boolean;
   recsOpen: boolean;
   paused?: boolean;
   content?: HomeContent;
-  onSelect: (
-    index: number,
-    opts?: { open?: boolean; userInitiated?: boolean },
-  ) => void;
-  onClose: () => void;
-  onToggleRecs: () => void;
 };
 
 const SWIPE_MIN_DISTANCE = 50;
@@ -25,8 +16,8 @@ const SWIPE_MAX_DURATION = 600;
 
 const defaultHeroTitle = ["You always", "find your way", "back"];
 const defaultHeroSubtitle = [
-  "Preview streetwear on a 3D avatar, switch styles",
-  "instantly, and choose your fit with confidence.",
+  "Explore streetwear with sharp silhouettes, focused drops,",
+  "and pieces built to move from city nights to daily rituals.",
 ];
 
 const splitContentLines = (value: string | undefined, fallback: string[]) => {
@@ -74,40 +65,6 @@ function HeroCopy({ content }: { content?: HomeContent }) {
 
 function HeroCharacters() {
   return <div className={styles.heroCharacters} aria-hidden />;
-}
-
-function HeroCTA({
-  content,
-}: {
-  content?: HomeContent;
-  onSelectAvatar: () => void;
-}) {
-  return (
-    <nav
-      className={styles.heroHeadline}
-      data-no-swipe
-      aria-label="Hero actions"
-    >
-      <a
-        href={content?.primaryButtonLink ?? "/indexes/products"}
-        className={styles.secondaryAction}
-      >
-        <span>{content?.primaryButtonText ?? "Shop now"}</span>
-      </a>
-      <a
-        href={content?.secondaryButtonLink ?? "/try-on"}
-        className={styles.secondaryAction}
-      >
-        {content?.secondaryButtonText ?? "Select avatar"}
-      </a>
-      <a
-        href={content?.thirdButtonLink ?? "/indexes/products"}
-        className={styles.secondaryAction}
-      >
-        {content?.thirdButtonText ?? "Explore catalog"}
-      </a>
-    </nav>
-  );
 }
 
 function ScrollIndicator({
@@ -191,16 +148,10 @@ function ScrollIndicator({
 // }
 
 export const ScrollStage = React.memo(function ScrollStage({
-  products,
-  recommendationsMap,
-  currentIndex,
   detailOpen,
   recsOpen,
   paused = false,
   content,
-  onSelect,
-  onClose,
-  onToggleRecs,
 }: Props) {
   // Swipe navigation (pointer-based, both modes).
   const stageRef = useRef<HTMLElement>(null);
@@ -227,17 +178,6 @@ export const ScrollStage = React.memo(function ScrollStage({
 
       <HeroBackground style={stageStyle} />
       <HeroCharacters />
-
-      {!detailOpen && (
-        <div className={styles.ctaPanel}>
-          <HeroCTA
-            content={content}
-            onSelectAvatar={() => {
-              onSelect(currentIndex, { open: true, userInitiated: true });
-            }}
-          />
-        </div>
-      )}
 
       <ScrollIndicator
         soundOn={soundOn}

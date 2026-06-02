@@ -76,10 +76,10 @@ const brandValues: WhyChooseItem[] = [
     sortOrder: 3,
   },
   {
-    title: "Personalized Virtual Try-On",
+    title: "Considered Styling",
     description:
-      "Preview the look on your selected avatar before you move from browse to bag.",
-    subtitle: "Try before checkout",
+      "Build a full look from focused drops and move from browse to bag with confidence.",
+    subtitle: "Intentional pairings",
     sortOrder: 4,
   },
 ];
@@ -292,15 +292,9 @@ export function HomeScene({
         data-detail-open={detailOpen ? "true" : "false"}
       >
         <ScrollStage
-          products={products}
-          recommendationsMap={recommendationsMap}
-          currentIndex={currentIndex}
           detailOpen={detailOpen}
           recsOpen={recsOpen}
           paused={cartOpen}
-          onSelect={handleSelect}
-          onClose={handleClose}
-          onToggleRecs={handleToggleRecs}
           content={content}
         />
       </div>
@@ -308,7 +302,7 @@ export function HomeScene({
       {!detailOpen && (
         <div className={styles.scrollableContent}>
           <TrustBar items={serviceBarItems} />
-          <CategoryShowcase />
+          {/* <CategoryShowcase /> */}
           <PressQuote content={brandQuoteContent} />
           <WhyBlckole items={whyChooseItems} />
           <Newsletter />

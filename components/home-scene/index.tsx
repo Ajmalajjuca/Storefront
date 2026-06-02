@@ -1,6 +1,10 @@
 "use client";
 
 import { Footer } from "components/footer";
+import {
+  CollectionShowcase,
+  type CollectionShowcaseItem,
+} from "components/collection-showcase";
 import { Manifesto } from "components/manifesto";
 import { Newsletter } from "components/newsletter";
 import { PressQuote } from "components/press-quote";
@@ -20,6 +24,7 @@ import styles from "./index.module.css";
 
 type Props = {
   content?: HomeContent;
+  showcaseCollections?: CollectionShowcaseItem[];
   serviceBarItems?: ServiceBarItem[];
   whyChooseItems?: WhyChooseItem[];
   brandQuoteContent?: BrandQuoteContent;
@@ -95,6 +100,7 @@ function WhyBlckole({ items }: { items?: WhyChooseItem[] }) {
 
 export function HomeScene({
   content,
+  showcaseCollections,
   serviceBarItems,
   whyChooseItems,
   brandQuoteContent,
@@ -110,6 +116,7 @@ export function HomeScene({
 
       <div className={styles.scrollableContent}>
         <TrustBar items={serviceBarItems} />
+        <CollectionShowcase collections={showcaseCollections} />
         <PressQuote content={brandQuoteContent} />
         <WhyBlckole items={whyChooseItems} />
         <Newsletter />

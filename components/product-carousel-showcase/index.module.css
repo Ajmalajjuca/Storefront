@@ -1,7 +1,6 @@
 .section {
   position: relative;
   padding: clamp(78rem, 8vw, 118rem) clamp(24rem, 3vw, 42rem);
-  border-bottom: 1rem solid var(--color-divider);
   background:
     radial-gradient(
       ellipse at 18% 12%,
@@ -13,17 +12,16 @@
 }
 
 .frame {
-  --card-width: clamp(190rem, 17.6vw, 268rem);
-  --slot-space: clamp(132rem, 13.4vw, 188rem);
+  --card-width: clamp(220rem, 16vw, 320rem);
+  --card-height: clamp(420rem, 42vw, 560rem);
+  --active-card-scale: 1.12;
+  --card-gap: clamp(24rem, 3vw, 54rem);
   position: relative;
-  min-height: clamp(690rem, 82vh, 790rem);
+  min-height: clamp(760rem, 90vh, 880rem);
   overflow: hidden;
-  border: 1rem solid color-mix(in srgb, var(--color-divider), #ffffff 10%);
   border-radius: 8rem;
   background: var(--color-off-white);
-  box-shadow:
-    0 36rem 90rem rgba(0, 0, 0, 0.54),
-    inset 0 0 0 1rem rgba(255, 255, 255, 0.03);
+  box-shadow: 0 36rem 90rem rgba(0, 0, 0, 0.54);
   isolation: isolate;
 }
 
@@ -39,20 +37,20 @@
   background:
     radial-gradient(
       ellipse at 50% 54%,
-      rgba(214, 165, 70, 0.38) 0%,
-      rgba(137, 24, 36, 0.2) 18%,
+      rgba(184, 31, 48, 0.24) 0%,
+      rgba(137, 24, 36, 0.16) 20%,
       rgba(0, 0, 0, 0) 47%
     ),
     radial-gradient(
       ellipse at 42% 60%,
-      rgba(214, 165, 70, 0.18),
+      rgba(184, 31, 48, 0.16),
       transparent 36%
     ),
     var(--product-carousel-bg),
     linear-gradient(180deg, #0b0b0b 0%, #020202 100%);
-  background-position: center;
+  background-position: center center;
   background-size: cover;
-  filter: saturate(0.9) contrast(1.1) brightness(0.68);
+  filter: saturate(1) contrast(1.06) brightness(0.92);
   transform: scale(1.02);
 }
 
@@ -61,21 +59,21 @@
   background:
     radial-gradient(
       ellipse at 50% 58%,
-      rgba(215, 179, 95, 0.16),
+      rgba(184, 31, 48, 0.12),
       transparent 28%
     ),
     linear-gradient(
       180deg,
-      rgba(0, 0, 0, 0.86) 0%,
-      rgba(0, 0, 0, 0.42) 34%,
-      rgba(0, 0, 0, 0.18) 52%,
-      rgba(0, 0, 0, 0.88) 100%
+      rgba(0, 0, 0, 0.52) 0%,
+      rgba(0, 0, 0, 0.24) 34%,
+      rgba(0, 0, 0, 0.08) 55%,
+      rgba(0, 0, 0, 0.52) 100%
     ),
     linear-gradient(
       90deg,
-      rgba(0, 0, 0, 0.84) 0%,
-      rgba(0, 0, 0, 0.16) 44%,
-      rgba(0, 0, 0, 0.82) 100%
+      rgba(0, 0, 0, 0.54) 0%,
+      rgba(0, 0, 0, 0.08) 44%,
+      rgba(0, 0, 0, 0.52) 100%
     );
   pointer-events: none;
 }
@@ -83,13 +81,15 @@
 .content {
   z-index: 2;
   display: grid;
-  grid-template-rows: auto minmax(390rem, 1fr);
-  gap: clamp(16rem, 2vw, 28rem);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(28rem, 3.2vw, 48rem);
   min-width: 0;
   padding: clamp(42rem, 4.8vw, 62rem);
 }
 
 .header {
+  position: relative;
+  z-index: 6;
   max-width: min(1040rem, 92vw);
   margin: 0 auto;
   text-align: center;
@@ -102,7 +102,7 @@
   font-weight: 800;
   line-height: 1;
   letter-spacing: 0.26em;
-  color: #d7b35f;
+  color: var(--color-accent-bright);
   text-transform: uppercase;
 }
 
@@ -113,119 +113,126 @@
   font-weight: 800;
   line-height: 0.9;
   letter-spacing: 0;
-  color: #d7b35f;
+  color: var(--color-off-black);
   text-transform: uppercase;
   text-shadow:
-    0 0 22rem rgba(215, 179, 95, 0.28),
+    0 0 24rem rgba(184, 31, 48, 0.34),
     0 14rem 42rem rgba(0, 0, 0, 0.94);
 }
 
 .subtitle {
-  margin: 18rem 0 0;
+  position: relative;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 24rem 0 0;
+  padding: 10rem 20rem;
+  border-radius: 999rem;
+  background: rgba(0, 0, 0, 0.62);
   font-family: var(--font-family-sans);
-  font-size: 13rem;
-  font-weight: 400;
+  font-size: clamp(14rem, 1.2vw, 18rem);
+  font-weight: 700;
   line-height: 1.45;
   letter-spacing: 0;
-  color: rgba(255, 255, 255, 0.64);
+  color: #ffffff;
   text-transform: none;
+  text-shadow: 0 8rem 24rem rgba(0, 0, 0, 1);
 }
 
 .carousel {
   position: relative;
-  align-self: center;
+  display: flex;
+  align-self: stretch;
+  align-items: stretch;
   min-width: 0;
+  min-height: 0;
 }
 
 .viewport {
   position: relative;
-  min-height: clamp(390rem, 42vw, 500rem);
-  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
 }
 
 .track {
   position: absolute;
   inset: 0;
+  padding: 0 clamp(44rem, 5vw, 80rem);
 }
 
 .card {
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: var(--slot-left, 50%);
   display: block;
   width: var(--card-width);
-  height: clamp(270rem, 32vw, 396rem);
+  height: var(--card-height);
   overflow: hidden;
-  border: 1rem solid rgba(255, 255, 255, 0.16);
   border-radius: 8rem;
   background: rgba(5, 5, 5, 0.74);
   box-shadow: 0 22rem 54rem rgba(0, 0, 0, 0.58);
   color: var(--color-off-black);
   opacity: var(--card-opacity, 0);
   z-index: var(--card-z, 1);
-  transform: translate3d(
-      calc(-50% + (var(--slot) * var(--slot-space))),
-      var(--card-y, -42%),
-      0
-    )
-    scale(var(--card-scale, 0.5));
+  transform: translate3d(-50%, var(--card-y, -50%), 0)
+    scale(var(--card-scale, 0.78));
   transform-origin: center;
   transition:
+    left 680ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity var(--transition-base),
-    border-color var(--transition-base),
     box-shadow var(--transition-base),
-    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform 680ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .card:hover {
-  border-color: rgba(215, 179, 95, 0.46);
+  box-shadow:
+    0 0 34rem rgba(184, 31, 48, 0.2),
+    0 26rem 64rem rgba(0, 0, 0, 0.66);
 }
 
 .card:focus-visible {
-  outline: 2rem solid #d7b35f;
+  outline: 2rem solid var(--color-accent-bright);
   outline-offset: 4rem;
 }
 
 .near {
-  --card-opacity: 0.86;
-  --card-scale: 0.82;
-  --card-y: -38%;
+  --card-opacity: 0.82;
+  --card-scale: 0.9;
+  --card-y: calc(-50% + 20rem);
   --card-z: 3;
 }
 
 .middle {
-  --card-opacity: 0.58;
-  --card-scale: 0.66;
-  --card-y: -35%;
+  --card-opacity: 0.62;
+  --card-scale: 0.78;
+  --card-y: calc(-50% + 40rem);
   --card-z: 2;
 }
 
 .far {
-  --card-opacity: 0.34;
-  --card-scale: 0.52;
-  --card-y: -31%;
+  --card-opacity: 0.38;
+  --card-scale: 0.68;
+  --card-y: calc(-50% + 56rem);
   --card-z: 1;
-}
-
-.hidden {
-  --card-opacity: 0;
-  --card-scale: 0.44;
-  --card-y: -28%;
-  --card-z: 0;
-  visibility: hidden;
-  pointer-events: none;
 }
 
 .active {
   --card-opacity: 1;
-  --card-scale: 1.16;
-  --card-y: -45%;
+  --card-scale: var(--active-card-scale);
+  --card-y: -50%;
   --card-z: 5;
-  border-color: rgba(215, 179, 95, 0.76);
   box-shadow:
-    0 0 0 1rem rgba(215, 179, 95, 0.2),
-    0 0 44rem rgba(215, 179, 95, 0.22),
+    0 0 44rem rgba(184, 31, 48, 0.28),
     0 34rem 80rem rgba(0, 0, 0, 0.68);
+}
+
+.hidden {
+  --card-opacity: 0;
+  --card-scale: 0.52;
+  --card-y: calc(-50% + 72rem);
+  pointer-events: none;
 }
 
 .imageWrap,
@@ -255,7 +262,7 @@
 
 .card:hover .productImage,
 .active .productImage {
-  transform: scale(1.06);
+  transform: scale(1.025);
 }
 
 .imageFallback {
@@ -263,7 +270,7 @@
     linear-gradient(135deg, rgba(137, 24, 36, 0.34), transparent 42%),
     radial-gradient(
       ellipse at 50% 42%,
-      rgba(215, 179, 95, 0.18),
+      rgba(184, 31, 48, 0.16),
       transparent 36%
     ),
     #080808;
@@ -308,32 +315,42 @@
   justify-content: center;
   width: 44rem;
   height: 44rem;
-  border: 1rem solid rgba(255, 255, 255, 0.24);
+  border: 0;
   border-radius: 999rem;
-  background: rgba(0, 0, 0, 0.44);
+  background: rgba(0, 0, 0, 0.72);
   color: var(--color-off-black);
+  box-shadow:
+    0 0 0 1rem rgba(255, 255, 255, 0.1),
+    0 14rem 34rem rgba(0, 0, 0, 0.56);
   transform: translateY(-50%);
   transition:
-    border-color var(--transition-base),
     background var(--transition-base),
+    box-shadow var(--transition-base),
+    color var(--transition-base),
     transform var(--transition-base);
 }
 
 .arrowButton span {
   display: block;
   margin-top: -2rem;
-  font-size: 30rem;
+  font-size: 34rem;
+  font-weight: 700;
   line-height: 1;
+  color: #ffffff;
+  text-shadow: 0 0 16rem rgba(184, 31, 48, 0.55);
 }
 
 .arrowButton:hover {
-  border-color: rgba(215, 179, 95, 0.66);
-  background: rgba(137, 24, 36, 0.34);
+  background: rgba(184, 31, 48, 0.72);
+  box-shadow:
+    0 0 0 1rem rgba(255, 255, 255, 0.18),
+    0 0 28rem rgba(184, 31, 48, 0.36),
+    0 16rem 38rem rgba(0, 0, 0, 0.58);
   transform: translateY(-50%) scale(1.06);
 }
 
 .arrowButton:focus-visible {
-  outline: 2rem solid #d7b35f;
+  outline: 2rem solid var(--color-accent-bright);
   outline-offset: 4rem;
 }
 
@@ -351,14 +368,12 @@
   }
 
   .frame {
-    min-height: clamp(600rem, 80svh, 700rem);
-    border-right: 0;
-    border-left: 0;
+    min-height: clamp(680rem, 86svh, 780rem);
     border-radius: 0;
   }
 
   .content {
-    gap: 24rem;
+    gap: 32rem;
     padding: 34rem 0;
   }
 
@@ -373,12 +388,13 @@
   }
 
   .subtitle {
-    margin-top: 14rem;
-    font-size: 12rem;
+    margin-top: 18rem;
+    padding: 8rem 16rem;
+    font-size: 14rem;
   }
 
   .viewport {
-    min-height: clamp(310rem, 60vw, 390rem);
+    min-height: clamp(400rem, 74vw, 500rem);
     overflow-x: auto;
     overflow-y: visible;
     overscroll-behavior-x: contain;
@@ -393,7 +409,9 @@
   .track {
     position: static;
     display: grid;
-    grid-auto-columns: clamp(176rem, 58vw, 244rem);
+    grid-template-columns: none;
+    grid-auto-columns: clamp(220rem, 64vw, 300rem);
+    grid-auto-flow: column;
     gap: 14rem;
     padding: 24rem var(--grid-margin);
     transform: none;
@@ -404,7 +422,7 @@
     top: auto;
     left: auto;
     width: auto;
-    height: clamp(270rem, 78vw, 350rem);
+    height: clamp(380rem, 90vw, 480rem);
     opacity: 0.72;
     transform: scale(0.92);
     pointer-events: auto;
@@ -412,12 +430,14 @@
 
   .middle,
   .near,
-  .far,
-  .hidden {
-    visibility: visible;
+  .far {
     opacity: 0.72;
     transform: scale(0.92);
     pointer-events: auto;
+  }
+
+  .hidden {
+    display: none;
   }
 
   .active {
@@ -443,7 +463,7 @@
 
 @media (max-width: 520px) {
   .frame {
-    min-height: clamp(560rem, 78svh, 640rem);
+    min-height: clamp(650rem, 84svh, 720rem);
   }
 
   .eyebrow {
@@ -457,7 +477,7 @@
   }
 
   .viewport {
-    min-height: 318rem;
+    min-height: 400rem;
   }
 
   .track {
@@ -465,7 +485,7 @@
   }
 
   .card {
-    height: clamp(250rem, 86vw, 318rem);
+    height: clamp(310rem, 92vw, 380rem);
   }
 
   .cardInfo {

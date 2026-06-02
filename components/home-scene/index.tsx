@@ -126,6 +126,7 @@ export function HomeScene({
         <ProductCarouselShowcase
           products={carouselProducts}
           backgroundImage="/bg-carousel.png"
+          visibleProductCount={5}
         />
         <PressQuote content={brandQuoteContent} />
         <WhyBlckole items={whyChooseItems} />

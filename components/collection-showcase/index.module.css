@@ -1,8 +1,6 @@
 .section {
   position: relative;
   padding: clamp(78rem, 8vw, 120rem) clamp(24rem, 3vw, 42rem);
-  border-top: 1rem solid var(--color-divider);
-  border-bottom: 1rem solid var(--color-divider);
   background:
     radial-gradient(
       ellipse at 82% 10%,
@@ -17,12 +15,9 @@
   position: relative;
   min-height: clamp(720rem, 84vh, 860rem);
   overflow: hidden;
-  border: 1rem solid color-mix(in srgb, var(--color-divider), #ffffff 10%);
   border-radius: 8rem;
   background: var(--color-off-white);
-  box-shadow:
-    0 36rem 90rem rgba(0, 0, 0, 0.54),
-    inset 0 0 0 1rem rgba(255, 255, 255, 0.03);
+  box-shadow: 0 36rem 90rem rgba(0, 0, 0, 0.54);
   isolation: isolate;
 }
 
@@ -137,7 +132,7 @@
   min-width: 86rem;
   height: 38rem;
   padding: 0 18rem;
-  border: 1rem solid rgba(255, 255, 255, 0.34);
+  border: 0;
   border-radius: 0;
   background: rgba(0, 0, 0, 0.28);
   color: var(--color-off-black);
@@ -148,14 +143,12 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   transition:
-    border-color var(--transition-base),
     color var(--transition-base),
     background var(--transition-base),
     transform var(--transition-base);
 }
 
 .exploreLink:hover {
-  border-color: var(--color-accent-bright);
   background: rgba(184, 31, 48, 0.18);
   color: #ffffff;
   transform: translateY(-2rem);
@@ -178,7 +171,7 @@
   min-width: 0;
   height: clamp(210rem, 22vw, 270rem);
   overflow: hidden;
-  border: 1rem solid rgba(255, 255, 255, 0.16);
+  border: 0;
   border-radius: 8rem;
   background: rgba(5, 5, 5, 0.68);
   color: var(--color-off-black);
@@ -186,13 +179,11 @@
   box-shadow: 0 18rem 42rem rgba(0, 0, 0, 0.46);
   transform: translateY(0) scale(1);
   transition:
-    border-color var(--transition-base),
     box-shadow var(--transition-base),
     transform var(--transition-base);
 }
 
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.42);
   transform: translateY(-4rem) scale(1.012);
 }
 
@@ -202,9 +193,7 @@
 }
 
 .cardActive {
-  border-color: var(--color-accent-bright);
   box-shadow:
-    0 0 0 1rem rgba(184, 31, 48, 0.34),
     0 0 30rem rgba(184, 31, 48, 0.28),
     0 22rem 58rem rgba(0, 0, 0, 0.54);
   transform: translateY(-7rem) scale(1.018);
@@ -278,8 +267,6 @@
   .frame {
     min-height: clamp(560rem, 78svh, 660rem);
     border-radius: 0;
-    border-left: 0;
-    border-right: 0;
   }
 
   .content {

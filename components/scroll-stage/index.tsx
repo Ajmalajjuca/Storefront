@@ -94,7 +94,7 @@ export const ScrollStage = React.memo(function ScrollStage({ content }: Props) {
 
         <HeroCharacters />
 
-        <ScrollIndicator scrollText={content?.scrollText} />
+        {/* <ScrollIndicator scrollText={content?.scrollText} /> */}
       </section>
     </HeroImageSequence>
   );

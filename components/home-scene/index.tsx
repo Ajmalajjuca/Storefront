@@ -1,14 +1,18 @@
 "use client";
 
-import { Footer } from "components/footer";
 import {
   CollectionShowcase,
   type CollectionShowcaseItem,
 } from "components/collection-showcase";
+import { Footer } from "components/footer";
 import { Manifesto } from "components/manifesto";
 import { Newsletter } from "components/newsletter";
 import { PressQuote } from "components/press-quote";
 import { Principles } from "components/principles";
+import {
+  ProductCarouselShowcase,
+  type ProductCarouselShowcaseItem,
+} from "components/product-carousel-showcase";
 import { ScrollStage } from "components/scroll-stage";
 import { TrustBar } from "components/trust-bar";
 import type {
@@ -25,6 +29,7 @@ import styles from "./index.module.css";
 type Props = {
   content?: HomeContent;
   showcaseCollections?: CollectionShowcaseItem[];
+  carouselProducts?: ProductCarouselShowcaseItem[];
   serviceBarItems?: ServiceBarItem[];
   whyChooseItems?: WhyChooseItem[];
   brandQuoteContent?: BrandQuoteContent;
@@ -101,6 +106,7 @@ function WhyBlckole({ items }: { items?: WhyChooseItem[] }) {
 export function HomeScene({
   content,
   showcaseCollections,
+  carouselProducts,
   serviceBarItems,
   whyChooseItems,
   brandQuoteContent,
@@ -117,6 +123,10 @@ export function HomeScene({
       <div className={styles.scrollableContent}>
         <TrustBar items={serviceBarItems} />
         <CollectionShowcase collections={showcaseCollections} />
+        <ProductCarouselShowcase
+          products={carouselProducts}
+          backgroundImage="/bg-carousel.png"
+        />
         <PressQuote content={brandQuoteContent} />
         <WhyBlckole items={whyChooseItems} />
         <Newsletter />

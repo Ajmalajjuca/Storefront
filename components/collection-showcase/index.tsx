@@ -68,7 +68,6 @@ const fallbackCollections: CollectionShowcaseItem[] = [
 ];
 
 export function CollectionShowcase({ collections }: Props) {
-  console.log("CollectionShowcase render", { collections });
   const displayCollections =
     collections && collections.length > 0 ? collections : fallbackCollections;
 

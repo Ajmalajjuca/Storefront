@@ -88,22 +88,22 @@
 
 .eyebrow {
   margin: 0 0 18rem;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 10rem;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.14em;
   color: var(--color-accent-bright);
   text-transform: uppercase;
 }
 
 .title {
   margin: 0;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-display);
   font-size: clamp(44rem, 5.6vw, 88rem);
   font-weight: 500;
   line-height: 0.88;
-  letter-spacing: 0;
+  letter-spacing: -0.035em;
   color: var(--color-off-black);
   text-transform: uppercase;
   text-shadow: 0 24rem 60rem rgba(0, 0, 0, 0.62);
@@ -136,11 +136,11 @@
   border-radius: 0;
   background: rgba(0, 0, 0, 0.28);
   color: var(--color-off-black);
-  font-family: var(--font-family-serif);
-  font-size: 9rem;
-  font-weight: 800;
+  font-family: var(--font-family-sans);
+  font-size: 10rem;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   transition:
     color var(--transition-base),
@@ -240,21 +240,21 @@
 }
 
 .cardLabel {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 8rem;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.14em;
   color: var(--color-accent-bright);
   text-transform: uppercase;
 }
 
 .cardTitle {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: clamp(13rem, 1.1vw, 16rem);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: 0.02em;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: 0.04em;
   color: var(--color-off-black);
   text-transform: uppercase;
 }

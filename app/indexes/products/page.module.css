@@ -17,17 +17,17 @@
 }
 
 .eyebrow {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 11rem;
-  font-weight: 500;
-  letter-spacing: 0.28em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-accent-bright);
   margin: 0;
 }
 
 .headline {
-  font-family: var(--font-family-serif) !important;
+  font-family: var(--font-family-display) !important;
   font-size: clamp(48rem, 7vw, 64rem) !important;
   font-weight: 500 !important;
   font-style: italic !important;
@@ -57,10 +57,10 @@
 }
 
 .chip {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 11rem;
-  font-weight: 500;
-  letter-spacing: 0.22em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.55);
   background: transparent;

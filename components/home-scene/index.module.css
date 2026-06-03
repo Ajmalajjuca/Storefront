@@ -68,11 +68,11 @@
   top: -34rem;
   left: 0;
   margin: 0 0 18rem;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: clamp(10rem, 0.75vw, 12rem);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.14em;
   color: var(--color-accent-bright);
   text-transform: uppercase;
 }
@@ -83,11 +83,11 @@
   align-items: flex-start;
   gap: 2rem;
   margin: 0;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-display);
   font-size: clamp(40rem, 5.4vw, 86rem);
-  font-weight: 900;
+  font-weight: 500;
   line-height: 0.82;
-  letter-spacing: 0;
+  letter-spacing: -0.035em;
   color: var(--color-accent-bright);
   text-transform: uppercase;
   text-shadow:
@@ -96,9 +96,9 @@
 }
 
 .whyTitle span {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-display);
   font-style: italic;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--color-off-black);
   text-transform: lowercase;
 }
@@ -162,7 +162,7 @@
 
 .valueMarker {
   padding-top: 4rem;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-display);
   font-size: clamp(24rem, 2.4vw, 36rem);
   font-weight: 700;
   line-height: 1;
@@ -191,11 +191,11 @@
   order: 1;
   max-width: 680rem;
   margin: 0;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-display);
   font-size: clamp(30rem, 3.6vw, 56rem);
-  font-weight: 900;
+  font-weight: 500;
   line-height: 0.86;
-  letter-spacing: 0;
+  letter-spacing: -0.03em;
   color: var(--color-off-black);
   text-transform: uppercase;
 }
@@ -203,11 +203,11 @@
 .valueMeta {
   order: 2;
   margin: 0;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: clamp(10rem, 0.78vw, 12rem);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   color: var(--color-accent-bright);
   text-transform: uppercase;
 }

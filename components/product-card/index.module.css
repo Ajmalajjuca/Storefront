@@ -69,11 +69,11 @@
   padding: 5rem 8rem 4rem;
   background: #ff3a24;
   color: #ffffff;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 10rem;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
-  letter-spacing: 0;
+  letter-spacing: 0.08em;
   text-align: center;
   text-transform: uppercase;
 }
@@ -138,13 +138,13 @@
 
 .title {
   display: block;
-  font-family: var(--font-family-serif);
-  font-size: clamp(18rem, 1.75vw, 24rem);
-  font-weight: 900;
-  line-height: 0.98;
-  letter-spacing: 0;
+  font-family: var(--font-family-sans);
+  font-size: clamp(12rem, 1.05vw, 15rem);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: 0.04em;
   color: #fffde8;
-  text-transform: capitalize;
+  text-transform: uppercase;
   margin: 0 !important;
   max-width: 100%;
   overflow-wrap: anywhere;

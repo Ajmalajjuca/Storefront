@@ -24,10 +24,10 @@
 }
 
 .eyebrow {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 10rem;
-  font-weight: 500;
-  letter-spacing: 0.28em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-accent-bright);
   display: block;
@@ -35,11 +35,11 @@
 }
 
 .title {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-display);
   font-size: clamp(32rem, 4vw, 48rem);
   font-weight: 500;
   font-style: italic;
-  line-height: 1.05;
+  line-height: 0.98;
   margin: 10rem 0 0;
   color: #ffffff;
   letter-spacing: -0.01em;
@@ -74,7 +74,7 @@
   background: transparent;
   border: none;
   outline: none;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 12rem;
   letter-spacing: 0.05em;
   color: #ffffff;
@@ -94,10 +94,10 @@
   color: #ffffff;
   border: none;
   cursor: pointer;
-  font-family: var(--font-family-serif);
-  font-size: 10rem;
-  font-weight: 500;
-  letter-spacing: 0.24em;
+  font-family: var(--font-family-sans);
+  font-size: 12rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   transition: background var(--transition-base);
 }
@@ -107,9 +107,9 @@
 }
 
 .thanks {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 11rem;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -125,7 +125,7 @@
 .error {
   flex-basis: 100%;
   margin: 10rem 0 0;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 10rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;

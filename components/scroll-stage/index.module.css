@@ -112,11 +112,11 @@
 
 .heroEyebrow {
   margin: 0 0 2rem;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: clamp(10rem, 0.82vw, 13rem);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   color: var(--color-red);
   text-transform: uppercase;
   text-shadow: 0 0 18rem rgba(255, 31, 45, 0.34);
@@ -126,11 +126,11 @@
   display: grid;
   gap: clamp(6rem, 1.1vh, 10rem);
   margin: 0;
-  font-family: var(--font-family-serif);
-  font-size: clamp(40rem, 3.5vw, 64rem);
+  font-family: var(--font-family-display);
+  font-size: clamp(46rem, 5.2vw, 92rem);
   font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: 0.13em;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
   color: var(--text-main);
   text-transform: uppercase;
   text-shadow:
@@ -149,8 +149,8 @@
   font-family: var(--font-family-sans);
   font-size: clamp(13rem, 1vw, 16rem);
   font-weight: 400;
-  line-height: 1.25;
-  letter-spacing: 0;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
   color: var(--text-muted);
   text-transform: none;
   text-shadow: 0 10rem 28rem rgba(0, 0, 0, 0.78);
@@ -176,11 +176,11 @@
 .scrollCue {
   display: flex;
   align-items: center;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 9rem;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
 }

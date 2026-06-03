@@ -9,7 +9,7 @@
 }
 
 .quote {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-display);
   font-size: clamp(28rem, 4vw, 42rem);
   font-weight: 500;
   font-style: italic;
@@ -22,10 +22,10 @@
 }
 
 .cite {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 10rem;
-  font-weight: 500;
-  letter-spacing: 0.28em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.42);
   font-style: normal;

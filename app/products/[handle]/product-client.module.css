@@ -25,22 +25,22 @@
 }
 
 .category {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 11rem;
-  font-weight: 500;
-  letter-spacing: 0.28em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-accent-bright);
 }
 
 .title {
-  font-family: var(--font-family-serif) !important;
+  font-family: var(--font-family-display) !important;
   font-size: clamp(38rem, 4vw, 56rem) !important;
-  font-weight: 700 !important;
+  font-weight: 500 !important;
   font-style: normal !important;
   line-height: 1 !important;
   text-transform: uppercase !important;
-  letter-spacing: -0.005em !important;
+  letter-spacing: -0.03em !important;
   color: var(--color-off-black) !important;
   margin: 0 !important;
 }
@@ -61,10 +61,10 @@
 }
 
 .priceTax {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 10rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-medium-grey);
 }
@@ -93,10 +93,10 @@
 }
 
 .optionLabel {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 10rem;
   font-weight: 500;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-medium-grey);
   flex: 0 0 56rem;
@@ -113,10 +113,10 @@
   display: inline-flex;
   align-items: center;
   gap: 10rem;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 10rem;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-off-black);
   padding: 10rem 16rem;
@@ -145,7 +145,7 @@
 }
 
 .sizeChip {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 11rem;
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -183,10 +183,10 @@
   display: inline-flex;
   align-items: center;
   gap: 8rem;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 10rem;
   font-weight: 500;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.7);
   background: transparent;
@@ -226,10 +226,10 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 11rem;
   font-weight: 500;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-off-black);
   transition: color var(--transition-base);
@@ -240,7 +240,7 @@
 }
 
 .accordionIcon {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 14rem;
   color: var(--color-medium-grey);
 }
@@ -313,10 +313,10 @@
   align-items: center;
   justify-content: center;
   gap: 10rem;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 12rem;
   font-weight: 500;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-off-black);
   background: var(--color-accent);
@@ -338,17 +338,17 @@
 .addToBagPrice {
   font-family: var(--font-family-sans);
   font-weight: 500;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.12em;
 }
 
 .returns {
   display: inline-flex;
   align-items: center;
   gap: 10rem;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 10rem;
   font-weight: 500;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-medium-grey);
   margin: 0;
@@ -361,9 +361,9 @@
 }
 
 .errorMsg {
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 11rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-accent-bright);
   margin: 0;
@@ -435,7 +435,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-family-serif);
+  font-family: var(--font-family-sans);
   font-size: 18rem;
   color: var(--color-off-black);
   background: rgba(0, 0, 0, 0.5);

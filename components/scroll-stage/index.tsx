@@ -82,6 +82,10 @@ export const ScrollStage = React.memo(function ScrollStage({ content }: Props) {
       framePath="/hero-sequence/ezgif-frame-"
       frameExtension="webp"
       fallbackImage="/hero-sequence/ezgif-frame-001.webp"
+      mobileFrameCount={192}
+      mobileFramePath="/hero-sequence-mobile/ezgif-frame-"
+      mobileFrameExtension="webp"
+      mobileFallbackImage="/hero-sequence-mobile/ezgif-frame-001.webp"
     >
       <section
         className={styles.stage}

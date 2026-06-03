@@ -16,11 +16,17 @@ export function Manifesto({ content }: { content?: BrandStatementContent }) {
 
   return (
     <section className={styles.section}>
+      <div className={styles.watermark} aria-hidden="true">
+        BLCKOLE
+      </div>
       <div className={styles.inner}>
-        <div className={styles.quote}>
-          {firstLine}
-          <br />
-          {secondLine}
+        <div className={styles.left}>
+          <p className={styles.kicker}>Manifesto</p>
+          <div className={styles.quote}>
+            {firstLine}
+            <br />
+            {secondLine}
+          </div>
         </div>
         <div className={styles.right}>
           <p className={styles.body}>

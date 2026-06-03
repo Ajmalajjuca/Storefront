@@ -39,14 +39,21 @@ export function Principles({ items }: { items?: BrandValueItem[] }) {
 
   return (
     <section className={styles.section} aria-label="Principles">
-      <div className={styles.grid}>
-        {displayItems.map((p) => (
-          <div key={p.num} className={styles.cell}>
-            <div className={styles.num}>— {p.num}</div>
-            <div className={styles.name}>{p.name}</div>
-            <div className={styles.desc}>{p.desc}</div>
-          </div>
-        ))}
+      <div className={styles.inner}>
+        <div className={styles.head}>
+          <p className={styles.eyebrow}>Code of the house</p>
+          <h2 className={styles.title}>Principles</h2>
+        </div>
+
+        <div className={styles.grid}>
+          {displayItems.map((p) => (
+            <div key={p.num} className={styles.cell}>
+              <div className={styles.num}>{p.num}</div>
+              <div className={styles.name}>{p.name}</div>
+              <div className={styles.desc}>{p.desc}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

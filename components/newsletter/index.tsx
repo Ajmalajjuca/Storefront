@@ -21,14 +21,15 @@ export function Newsletter() {
 
   return (
     <section className={styles.section}>
+      <div className={styles.ghost} aria-hidden="true">
+        BLCKOLE
+      </div>
       <div className={styles.inner}>
         <div className={styles.copy}>
-          <span className={styles.eyebrow}>Notes</span>
-          <h2 className={styles.title}>
-            Restocks &amp; new drops in your inbox.
-          </h2>
+          <span className={styles.eyebrow}>Drop list</span>
+          <h2 className={styles.title}>Enter the drop list</h2>
           <p className={styles.dek}>
-            One field. No daily spam. Unsubscribe anytime.
+            No noise. Only releases, restocks, and pieces worth remembering.
           </p>
         </div>
 

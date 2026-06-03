@@ -64,7 +64,7 @@ Your app should now be running on [localhost:3000](http://localhost:3000/).
   <summary>Expand if you work at Vercel and want to run locally and / or contribute</summary>
 
 1. Run `vc link`.
-1. Select the `Vercel Solutions` scope.
+1. Select the `Vercel Solutions` scope..
 1. Connect to the existing `commerce-shopify` project.
 1. Run `vc env pull` to get environment variables.
 1. Run `pnpm dev` to ensure everything is working correctly.

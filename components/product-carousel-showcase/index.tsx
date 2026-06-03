@@ -27,7 +27,7 @@ type Props = {
   visibleProductCount?: 5 | 7;
 };
 
-const defaultBackgroundImage = "/bg-carousel.png";
+const defaultBackgroundImage = "/bg-carousel1.png";
 const activeCardScale = 1.12;
 
 function getWrappedIndex(index: number, total: number) {

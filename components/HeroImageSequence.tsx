@@ -244,11 +244,11 @@ export default function HeroImageSequence({
             position: "absolute",
             inset: 0,
             background: `
-              radial-gradient(circle at 100% 100%, rgba(3,3,3,0.95) 0%, rgba(3,3,3,0) 250px),
-              radial-gradient(circle at 0% 100%, rgba(3,3,3,0.95) 0%, rgba(3,3,3,0) 250px),
-              radial-gradient(circle at center, transparent 0%, rgba(3,3,3,0.4) 100%),
-              linear-gradient(to bottom, rgba(3,3,3,0.2) 0%, rgba(3,3,3,0.7) 100%)
-            `,
+  radial-gradient(circle at 100% 100%, rgba(0,0,0,1) 4%, rgba(0,0,0,0) 500px),
+  radial-gradient(circle at 0% 100%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 500px),
+  radial-gradient(circle at center, transparent 0%, rgba(3,3,3,0.4) 100%),
+  linear-gradient(to bottom, rgba(3,3,3,0.2) 0%, rgba(3,3,3,0.7) 100%)
+`,
             pointerEvents: "none",
             zIndex: 0,
           }}

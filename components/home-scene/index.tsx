@@ -125,7 +125,7 @@ export function HomeScene({
         <CollectionShowcase collections={showcaseCollections} />
         <ProductCarouselShowcase
           products={carouselProducts}
-          backgroundImage="/bg-carousel.png"
+          backgroundImage="/bg-carousel1.png"
           visibleProductCount={5}
         />
         <PressQuote content={brandQuoteContent} />

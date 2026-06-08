@@ -325,7 +325,7 @@
 .arrowButton {
   position: absolute;
   top: 50%;
-  z-index: 10;
+  z-index: 4;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -393,11 +393,6 @@
     padding: 34rem 0;
   }
 
-  .carousel {
-    align-items: center;
-    min-height: clamp(420rem, 76vw, 520rem);
-  }
-
   .header {
     max-width: 92vw;
     padding: 0 var(--grid-margin);
@@ -415,19 +410,11 @@
   }
 
   .viewport {
-    --mobile-card-width: clamp(220rem, 64vw, 300rem);
-    --mobile-edge-space: max(
-      calc(var(--grid-margin) + 42rem),
-      calc((100vw - var(--mobile-card-width)) / 2)
-    );
-
     min-height: clamp(400rem, 74vw, 500rem);
     overflow-x: auto;
     overflow-y: visible;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
-    scroll-padding-inline: var(--mobile-edge-space);
-    scroll-snap-type: x mandatory;
     scrollbar-width: none;
   }
 
@@ -437,34 +424,24 @@
 
   .track {
     position: static;
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: none;
+    grid-auto-columns: clamp(220rem, 64vw, 300rem);
+    grid-auto-flow: column;
     gap: 14rem;
-    width: max-content;
-    min-width: 100%;
-    min-height: inherit;
-    padding: 24rem 0;
+    padding: 24rem var(--grid-margin);
     transform: none;
-  }
-
-  .track::before,
-  .track::after {
-    content: "";
-    flex: 0 0 var(--mobile-edge-space);
-    width: var(--mobile-edge-space);
   }
 
   .card {
     position: relative;
     top: auto;
     left: auto;
-    flex: 0 0 var(--mobile-card-width);
-    width: var(--mobile-card-width);
+    width: auto;
     height: clamp(380rem, 90vw, 480rem);
     opacity: 0.72;
     transform: scale(0.92);
     pointer-events: auto;
-    scroll-snap-align: center;
   }
 
   .middle,
@@ -476,10 +453,7 @@
   }
 
   .hidden {
-    display: block;
-    opacity: 0.72;
-    transform: scale(0.92);
-    pointer-events: auto;
+    display: none;
   }
 
   .active {
@@ -488,23 +462,18 @@
   }
 
   .arrowButton {
-    top: 50%;
-    bottom: auto;
-    width: 42rem;
-    height: 42rem;
-    transform: translateY(-50%);
-  }
-
-  .arrowButton:hover {
-    transform: translateY(-50%) scale(1.04);
+    top: auto;
+    bottom: 76rem;
+    width: 38rem;
+    height: 38rem;
   }
 
   .arrowPrevious {
-    left: max(14rem, calc(var(--grid-margin) * 0.72));
+    left: var(--grid-margin);
   }
 
   .arrowNext {
-    right: max(14rem, calc(var(--grid-margin) * 0.72));
+    right: var(--grid-margin);
   }
 }
 
@@ -524,13 +493,11 @@
   }
 
   .viewport {
-    --mobile-card-width: clamp(168rem, 66vw, 226rem);
-    --mobile-edge-space: max(
-      calc(var(--grid-margin) + 40rem),
-      calc((100vw - var(--mobile-card-width)) / 2)
-    );
-
     min-height: 400rem;
+  }
+
+  .track {
+    grid-auto-columns: clamp(168rem, 66vw, 226rem);
   }
 
   .card {
@@ -544,7 +511,6 @@
   }
 
   .arrowButton {
-    width: 38rem;
-    height: 38rem;
+    bottom: 70rem;
   }
 }

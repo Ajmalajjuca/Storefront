@@ -51,6 +51,7 @@ export function ProductCarouselShowcase({
 }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [stageStyle, setStageStyle] = useState<CSSProperties>({});
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const viewportRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Array<HTMLAnchorElement | HTMLButtonElement | null>>(
     [],
@@ -72,14 +73,30 @@ export function ProductCarouselShowcase({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!window.matchMedia("(max-width: 900px)").matches) return;
+
+    const mediaQuery = window.matchMedia("(max-width: 900px)");
+    const updateViewportMode = () => setIsMobileViewport(mediaQuery.matches);
+
+    updateViewportMode();
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", updateViewportMode);
+      return () => mediaQuery.removeEventListener("change", updateViewportMode);
+    }
+
+    window.addEventListener("resize", updateViewportMode);
+    return () => window.removeEventListener("resize", updateViewportMode);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileViewport) return;
 
     cardRefs.current[activeIndex]?.scrollIntoView({
       behavior: "smooth",
       block: "nearest",
       inline: "center",
     });
-  }, [activeIndex]);
+  }, [activeIndex, isMobileViewport]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -212,6 +229,7 @@ export function ProductCarouselShowcase({
                   const circularOffset =
                     offset > productCount / 2 ? offset - productCount : offset;
                   const isVisible =
+                    isMobileViewport ||
                     Math.abs(circularOffset) <= effectiveSideCount;
                   const clampedOffset = Math.max(
                     -(effectiveSideCount + 1),

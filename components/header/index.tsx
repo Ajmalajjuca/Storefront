@@ -12,7 +12,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { CurrencySelector } from "./currency-selector";
 import styles from "./index.module.css";
 
@@ -158,6 +158,8 @@ export function Header({
   logoAlt = "BLCKHOLE",
 }: Props) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const lastPointer = useRef({ x: 0, y: 0, time: 0 });
   const pathname = usePathname();
 
   useEffect(() => {
@@ -175,8 +177,184 @@ export function Header({
     };
   }, [isMobileMenuOpen]);
 
+  function handleGlassPointerMove(event: PointerEvent<HTMLElement>) {
+    const header = headerRef.current;
+    if (!header) return;
+
+    const rect = header.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const now = performance.now();
+    const elapsed = Math.max(now - lastPointer.current.time, 16);
+    const distance = Math.hypot(
+      x - lastPointer.current.x,
+      y - lastPointer.current.y,
+    );
+    const velocity = Math.min(distance / elapsed, 1);
+
+    header.style.setProperty("--glass-x", `${x}px`);
+    header.style.setProperty("--glass-y", `${y}px`);
+    header.style.setProperty(
+      "--glass-lens-alpha",
+      (0.05 + velocity * 0.07).toFixed(3),
+    );
+    header.style.setProperty(
+      "--glass-lens-scale",
+      (1.05 + velocity * 0.05).toFixed(4),
+    );
+    header.style.setProperty(
+      "--glass-caustic-opacity",
+      (0.28 + velocity * 0.22).toFixed(3),
+    );
+    header.style.setProperty(
+      "--glass-specular-opacity",
+      (0.5 + velocity * 0.25).toFixed(3),
+    );
+    header.style.setProperty(
+      "--glass-chroma-opacity",
+      (0.45 + velocity * 0.4).toFixed(3),
+    );
+    lastPointer.current = { x, y, time: now };
+  }
+
+  function handleGlassPointerLeave() {
+    const header = headerRef.current;
+    if (!header) return;
+
+    header.style.setProperty("--glass-lens-alpha", "0.05");
+    header.style.setProperty("--glass-lens-scale", "1.05");
+    header.style.setProperty("--glass-caustic-opacity", "0.28");
+    header.style.setProperty("--glass-specular-opacity", "0.5");
+    header.style.setProperty("--glass-chroma-opacity", "0.45");
+  }
+
   return (
-    <header className={styles.header}>
+    <header
+      ref={headerRef}
+      className={styles.header}
+      onPointerMove={handleGlassPointerMove}
+      onPointerLeave={handleGlassPointerLeave}
+    >
+      <svg className={styles.glassFilter} aria-hidden>
+        <defs>
+          {/* Soft noise warp used by the caustic highlights. */}
+          <filter
+            id="liquid-glass-distortion"
+            x="-20%"
+            y="-40%"
+            width="140%"
+            height="180%"
+            colorInterpolationFilters="sRGB"
+          >
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.008 0.035"
+              numOctaves="2"
+              seed="9"
+              result="noise"
+            >
+              <animate
+                attributeName="baseFrequency"
+                dur="14s"
+                values="0.008 0.035;0.012 0.026;0.008 0.035"
+                repeatCount="indefinite"
+              />
+            </feTurbulence>
+            <feGaussianBlur in="noise" stdDeviation="0.6" result="softNoise" />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="softNoise"
+              scale="18"
+              xChannelSelector="R"
+              yChannelSelector="B"
+            />
+          </filter>
+
+          {/* True liquid refraction: the live noise field displaces the
+              backdrop, and each colour channel is displaced by a different
+              amount to produce genuine chromatic aberration of whatever
+              cosmic content scrolls behind the glass. */}
+          <filter
+            id="liquid-glass-refract"
+            x="-30%"
+            y="-60%"
+            width="160%"
+            height="220%"
+            colorInterpolationFilters="sRGB"
+          >
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.009 0.016"
+              numOctaves="2"
+              seed="7"
+              result="turb"
+            >
+              <animate
+                attributeName="baseFrequency"
+                dur="18s"
+                values="0.009 0.016;0.013 0.011;0.009 0.016"
+                repeatCount="indefinite"
+              />
+            </feTurbulence>
+            <feGaussianBlur in="turb" stdDeviation="1.4" result="warp" />
+
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="warp"
+              scale="26"
+              xChannelSelector="R"
+              yChannelSelector="G"
+              result="dispR"
+            />
+            <feColorMatrix
+              in="dispR"
+              type="matrix"
+              values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"
+              result="chanR"
+            />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="warp"
+              scale="19"
+              xChannelSelector="R"
+              yChannelSelector="G"
+              result="dispG"
+            />
+            <feColorMatrix
+              in="dispG"
+              type="matrix"
+              values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0"
+              result="chanG"
+            />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="warp"
+              scale="12"
+              xChannelSelector="R"
+              yChannelSelector="G"
+              result="dispB"
+            />
+            <feColorMatrix
+              in="dispB"
+              type="matrix"
+              values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"
+              result="chanB"
+            />
+
+            <feBlend in="chanR" in2="chanG" mode="screen" result="rg" />
+            <feBlend in="rg" in2="chanB" mode="screen" />
+          </filter>
+        </defs>
+      </svg>
+      <span className={styles.glassStack} aria-hidden>
+        <span className={styles.glassFrost} />
+        <span className={styles.glassRefraction} />
+        <span className={styles.glassChroma} />
+        <span className={styles.glassCaustics} />
+        <span className={styles.glassLens} />
+        <span className={styles.glassSpecular} />
+      </span>
+
       <button
         type="button"
         className={styles.mobileMenuBtn}

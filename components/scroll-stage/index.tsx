@@ -10,10 +10,7 @@ type Props = {
 };
 
 const defaultHeroTitle = ["You always", "find your way", "back"];
-const defaultHeroSubtitle = [
-  "Explore streetwear with sharp silhouettes, focused drops,",
-  "and pieces built to move from city nights to daily rituals.",
-];
+const defaultHeroSubtitle = [""];
 
 const splitContentLines = (value: string | undefined, fallback: string[]) => {
   if (!value) return fallback;

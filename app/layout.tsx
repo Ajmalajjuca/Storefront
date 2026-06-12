@@ -41,6 +41,15 @@ export default async function RootLayout({
     { title: "ENTRY", href: "/" },
     { title: "COLLECTIONS", href: "/indexes/products" },
     { title: "STORY", href: "/story" },
+    {
+      title: "INSTAGRAM",
+      href:
+        process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/",
+    },
+    {
+      title: "REDDIT",
+      href: process.env.NEXT_PUBLIC_REDDIT_URL || "https://www.reddit.com/",
+    },
   ];
 
   const rightNavItems = [

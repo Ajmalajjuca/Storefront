@@ -93,7 +93,7 @@ export function CurrencySelector({
         onClick={() => setOpen((value) => !value)}
       >
         <GlobeAltIcon className={styles.currencyIcon} aria-hidden />
-        <span>{activeCurrency.label}</span>
+        <span className={styles.currencyLabel}>{activeCurrency.label}</span>
         <span className={styles.currencyChevron} aria-hidden="true">
           ▾
         </span>

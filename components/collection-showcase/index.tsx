@@ -2,165 +2,190 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useRef } from "react";
 import styles from "./index.module.css";
 
-export type CollectionShowcaseItem = {
+export type LatestProductItem = {
   id: string;
   title: string;
-  subtitle?: string;
-  label?: string;
-  handle: string;
-  cardImage: string;
-  backgroundImage: string;
+  handle?: string;
+  price?: string;
+  image?: string;
+  imageAlt?: string;
 };
 
 type Props = {
-  collections?: CollectionShowcaseItem[];
+  products?: LatestProductItem[];
 };
 
-const fallbackCollections: CollectionShowcaseItem[] = [
+const fallbackProducts: LatestProductItem[] = [
   {
-    id: "oversized-tshirts",
-    title: "Oversized T-Shirts",
-    subtitle: "Graphic topwear",
-    label: "Core drop",
-    handle: "oversized-tshirts",
-    cardImage: "/topwearr.png",
-    backgroundImage: "/topwearr.png",
+    id: "green-dragonfly-top",
+    title: "Green Dragonfly Top",
+    handle: "green-dragonfly-top",
+    price: "Rs. 4,200",
+    image: "/topwearr.png",
   },
   {
-    id: "bottomwear",
-    title: "Bottom Wear",
-    subtitle: "Wide volume",
-    label: "Utility fit",
-    handle: "bottomwear",
-    cardImage: "/bottomwear.png",
-    backgroundImage: "/bottomwear.png",
+    id: "orng-dragonfly-top",
+    title: "Orng Dragonfly Top",
+    handle: "orng-dragonfly-top",
+    price: "Rs. 4,200",
+    image: "/bottomwear.png",
   },
   {
-    id: "void-entry",
-    title: "Void Entry",
-    subtitle: "Dark campaign",
-    label: "Editorial",
-    handle: "void-entry",
-    cardImage: "/void-entry-bg.png",
-    backgroundImage: "/void-entry-bg.png",
+    id: "iron-ladybird-top",
+    title: "Iron Ladybird Top",
+    handle: "iron-ladybird-top",
+    price: "Rs. 4,300",
+    image: "/void-entry-bg.png",
   },
   {
-    id: "road-story",
-    title: "Road Story",
-    subtitle: "Travel layers",
-    label: "Story edit",
-    handle: "road-story",
-    cardImage: "/Story_2.png",
-    backgroundImage: "/Story_2.png",
+    id: "brunette-crystal-tank",
+    title: "Brunette Crystal Tank Top",
+    handle: "brunette-crystal-tank",
+    price: "Rs. 5,100",
+    image: "/Story_2.png",
   },
   {
-    id: "blckole-system",
-    title: "BLCKOLE System",
-    subtitle: "Monochrome essentials",
-    label: "Limited",
-    handle: "blckole-system",
-    cardImage: "/blckole-1.png",
-    backgroundImage: "/blckole-1.png",
+    id: "blckole-system-tee",
+    title: "BLCKOLE System Tee",
+    handle: "blckole-system-tee",
+    price: "Rs. 4,800",
+    image: "/blckole-1.png",
   },
 ];
 
-export function CollectionShowcase({ collections }: Props) {
-  const displayCollections =
-    collections && collections.length > 0 ? collections : fallbackCollections;
-
-  const [activeId, setActiveId] = useState(displayCollections[0]?.id ?? "");
-
-  const activeCollection = useMemo(
-    () =>
-      displayCollections.find((collection) => collection.id === activeId) ??
-      displayCollections[0],
-    [activeId, displayCollections],
+function PlusIcon() {
+  return (
+    <svg
+      className={styles.plusIcon}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      aria-hidden
+    >
+      <path d="M12 5v14M5 12h14" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
   );
+}
 
-  if (!activeCollection) return null;
+function ArrowIcon({ direction }: { direction: "left" | "right" }) {
+  return (
+    <svg
+      className={styles.arrowIcon}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      aria-hidden
+    >
+      <path
+        d={direction === "left" ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function CollectionShowcase({ products }: Props) {
+  const items = products && products.length > 0 ? products : fallbackProducts;
+  const railRef = useRef<HTMLDivElement>(null);
+
+  function scrollRail(direction: 1 | -1) {
+    const rail = railRef.current;
+    if (!rail) return;
+    const card = rail.querySelector<HTMLElement>(`.${styles.card}`);
+    const step = card
+      ? card.offsetWidth + 24
+      : Math.round(rail.clientWidth * 0.7);
+    rail.scrollBy({ left: direction * step, behavior: "smooth" });
+  }
+
+  if (items.length === 0) return null;
 
   return (
     <section
       className={styles.section}
-      aria-labelledby="collection-showcase-title"
+      aria-labelledby="latest-collection-title"
     >
-      <div className={styles.frame}>
-        <div className={styles.backgroundStack} aria-hidden="true">
-          {displayCollections.map((collection, index) => (
-            <Image
-              key={collection.id}
-              src={collection.backgroundImage}
-              alt=""
-              fill
-              priority={index === 0}
-              sizes="100vw"
-              className={`${styles.backgroundImage} ${
-                collection.id === activeCollection.id
-                  ? styles.backgroundImageActive
-                  : ""
-              }`}
-            />
-          ))}
-        </div>
-        <div className={styles.overlay} aria-hidden="true" />
+      <div className={styles.header}>
+        <h2 id="latest-collection-title" className={styles.title}>
+          Latest Collection
+        </h2>
 
-        <div className={styles.content}>
-          <div className={styles.copy}>
-            <p className={styles.eyebrow}>
-              {activeCollection.label ?? "Selected collection"}
-            </p>
-            <h2 id="collection-showcase-title" className={styles.title}>
-              {activeCollection.title}
-            </h2>
-            <p className={styles.subtitle}>
-              {activeCollection.subtitle ??
-                "Explore BLCKOLE pieces through a cinematic product edit."}
-            </p>
+        <div className={styles.headerActions}>
+          <div className={styles.arrows} aria-hidden="true">
+            <button
+              type="button"
+              className={styles.arrow}
+              onClick={() => scrollRail(-1)}
+              aria-label="Scroll to previous"
+            >
+              <ArrowIcon direction="left" />
+            </button>
+            <button
+              type="button"
+              className={styles.arrow}
+              onClick={() => scrollRail(1)}
+              aria-label="Scroll to next"
+            >
+              <ArrowIcon direction="right" />
+            </button>
           </div>
 
-          <Link
-            href="/indexes/products"
-            className={styles.exploreLink}
-            aria-label={`Explore ${activeCollection.title}`}
-          >
-            <span>Explore</span>
+          <Link href="/indexes/products" className={styles.discover}>
+            Discover more
           </Link>
+        </div>
+      </div>
 
-          <div className={styles.cardRail} aria-label="Collection selector">
-            {displayCollections.map((collection) => {
-              const isActive = collection.id === activeCollection.id;
+      <div className={styles.rail} ref={railRef}>
+        {items.map((item) => {
+          const href = item.handle
+            ? `/products/${item.handle}`
+            : "/indexes/products";
 
-              return (
-                <button
-                  key={collection.id}
-                  type="button"
-                  className={`${styles.card} ${isActive ? styles.cardActive : ""}`}
-                  aria-pressed={isActive}
-                  onClick={() => setActiveId(collection.id)}
-                >
-                  <span className={styles.cardMedia}>
+          return (
+            <article key={item.id} className={styles.card}>
+              <Link
+                href={href}
+                className={styles.cardLink}
+                aria-label={item.title}
+              >
+                <span className={styles.cardMedia}>
+                  {item.image ? (
                     <Image
-                      src={collection.cardImage}
-                      alt=""
+                      src={item.image}
+                      alt={item.imageAlt ?? item.title}
                       fill
-                      sizes="190px"
+                      sizes="(max-width: 900px) 72vw, 23vw"
                       className={styles.cardImage}
                     />
-                  </span>
+                  ) : null}
+                </span>
+
+                <span className={styles.scrim} aria-hidden="true" />
+                <span className={styles.glassPanel} aria-hidden="true">
+                  <span className={styles.glassEdge} />
+                </span>
+
+                <span className={styles.cardInfo}>
                   <span className={styles.cardText}>
-                    <span className={styles.cardLabel}>
-                      {collection.label ?? "Collection"}
+                    <span className={styles.cardName}>{item.title}</span>
+                    <span className={styles.cardPrice}>
+                      {item.price ?? "View piece"}
                     </span>
-                    <span className={styles.cardTitle}>{collection.title}</span>
                   </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+                  <span className={styles.plus}>
+                    <PlusIcon />
+                  </span>
+                </span>
+              </Link>
+            </article>
+          );
+        })}
       </div>
     </section>
   );

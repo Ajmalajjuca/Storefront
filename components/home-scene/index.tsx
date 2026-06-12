@@ -5,7 +5,6 @@ import { Footer } from "components/footer";
 import { Manifesto } from "components/manifesto";
 import { Newsletter } from "components/newsletter";
 import { PressQuote } from "components/press-quote";
-import { Principles } from "components/principles";
 import {
   ProductCarouselShowcase,
   type ProductCarouselShowcaseItem,
@@ -57,12 +56,24 @@ const brandValues: WhyChooseItem[] = [
     sortOrder: 3,
   },
   {
-    title: "Considered Styling",
+    title: "Artist Based",
     description:
-      "Build a full look from focused drops and move from browse to bag with confidence.",
-    subtitle: "Intentional pairings",
+      "Created through a visual language shaped by artists, outsiders, and independent thought.",
+    subtitle: "Creative expression",
     sortOrder: 4,
   },
+];
+
+const brandStory = [
+  "We all carry a space within us.",
+  "A space filled with unfinished dreams, untold stories, unanswered questions, and endless possibilities.",
+  "Most people fear it.",
+  "We call it BLCKOLE.",
+  "Born for the bold, the curious, the creators, and the outsiders, BLCKOLE is more than clothing, it's a reminder that growth begins in the unknown.",
+  "We don't follow trends. We don't chase perfection.",
+  "We create for those becoming who they're meant to be.",
+  "Because every scar tells a story. Every risk creates a future. And every blank space holds a universe.",
+  "Welcome to BLCKOLE.",
 ];
 
 function WhyBlckole({ items }: { items?: WhyChooseItem[] }) {
@@ -70,29 +81,59 @@ function WhyBlckole({ items }: { items?: WhyChooseItem[] }) {
 
   return (
     <section className={styles.whySection} aria-labelledby="why-blckole-title">
-      <div className={styles.whyIntro}>
+      <header className={styles.whyIntro}>
         <p className={styles.whyEyebrow}>System values</p>
         <h2 id="why-blckole-title" className={styles.whyTitle}>
-          <span>why</span> BLCKOLE?
+          <span>Why</span>
+          BLCKOLE?
         </h2>
-        <p className={styles.whyLead}>
-          Built for people who want the garment, the fit, and the ritual to feel
-          intentional before it reaches the bag.
+      </header>
+
+      <div className={styles.storyContent}>
+        <p className={styles.storyLead}>{brandStory[0]}</p>
+
+        <div className={styles.storyColumns}>
+          <div className={styles.storyColumn}>
+            {brandStory.slice(1, 5).map((paragraph, index) => (
+              <p
+                key={paragraph}
+                className={index === 2 ? styles.storyCallout : undefined}
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+
+          <div className={styles.storyColumn}>
+            {brandStory.slice(5).map((paragraph, index) => (
+              <p
+                key={paragraph}
+                className={
+                  index === brandStory.slice(5).length - 1
+                    ? styles.storyWelcome
+                    : undefined
+                }
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </div>
+
+        <p className={styles.storyClosing}>
+          <span>Wear your story.</span>
+          <span>Create your own universe.</span>
         </p>
       </div>
 
-      <div className={styles.valueGrid}>
-        {displayItems.map((item, index) => (
-          <article key={item.title} className={styles.valueItem}>
-            <div className={styles.valueMarker} aria-hidden="true">
+      <div className={styles.valueStrip} aria-label="Brand values">
+        {displayItems.slice(0, 4).map((item, index) => (
+          <div key={item.title} className={styles.valueItem}>
+            <span className={styles.valueMarker} aria-hidden="true">
               {String(index + 1).padStart(2, "0")}
-            </div>
-            <div className={styles.valueContent}>
-              <p className={styles.valueMeta}>{item.subtitle}</p>
-              <h3 className={styles.valueTitle}>{item.title}</h3>
-              <p className={styles.valueText}>{item.description}</p>
-            </div>
-          </article>
+            </span>
+            <span className={styles.valueTitle}>{item.title}</span>
+          </div>
         ))}
       </div>
     </section>
@@ -126,7 +167,7 @@ export function HomeScene({
         <PressQuote content={brandQuoteContent} />
         <WhyBlckole items={whyChooseItems} />
         <Newsletter />
-        <Principles items={brandValueItems} />
+        {/* <Principles items={brandValueItems} /> */}
         <Manifesto content={brandStatementContent} />
         <Footer content={footerContent} />
       </div>

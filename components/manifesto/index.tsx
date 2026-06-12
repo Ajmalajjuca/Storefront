@@ -1,40 +1,44 @@
 import type { BrandStatementContent } from "lib/shopify/types";
 import styles from "./index.module.css";
 
-const DEFAULT_BODY =
-  "We drift, we orbit, we come back. BLCKHOLE is the reminder: some forces do not negotiate — they align you. The work is wardrobe as gravity — black, white, a controlled flash of red, and silhouettes that hold the room without asking for it.";
+const MANIFESTO_PARAGRAPHS = [
+  "BLCKOLE was built for the creators nobody sees — the artists creating in silence. The skaters, musicians, designers, dancers, and dreamers who keep going even when nobody is watching.",
+  "We believe talent shouldn’t be measured by followers, fame, or popularity. Our mission is to discover, support, and amplify underground artists who deserve to be seen.",
+  "More than a fashion brand, BLCKOLE is a community for the overlooked, the misunderstood, and the unapologetically different.",
+  "This is not just clothing. This is a movement for the unseen.",
+];
 
-export function Manifesto({ content }: { content?: BrandStatementContent }) {
-  const firstLine =
-    content?.leftTitleLine1 ?? content?.leftTitleLine2 ?? "Not volume.";
-  const secondLine = content?.leftTitleLine1
-    ? (content.leftTitleLine2 ?? "Conviction.")
-    : "Conviction.";
-  const badgeText = content?.badgeText ?? "BK";
-  const body = content?.body ?? DEFAULT_BODY;
-  const establishedText = content?.establishedText ?? "Established 2024";
+const OUTRO = "Welcome to BLCKOLE.";
 
+export function Manifesto({}: { content?: BrandStatementContent }) {
   return (
     <section className={styles.section}>
-      <div className={styles.watermark} aria-hidden="true">
+      <div className={styles.glow} aria-hidden="true" />
+      {/* <div className={styles.watermark} aria-hidden="true">
         BLCKOLE
-      </div>
+      </div> */}
+
       <div className={styles.inner}>
-        <div className={styles.left}>
-          <p className={styles.kicker}>Manifesto</p>
-          <div className={styles.quote}>
-            {firstLine}
-            <br />
-            {secondLine}
-          </div>
+        <div className={styles.label}>
+          <span className={styles.labelLine} />
+          <span className={styles.labelText}>Manifesto</span>
+          <span className={styles.labelLine} />
         </div>
-        <div className={styles.right}>
-          <p className={styles.body}>
-            <span className={styles.pill}>{badgeText}</span>
-            {body}
-          </p>
-          <p className={styles.meta}>{establishedText}</p>
+
+        <h2 className={styles.headline}>
+          For the <span className={styles.headlineAccent}>unseen.</span>
+        </h2>
+
+        <div className={styles.body}>
+          {MANIFESTO_PARAGRAPHS.map((paragraph, index) => (
+            <p key={index} className={styles.paragraph}>
+              {paragraph}
+            </p>
+          ))}
         </div>
+
+        <p className={styles.outro}>{OUTRO}</p>
+        <p className={styles.meta}>Established 2026</p>
       </div>
     </section>
   );

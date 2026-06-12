@@ -65,8 +65,8 @@
   max-width: 1280rem;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320rem, 480rem);
-  align-items: end;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320rem, 0.95fr);
+  align-items: center;
   gap: clamp(44rem, 7vw, 110rem);
 }
 
@@ -87,28 +87,16 @@
 
 .title {
   font-family: var(--font-family-display);
-  font-size: clamp(44rem, 6.8vw, 104rem);
+  font-size: clamp(40rem, 5.6vw, 88rem);
   font-weight: 500;
-  line-height: 0.88;
+  line-height: 0.9;
   margin: 10rem 0 0;
   color: #ffffff;
-  letter-spacing: -0.055em;
-  max-width: 10ch;
+  letter-spacing: -0.05em;
   text-transform: uppercase;
   text-shadow:
     0 0 34rem rgba(184, 31, 48, 0.18),
     0 18rem 50rem rgba(0, 0, 0, 0.84);
-}
-
-.dek {
-  font-family: var(--font-family-sans);
-  font-size: clamp(13rem, 1vw, 15rem);
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.62);
-  margin: clamp(18rem, 2vw, 26rem) 0 0;
-  max-width: 42ch;
-  letter-spacing: 0.01em;
-  text-transform: none;
 }
 
 .form {
@@ -117,6 +105,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: stretch;
   min-width: 280rem;
+  margin-top: clamp(26rem, 3vw, 40rem);
   border: 1rem solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.045);
   box-shadow:
@@ -124,6 +113,81 @@
     0 28rem 70rem rgba(0, 0, 0, 0.52);
   backdrop-filter: blur(18rem) saturate(1.18);
   -webkit-backdrop-filter: blur(18rem) saturate(1.18);
+}
+
+/* ─── Tagline under the form ──────────────────────────────────────────────── */
+.tagline {
+  margin: clamp(22rem, 2.4vw, 30rem) 0 0;
+  font-family: var(--font-family-sans);
+  font-size: clamp(13rem, 1.05vw, 16rem);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.taglineAccent {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* ─── Benefits column ─────────────────────────────────────────────────────── */
+.benefits {
+  position: relative;
+  padding: clamp(28rem, 3vw, 40rem);
+  border: 1rem solid rgba(255, 255, 255, 0.1);
+  border-radius: 4rem;
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: inset 0 1rem 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10rem);
+  -webkit-backdrop-filter: blur(10rem);
+}
+
+.benefitsIntro {
+  margin: 0 0 clamp(20rem, 2.4vw, 28rem);
+  font-family: var(--font-family-sans);
+  font-size: clamp(13rem, 1vw, 15rem);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.perks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12rem, 1.4vw, 18rem) clamp(18rem, 2vw, 30rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.perk {
+  display: flex;
+  align-items: flex-start;
+  gap: 10rem;
+  font-family: var(--font-family-sans);
+  font-size: clamp(12rem, 0.95vw, 14rem);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.tick {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 18rem;
+  height: 18rem;
+  margin-top: 1rem;
+  border-radius: 50%;
+  background: rgba(184, 31, 48, 0.16);
+  border: 1rem solid rgba(184, 31, 48, 0.5);
+  color: var(--color-accent-bright);
+  font-size: 10rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .input {
@@ -169,16 +233,15 @@
 }
 
 .thanks {
-  align-self: end;
   font-family: var(--font-family-sans);
   font-size: 11rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #ffffff;
-  border: 1rem solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1rem solid rgba(184, 31, 48, 0.5);
+  background: rgba(184, 31, 48, 0.12);
   padding: 20rem 24rem;
-  margin: 0;
+  margin: clamp(26rem, 3vw, 40rem) 0 0;
 }
 
 .btn:disabled {
@@ -217,20 +280,17 @@
   }
 
   .title {
-    max-width: none;
-    font-size: clamp(42rem, 14vw, 70rem);
-    line-height: 0.92;
-  }
-
-  .dek {
-    max-width: 30ch;
-    font-size: 12rem;
-    line-height: 1.45;
+    font-size: clamp(40rem, 12vw, 66rem);
+    line-height: 0.94;
   }
 
   .form {
     width: 100%;
     min-width: 0;
+  }
+
+  .perks {
+    grid-template-columns: 1fr;
   }
 
   .input {

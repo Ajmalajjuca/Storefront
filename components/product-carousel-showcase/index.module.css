@@ -12,12 +12,8 @@
 }
 
 .frame {
-  --card-width: clamp(220rem, 16vw, 320rem);
-  --card-height: clamp(420rem, 42vw, 560rem);
-  --active-card-scale: 1.12;
-  --card-gap: clamp(24rem, 3vw, 54rem);
   position: relative;
-  min-height: clamp(760rem, 90vh, 880rem);
+  min-height: clamp(560rem, 74vh, 740rem);
   overflow: hidden;
   border-radius: 8rem;
   background: var(--color-off-white);
@@ -143,105 +139,76 @@
 .carousel {
   position: relative;
   display: flex;
+  align-items: center;
   align-self: stretch;
-  align-items: stretch;
   min-width: 0;
-  min-height: 0;
 }
 
-.viewport {
-  position: relative;
+/* Equal-size tiles in a horizontal snap rail. Generous vertical padding gives
+   the hover-zoom room to grow without being clipped by the scroll container. */
+.rail {
   flex: 1;
-  min-height: 0;
-  overflow: visible;
+  min-width: 0;
+  display: flex;
+  gap: clamp(16rem, 1.8vw, 28rem);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: clamp(40rem, 4.5vw, 60rem) clamp(48rem, 5vw, 84rem);
+  margin: clamp(-40rem, -4.5vw, -60rem) 0;
 }
 
-.track {
-  position: absolute;
-  inset: 0;
-  padding: 0 clamp(44rem, 5vw, 80rem);
+.rail::-webkit-scrollbar {
+  display: none;
 }
 
 .card {
-  position: absolute;
-  top: 50%;
-  left: var(--slot-left, 50%);
+  flex: 0 0 auto;
+  width: clamp(228rem, 18vw, 320rem);
+  scroll-snap-align: center;
+}
+
+.cardLink {
+  position: relative;
   display: block;
-  width: var(--card-width);
-  height: var(--card-height);
+  aspect-ratio: 3 / 4;
   overflow: hidden;
-  border-radius: 8rem;
-  background: rgba(255, 255, 255, 0.055);
+  border-radius: 10rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1rem solid rgba(255, 255, 255, 0.1);
   box-shadow:
     inset 0 1rem 0 rgba(255, 255, 255, 0.18),
     inset 0 -1rem 0 rgba(255, 255, 255, 0.05),
     0 22rem 54rem rgba(0, 0, 0, 0.58);
-  backdrop-filter: blur(16rem) saturate(1.18);
-  -webkit-backdrop-filter: blur(16rem) saturate(1.18);
   color: var(--color-off-black);
-  opacity: var(--card-opacity, 0);
-  z-index: var(--card-z, 1);
-  transform: translate3d(-50%, var(--card-y, -50%), 0)
-    scale(var(--card-scale, 0.78));
+  text-decoration: none;
+  transform: scale(1);
   transform-origin: center;
   transition:
-    left 680ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity var(--transition-base),
-    box-shadow var(--transition-base),
-    transform 680ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform 560ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 560ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 560ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
 
-.card:hover {
-  box-shadow:
-    inset 0 1rem 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1rem 0 rgba(255, 255, 255, 0.07),
-    0 0 34rem rgba(184, 31, 48, 0.2),
-    0 26rem 64rem rgba(0, 0, 0, 0.66);
-}
-
-.card:focus-visible {
-  outline: 2rem solid var(--color-accent-bright);
-  outline-offset: 4rem;
-}
-
-.near {
-  --card-opacity: 0.82;
-  --card-scale: 0.9;
-  --card-y: calc(-50% + 20rem);
-  --card-z: 3;
-}
-
-.middle {
-  --card-opacity: 0.62;
-  --card-scale: 0.78;
-  --card-y: calc(-50% + 40rem);
-  --card-z: 2;
-}
-
-.far {
-  --card-opacity: 0.38;
-  --card-scale: 0.68;
-  --card-y: calc(-50% + 56rem);
-  --card-z: 1;
-}
-
-.active {
-  --card-opacity: 1;
-  --card-scale: var(--active-card-scale);
-  --card-y: -50%;
-  --card-z: 5;
+/* Hovering a tile makes it grow + zoom while lifting above its neighbours */
+.cardLink:hover,
+.cardLink:focus-visible {
+  transform: scale(1.08);
+  z-index: 5;
+  border-color: rgba(255, 255, 255, 0.22);
   box-shadow:
     inset 0 1rem 0 rgba(255, 255, 255, 0.24),
-    inset 0 -1rem 0 rgba(255, 255, 255, 0.08),
-    0 0 44rem rgba(184, 31, 48, 0.28),
-    0 34rem 80rem rgba(0, 0, 0, 0.68);
+    0 0 46rem rgba(184, 31, 48, 0.3),
+    0 40rem 84rem rgba(0, 0, 0, 0.66);
 }
 
-.hidden {
-  --card-opacity: 0;
-  --card-scale: 0.52;
-  --card-y: calc(-50% + 72rem);
-  pointer-events: none;
+.cardLink:focus-visible {
+  outline: 2rem solid var(--color-accent-bright);
+  outline-offset: 4rem;
 }
 
 .imageWrap,
@@ -266,19 +233,20 @@
       rgba(255, 255, 255, 0.035) 18%,
       transparent 36%
     ),
-    linear-gradient(180deg, transparent 42%, rgba(0, 0, 0, 0.9) 100%),
+    linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.92) 100%),
     linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent 52%);
   pointer-events: none;
 }
 
 .productImage {
   object-fit: cover;
-  transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform: scale(1.001);
+  transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.card:hover .productImage,
-.active .productImage {
-  transform: scale(1.025);
+.cardLink:hover .productImage,
+.cardLink:focus-visible .productImage {
+  transform: scale(1.1);
 }
 
 .imageFallback {
@@ -292,13 +260,36 @@
     #080808;
 }
 
+/* "Next drop" tag pinned top-left */
+.badge {
+  position: absolute;
+  top: 14rem;
+  left: 14rem;
+  z-index: 3;
+  padding: 6rem 11rem;
+  border-radius: 999rem;
+  border: 1rem solid rgba(255, 255, 255, 0.28);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10rem) saturate(140%);
+  -webkit-backdrop-filter: blur(10rem) saturate(140%);
+  font-family: var(--font-family-sans);
+  font-size: 8rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
 .cardInfo {
   position: absolute;
   right: 18rem;
   bottom: 18rem;
   left: 18rem;
   z-index: 2;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 8rem;
 }
 
@@ -322,10 +313,53 @@
   text-transform: uppercase;
 }
 
+/* Tap affordance — brightens into a red "Notify me" pill on hover */
+.notify {
+  display: inline-flex;
+  align-items: center;
+  gap: 7rem;
+  margin-top: 4rem;
+  padding: 8rem 14rem;
+  border-radius: 999rem;
+  border: 1rem solid rgba(255, 255, 255, 0.26);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10rem);
+  -webkit-backdrop-filter: blur(10rem);
+  font-family: var(--font-family-sans);
+  font-size: 10rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ffffff;
+  opacity: 0.9;
+  transform: translateY(2rem);
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    opacity var(--transition-base),
+    transform var(--transition-base);
+}
+
+.notifyIcon {
+  width: 13rem;
+  height: 13rem;
+}
+
+.cardLink:hover .notify,
+.cardLink:focus-visible .notify {
+  background: rgba(184, 31, 48, 0.92);
+  border-color: rgba(184, 31, 48, 0.92);
+  box-shadow: 0 0 24rem rgba(184, 31, 48, 0.5);
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .arrowButton {
-  position: absolute;
-  top: 50%;
+  position: relative;
   z-index: 4;
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -335,10 +369,10 @@
   border-radius: 999rem;
   background: rgba(0, 0, 0, 0.72);
   color: var(--color-off-black);
+  cursor: pointer;
   box-shadow:
     0 0 0 1rem rgba(255, 255, 255, 0.1),
     0 14rem 34rem rgba(0, 0, 0, 0.56);
-  transform: translateY(-50%);
   transition:
     background var(--transition-base),
     box-shadow var(--transition-base),
@@ -362,20 +396,12 @@
     0 0 0 1rem rgba(255, 255, 255, 0.18),
     0 0 28rem rgba(184, 31, 48, 0.36),
     0 16rem 38rem rgba(0, 0, 0, 0.58);
-  transform: translateY(-50%) scale(1.06);
+  transform: scale(1.06);
 }
 
 .arrowButton:focus-visible {
   outline: 2rem solid var(--color-accent-bright);
   outline-offset: 4rem;
-}
-
-.arrowPrevious {
-  left: clamp(18rem, 3vw, 42rem);
-}
-
-.arrowNext {
-  right: clamp(18rem, 3vw, 42rem);
 }
 
 @media (max-width: 900px) {
@@ -384,7 +410,7 @@
   }
 
   .frame {
-    min-height: clamp(680rem, 86svh, 780rem);
+    min-height: clamp(560rem, 80svh, 700rem);
     border-radius: 0;
   }
 
@@ -409,77 +435,29 @@
     font-size: 14rem;
   }
 
-  .viewport {
-    min-height: clamp(400rem, 74vw, 500rem);
-    overflow-x: auto;
-    overflow-y: visible;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .viewport::-webkit-scrollbar {
-    display: none;
-  }
-
-  .track {
-    position: static;
-    display: grid;
-    grid-template-columns: none;
-    grid-auto-columns: clamp(220rem, 64vw, 300rem);
-    grid-auto-flow: column;
-    gap: 14rem;
-    padding: 24rem var(--grid-margin);
-    transform: none;
+  .rail {
+    padding: 30rem var(--grid-margin);
+    margin: 0;
   }
 
   .card {
-    position: relative;
-    top: auto;
-    left: auto;
-    width: auto;
-    height: clamp(380rem, 90vw, 480rem);
-    opacity: 0.72;
-    transform: scale(0.92);
-    pointer-events: auto;
+    width: clamp(220rem, 64vw, 300rem);
   }
 
-  .middle,
-  .near,
-  .far {
-    opacity: 0.72;
-    transform: scale(0.92);
-    pointer-events: auto;
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  .active {
-    opacity: 1;
+  /* No hover on touch — keep tiles full and tap-navigable */
+  .cardLink:hover,
+  .cardLink:focus-visible {
     transform: scale(1);
   }
 
   .arrowButton {
-    top: auto;
-    bottom: 76rem;
-    width: 38rem;
-    height: 38rem;
-  }
-
-  .arrowPrevious {
-    left: var(--grid-margin);
-  }
-
-  .arrowNext {
-    right: var(--grid-margin);
+    display: none;
   }
 }
 
 @media (max-width: 520px) {
   .frame {
-    min-height: clamp(650rem, 84svh, 720rem);
+    min-height: clamp(520rem, 84svh, 640rem);
   }
 
   .eyebrow {
@@ -492,16 +470,8 @@
     font-size: clamp(30rem, 10vw, 42rem);
   }
 
-  .viewport {
-    min-height: 400rem;
-  }
-
-  .track {
-    grid-auto-columns: clamp(168rem, 66vw, 226rem);
-  }
-
   .card {
-    height: clamp(310rem, 92vw, 380rem);
+    width: clamp(206rem, 70vw, 268rem);
   }
 
   .cardInfo {
@@ -509,8 +479,16 @@
     bottom: 14rem;
     left: 14rem;
   }
+}
 
-  .arrowButton {
-    bottom: 70rem;
+@media (prefers-reduced-motion: reduce) {
+  .cardLink,
+  .productImage,
+  .notify {
+    transition-duration: 200ms;
+  }
+
+  .rail {
+    scroll-behavior: auto;
   }
 }

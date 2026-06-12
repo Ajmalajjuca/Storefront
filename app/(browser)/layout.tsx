@@ -10,7 +10,6 @@ import {
   getServiceBarItems,
   getWhyChooseItems,
 } from "lib/shopify";
-import { formatMoney } from "lib/money";
 import type { Product } from "lib/shopify/types";
 import { Suspense, type ReactNode } from "react";
 
@@ -27,12 +26,10 @@ function mapProductsToCarouselItems(
         id: product.id,
         title: product.title,
         handle: product.handle,
-        price: price
-          ? formatMoney({
-              amount: price.amount,
-              currencyCode: price.currencyCode,
-            })
-          : undefined,
+        // Raw price — the client cards convert/format to the shopper's selected
+        // currency via useDisplayMoney() (reads ?currency= from the URL).
+        priceAmount: price ? Number(price.amount) : undefined,
+        priceCurrencyCode: price?.currencyCode,
         image: image?.url,
         imageAlt: image?.altText ?? product.title,
       };

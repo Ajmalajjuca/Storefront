@@ -1,131 +1,181 @@
 .section {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
+  text-align: center;
+  padding: clamp(110rem, 12vw, 184rem) var(--grid-margin);
   background:
     radial-gradient(
-      ellipse at 78% 28%,
+      ellipse at 50% -8%,
       rgba(184, 31, 48, 0.16),
-      transparent 34%
+      transparent 46%
     ),
     linear-gradient(180deg, #000000 0%, #060606 100%);
-  padding: clamp(104rem, 11vw, 160rem) var(--grid-margin);
-  isolation: isolate;
+}
+
+/* Soft overhead spotlight pooling on the statement */
+.glow {
+  position: absolute;
+  top: -8%;
+  left: 50%;
+  z-index: -1;
+  width: min(940rem, 92%);
+  height: 540rem;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(184, 31, 48, 0.14),
+    transparent 62%
+  );
+  filter: blur(22rem);
+  transform: translateX(-50%);
 }
 
 .watermark {
   position: absolute;
-  right: calc(var(--grid-margin) * -1);
-  bottom: 10rem;
+  bottom: clamp(-28rem, -2vw, -10rem);
+  left: 50%;
   z-index: -1;
   font-family: var(--font-family-display);
-  font-size: clamp(96rem, 20vw, 280rem);
+  font-size: clamp(110rem, 24vw, 360rem);
   font-weight: 500;
   line-height: 0.8;
   letter-spacing: -0.085em;
-  color: rgba(255, 255, 255, 0.035);
+  color: rgba(255, 255, 255, 0.03);
   text-transform: uppercase;
   white-space: nowrap;
+  transform: translateX(-50%);
 }
 
 .inner {
-  max-width: 1280rem;
+  position: relative;
+  max-width: 940rem;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(320rem, 0.8fr);
-  gap: clamp(48rem, 8vw, 118rem);
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
-.left {
-  display: grid;
-  gap: 18rem;
+/* ─── Label row: — MANIFESTO — ────────────────────────────────────────────── */
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 16rem;
+  margin-bottom: clamp(28rem, 3.2vw, 44rem);
 }
 
-.kicker {
-  margin: 0;
+.labelLine {
+  width: clamp(28rem, 5vw, 64rem);
+  height: 1rem;
+  background: linear-gradient(90deg, transparent, rgba(184, 31, 48, 0.85));
+}
+
+.labelLine:last-child {
+  background: linear-gradient(90deg, rgba(184, 31, 48, 0.85), transparent);
+}
+
+.labelText {
   font-family: var(--font-family-sans);
   font-size: 10rem;
   font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
   color: var(--color-accent-bright);
-  text-transform: uppercase;
 }
 
-.quote {
-  font-family: var(--font-family-display);
-  font-size: clamp(48rem, 7vw, 112rem);
-  font-weight: 500;
-  line-height: 0.86;
-  letter-spacing: -0.055em;
-  color: var(--color-off-black);
-  padding-left: clamp(22rem, 2.4vw, 34rem);
-  border-left: 2rem solid #891824;
-  text-transform: uppercase;
-  text-shadow:
-    0 0 32rem rgba(184, 31, 48, 0.18),
-    0 22rem 56rem rgba(0, 0, 0, 0.78);
-}
-
-.right {
-  position: relative;
-  display: grid;
-  gap: 28rem;
-  max-width: 520rem;
-  padding: clamp(28rem, 3vw, 42rem);
-  background: rgba(255, 255, 255, 0.045);
-  border: 1rem solid rgba(255, 255, 255, 0.12);
-  box-shadow:
-    inset 0 1rem 0 rgba(255, 255, 255, 0.12),
-    0 28rem 70rem rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(18rem) saturate(1.12);
-  -webkit-backdrop-filter: blur(18rem) saturate(1.12);
-}
-
-.body {
-  font-family: var(--font-family-sans);
-  font-size: clamp(13rem, 1vw, 15rem);
-  font-weight: 400;
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.72);
+/* ─── Hero statement ──────────────────────────────────────────────────────── */
+.headline {
   margin: 0;
-  text-transform: none;
+  font-family: var(--font-family-display);
+  font-size: clamp(58rem, 1.2vw, 152rem);
+  font-weight: 500;
+  line-height: 0.88;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow:
+    0 0 40rem rgba(184, 31, 48, 0.2),
+    0 24rem 60rem rgba(0, 0, 0, 0.8);
 }
 
-.pill {
-  display: inline-block;
+.headlineAccent {
+  color: var(--color-accent-bright);
+  text-shadow: 0 0 44rem rgba(184, 31, 48, 0.55);
+}
+
+/* ─── Body copy ───────────────────────────────────────────────────────────── */
+.body {
+  display: grid;
+  gap: clamp(18rem, 1.8vw, 24rem);
+  max-width: 680rem;
+  margin: clamp(40rem, 4.4vw, 60rem) auto 0;
+}
+
+.paragraph {
+  margin: 0;
   font-family: var(--font-family-sans);
-  font-size: 9rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  background: var(--color-accent);
-  color: var(--color-off-black);
-  padding: 4rem 9rem;
-  margin-right: 8rem;
-  vertical-align: middle;
+  font-size: clamp(14rem, 1.1vw, 17rem);
+  font-weight: 400;
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+/* First line reads as a brighter lede */
+.paragraph:first-child {
+  font-size: clamp(15rem, 1.25vw, 19rem);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+/* ─── Outro ───────────────────────────────────────────────────────────────── */
+.outro {
+  position: relative;
+  margin: clamp(44rem, 5vw, 68rem) 0 0;
+  padding-top: clamp(40rem, 4.6vw, 60rem);
+  font-family: var(--font-family-display);
+  font-size: clamp(28rem, 3.6vw, 54rem);
+  font-weight: 500;
   line-height: 1;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 0 34rem rgba(184, 31, 48, 0.3);
+}
+
+/* Short vertical accent connecting body to the sign-off */
+.outro::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1rem;
+  height: clamp(24rem, 2.8vw, 36rem);
+  background: linear-gradient(180deg, transparent, rgba(184, 31, 48, 0.9));
+  transform: translateX(-50%);
 }
 
 .meta {
+  margin: clamp(22rem, 2.4vw, 30rem) 0 0;
   font-family: var(--font-family-sans);
   font-size: 10rem;
-  letter-spacing: 0.12em;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.48);
-  margin: 0;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 @media (max-width: 900px) {
   .section {
-    padding: 78rem var(--grid-margin);
-  }
-  .inner {
-    grid-template-columns: 1fr;
-    gap: 32rem;
+    padding: clamp(80rem, 16vw, 110rem) var(--grid-margin);
   }
 
-  .quote {
-    font-size: clamp(42rem, 13vw, 76rem);
+  .headline {
+    font-size: clamp(50rem, 16vw, 92rem);
+  }
+
+  .body {
+    gap: 16rem;
   }
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useDisplayMoney } from "components/currency/use-display-money";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
@@ -9,7 +10,8 @@ export type LatestProductItem = {
   id: string;
   title: string;
   handle?: string;
-  price?: string;
+  priceAmount?: number;
+  priceCurrencyCode?: string;
   image?: string;
   imageAlt?: string;
 };
@@ -23,35 +25,40 @@ const fallbackProducts: LatestProductItem[] = [
     id: "green-dragonfly-top",
     title: "Green Dragonfly Top",
     handle: "green-dragonfly-top",
-    price: "Rs. 4,200",
+    priceAmount: 4200,
+    priceCurrencyCode: "INR",
     image: "/topwearr.png",
   },
   {
     id: "orng-dragonfly-top",
     title: "Orng Dragonfly Top",
     handle: "orng-dragonfly-top",
-    price: "Rs. 4,200",
+    priceAmount: 4200,
+    priceCurrencyCode: "INR",
     image: "/bottomwear.png",
   },
   {
     id: "iron-ladybird-top",
     title: "Iron Ladybird Top",
     handle: "iron-ladybird-top",
-    price: "Rs. 4,300",
+    priceAmount: 4300,
+    priceCurrencyCode: "INR",
     image: "/void-entry-bg.png",
   },
   {
     id: "brunette-crystal-tank",
     title: "Brunette Crystal Tank Top",
     handle: "brunette-crystal-tank",
-    price: "Rs. 5,100",
+    priceAmount: 5100,
+    priceCurrencyCode: "INR",
     image: "/Story_2.png",
   },
   {
     id: "blckole-system-tee",
     title: "BLCKOLE System Tee",
     handle: "blckole-system-tee",
-    price: "Rs. 4,800",
+    priceAmount: 4800,
+    priceCurrencyCode: "INR",
     image: "/blckole-1.png",
   },
 ];
@@ -92,6 +99,7 @@ function ArrowIcon({ direction }: { direction: "left" | "right" }) {
 export function CollectionShowcase({ products }: Props) {
   const items = products && products.length > 0 ? products : fallbackProducts;
   const railRef = useRef<HTMLDivElement>(null);
+  const formatPrice = useDisplayMoney();
 
   function scrollRail(direction: 1 | -1) {
     const rail = railRef.current;
@@ -175,7 +183,9 @@ export function CollectionShowcase({ products }: Props) {
                   <span className={styles.cardText}>
                     <span className={styles.cardName}>{item.title}</span>
                     <span className={styles.cardPrice}>
-                      {item.price ?? "View piece"}
+                      {item.priceAmount != null && item.priceCurrencyCode
+                        ? formatPrice(item.priceAmount, item.priceCurrencyCode)
+                        : "View piece"}
                     </span>
                   </span>
                   <span className={styles.plus}>

@@ -1,22 +1,17 @@
 "use client";
 
+import { useDisplayMoney } from "components/currency/use-display-money";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  type CSSProperties,
-  type KeyboardEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { type CSSProperties, useMemo, useRef } from "react";
 import styles from "./index.module.css";
 
 export type ProductCarouselShowcaseItem = {
   id: string;
   title: string;
   handle?: string;
-  price?: string;
+  priceAmount?: number;
+  priceCurrencyCode?: string;
   image?: string;
   imageAlt?: string;
 };
@@ -24,154 +19,38 @@ export type ProductCarouselShowcaseItem = {
 type Props = {
   products?: ProductCarouselShowcaseItem[];
   backgroundImage?: string;
+  /** Kept for compatibility; the rail now sizes tiles equally. */
   visibleProductCount?: 5 | 7;
 };
 
 const defaultBackgroundImage = "/bg-carousel1.png";
-const activeCardScale = 1.12;
-
-function getWrappedIndex(index: number, total: number) {
-  return ((index % total) + total) % total;
-}
-
-function getSlotClassName(offset: number) {
-  const distance = Math.abs(offset);
-
-  if (distance === 0) return styles.active;
-  if (distance === 1) return styles.near;
-  if (distance === 2) return styles.middle;
-
-  return styles.far;
-}
 
 export function ProductCarouselShowcase({
   products = [],
   backgroundImage = defaultBackgroundImage,
-  visibleProductCount = 7,
 }: Props) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [stageStyle, setStageStyle] = useState<CSSProperties>({});
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<Array<HTMLAnchorElement | HTMLButtonElement | null>>(
-    [],
-  );
-  const productCount = products.length;
-
-  useEffect(() => {
-    if (activeIndex > productCount - 1) {
-      setActiveIndex(0);
-    }
-  }, [activeIndex, productCount]);
-
-  const sideCount = visibleProductCount === 5 ? 2 : 3;
-  const effectiveSideCount = Math.min(
-    sideCount,
-    Math.max(0, Math.floor((productCount - 1) / 2)),
-  );
-  const slotStep = effectiveSideCount > 0 ? 38 / effectiveSideCount : 0;
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!window.matchMedia("(max-width: 900px)").matches) return;
-
-    cardRefs.current[activeIndex]?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
-    });
-  }, [activeIndex]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-
-    const updateStageSize = () => {
-      const { width, height } = viewport.getBoundingClientRect();
-      const isMobile = window.matchMedia("(max-width: 900px)").matches;
-
-      if (isMobile || width <= 0 || height <= 0) {
-        setStageStyle({});
-        return;
-      }
-
-      const safeHeight = Math.max(360, height - 30);
-      const cardHeight = Math.min(
-        560,
-        Math.max(420, safeHeight / activeCardScale),
-      );
-      const availableWidth = Math.max(420, width - 120);
-      const widthBySlots = availableWidth / (visibleProductCount + 0.35);
-      const cardWidth = Math.min(
-        320,
-        Math.max(220, Math.min(widthBySlots, cardHeight * 0.68)),
-      );
-
-      const nextStageStyle = {
-        "--card-width": `${Math.round(cardWidth)}px`,
-        "--card-height": `${Math.round(cardHeight)}px`,
-        "--active-card-scale": String(activeCardScale),
-      } as CSSProperties;
-
-      setStageStyle((currentStageStyle) => {
-        if (
-          currentStageStyle["--card-width" as keyof CSSProperties] ===
-            nextStageStyle["--card-width" as keyof CSSProperties] &&
-          currentStageStyle["--card-height" as keyof CSSProperties] ===
-            nextStageStyle["--card-height" as keyof CSSProperties] &&
-          currentStageStyle["--active-card-scale" as keyof CSSProperties] ===
-            nextStageStyle["--active-card-scale" as keyof CSSProperties]
-        ) {
-          return currentStageStyle;
-        }
-
-        return nextStageStyle;
-      });
-    };
-
-    updateStageSize();
-
-    const resizeObserver = new ResizeObserver(updateStageSize);
-    resizeObserver.observe(viewport);
-    window.addEventListener("resize", updateStageSize);
-
-    return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener("resize", updateStageSize);
-    };
-  }, [visibleProductCount]);
+  const railRef = useRef<HTMLDivElement>(null);
+  const formatPrice = useDisplayMoney();
 
   const frameStyle = useMemo(
     () =>
       ({
         "--product-carousel-bg": `url("${backgroundImage}")`,
-        ...stageStyle,
       }) as CSSProperties,
-    [backgroundImage, stageStyle],
+    [backgroundImage],
   );
 
-  if (productCount === 0) return null;
+  if (products.length === 0) return null;
 
-  const goToPrevious = () => {
-    setActiveIndex((index) => (index === 0 ? productCount - 1 : index - 1));
-  };
-
-  const goToNext = () => {
-    setActiveIndex((index) => (index + 1) % productCount);
-  };
-
-  const onArrowKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      goToPrevious();
-    }
-
-    if (event.key === "ArrowRight") {
-      event.preventDefault();
-      goToNext();
-    }
-  };
+  function scrollRail(direction: 1 | -1) {
+    const rail = railRef.current;
+    if (!rail) return;
+    const card = rail.querySelector<HTMLElement>(`.${styles.card}`);
+    const step = card
+      ? card.offsetWidth + 24
+      : Math.round(rail.clientWidth * 0.7);
+    rail.scrollBy({ left: direction * step, behavior: "smooth" });
+  }
 
   return (
     <section
@@ -184,118 +63,91 @@ export function ProductCarouselShowcase({
 
         <div className={styles.content}>
           <header className={styles.header}>
-            <p className={styles.eyebrow}>Latest drop</p>
+            <p className={styles.eyebrow}>Upcoming Collection</p>
             <h2 id="product-carousel-showcase-title" className={styles.title}>
-              UNLEASH THE PSYCHO IN STYLE
+              The next drop is coming
             </h2>
-            <p className={styles.subtitle}>Explore the latest BLCKOLE drops</p>
           </header>
 
-          <div className={styles.carousel} aria-label="Product carousel">
+          <div className={styles.carousel} aria-label="Upcoming drop carousel">
             <button
               type="button"
               className={`${styles.arrowButton} ${styles.arrowPrevious}`}
-              aria-label="Show previous product"
-              onClick={goToPrevious}
-              onKeyDown={onArrowKeyDown}
+              aria-label="Scroll to previous"
+              onClick={() => scrollRail(-1)}
             >
               <span aria-hidden="true">&lsaquo;</span>
             </button>
 
-            <div className={styles.viewport} ref={viewportRef}>
-              <div className={styles.track}>
-                {products.map((product, productIndex) => {
-                  const offset = getWrappedIndex(
-                    productIndex - activeIndex,
-                    productCount,
-                  );
-                  const circularOffset =
-                    offset > productCount / 2 ? offset - productCount : offset;
-                  const isVisible =
-                    Math.abs(circularOffset) <= effectiveSideCount;
-                  const clampedOffset = Math.max(
-                    -(effectiveSideCount + 1),
-                    Math.min(effectiveSideCount + 1, circularOffset),
-                  );
-                  const slotLeft = 50 + clampedOffset * slotStep;
-                  const href = product.handle
-                    ? `/products/${product.handle}`
-                    : undefined;
-                  const isActive = productIndex === activeIndex;
-                  const cardClassName = `${styles.card} ${
-                    isVisible ? getSlotClassName(circularOffset) : styles.hidden
-                  }`;
-                  const commonProps = {
-                    className: cardClassName,
-                    style: { "--slot-left": `${slotLeft}%` } as CSSProperties,
-                    "aria-current": isActive ? ("true" as const) : undefined,
-                    "aria-hidden": isVisible ? undefined : true,
-                    tabIndex: isVisible ? undefined : -1,
-                    ref: (
-                      node: HTMLAnchorElement | HTMLButtonElement | null,
-                    ) => {
-                      cardRefs.current[productIndex] = node;
-                    },
-                  };
+            <div className={styles.rail} ref={railRef}>
+              {products.map((product) => {
+                const href = `/prebook/${product.handle ?? "next-drop"}`;
 
-                  const cardContent = (
-                    <>
+                return (
+                  <article key={product.id} className={styles.card}>
+                    <Link
+                      href={href}
+                      className={styles.cardLink}
+                      aria-label={`Prebook ${product.title}`}
+                    >
                       <span className={styles.imageWrap}>
                         {product.image ? (
                           <Image
                             src={product.image}
                             alt={product.imageAlt ?? product.title}
                             fill
-                            sizes="(max-width: 720px) 66vw, 340px"
+                            sizes="(max-width: 900px) 64vw, 320px"
                             className={styles.productImage}
                           />
                         ) : (
                           <span className={styles.imageFallback} />
                         )}
                       </span>
+
+                      <span className={styles.badge}>Next drop</span>
+
                       <span className={styles.cardInfo}>
                         <span className={styles.productTitle}>
                           {product.title}
                         </span>
-                        {product.price ? (
+                        {product.priceAmount != null &&
+                        product.priceCurrencyCode ? (
                           <span className={styles.productPrice}>
-                            {product.price}
+                            {formatPrice(
+                              product.priceAmount,
+                              product.priceCurrencyCode,
+                            )}
                           </span>
                         ) : null}
+                        <span className={styles.notify}>
+                          Notify me
+                          <svg
+                            className={styles.notifyIcon}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            aria-hidden
+                          >
+                            <path
+                              d="M5 12h14M13 6l6 6-6 6"
+                              strokeWidth="1.8"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </span>
                       </span>
-                    </>
-                  );
-
-                  return href ? (
-                    <Link
-                      key={product.id}
-                      href={href}
-                      aria-label={`View ${product.title}`}
-                      {...commonProps}
-                    >
-                      {cardContent}
                     </Link>
-                  ) : (
-                    <button
-                      key={product.id}
-                      type="button"
-                      aria-label={product.title}
-                      onClick={() => setActiveIndex(productIndex)}
-                      {...commonProps}
-                    >
-                      {cardContent}
-                    </button>
-                  );
-                })}
-              </div>
+                  </article>
+                );
+              })}
             </div>
 
             <button
               type="button"
               className={`${styles.arrowButton} ${styles.arrowNext}`}
-              aria-label="Show next product"
-              onClick={goToNext}
-              onKeyDown={onArrowKeyDown}
+              aria-label="Scroll to next"
+              onClick={() => scrollRail(1)}
             >
               <span aria-hidden="true">&rsaquo;</span>
             </button>

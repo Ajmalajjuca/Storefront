@@ -1,6 +1,7 @@
 "use client";
 
 import { useDisplayMoney } from "components/currency/use-display-money";
+import { WishlistButton } from "components/wishlist/wishlist-button";
 import { motion, useInView } from "framer-motion";
 import type { Product } from "lib/shopify/types";
 import Image from "next/image";
@@ -44,6 +45,15 @@ export function ProductCard({ product, index, priority = false }: Props) {
     ? `/products/${product.handle}?currency=${encodeURIComponent(currency)}`
     : `/products/${product.handle}`;
 
+  const wishlistItem = {
+    handle: product.handle,
+    title: product.title,
+    image: image?.url,
+    imageAlt: image?.altText ?? product.title,
+    priceAmount: priceAmount ?? undefined,
+    priceCurrencyCode: price.currencyCode,
+  };
+
   return (
     <motion.div
       className={styles.root}
@@ -55,6 +65,11 @@ export function ProductCard({ product, index, priority = false }: Props) {
         ease: [0.23, 1, 0.32, 1],
       }}
     >
+      <WishlistButton
+        item={wishlistItem}
+        variant="overlay"
+        className={styles.wishlist}
+      />
       <Link
         href={href}
         className={styles.wrapper}

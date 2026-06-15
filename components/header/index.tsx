@@ -3,6 +3,7 @@
 import {
   Bars3Icon,
   BookOpenIcon,
+  HeartIcon,
   HomeIcon,
   MagnifyingGlassIcon,
   ShoppingBagIcon,
@@ -10,6 +11,7 @@ import {
   UserIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { useWishlist } from "components/wishlist/wishlist-context";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
@@ -161,6 +163,7 @@ export function Header({
   const headerRef = useRef<HTMLElement>(null);
   const lastPointer = useRef({ x: 0, y: 0, time: 0 });
   const pathname = usePathname();
+  const { count: wishlistCount, ready: wishlistReady } = useWishlist();
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -384,6 +387,18 @@ export function Header({
             <NavLink key={`${item.title}-${item.href}`} item={item} />
           ))}
         </nav>
+        <Link
+          href="/wishlist"
+          className={styles.cartBtn}
+          aria-label={`Open wishlist, ${wishlistReady ? wishlistCount : 0} items`}
+          data-label="Wishlist"
+        >
+          <HeartIcon className={styles.navIcon} aria-hidden />
+          <span className={styles.navLabel}>Wishlist</span>
+          {wishlistReady && wishlistCount > 0 ? (
+            <span className={styles.navCount}>{wishlistCount}</span>
+          ) : null}
+        </Link>
         <button
           type="button"
           className={styles.cartBtn}

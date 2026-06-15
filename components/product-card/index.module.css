@@ -1,6 +1,14 @@
 .root {
+  position: relative;
   width: 100%;
   height: 100%;
+}
+
+.wishlist {
+  position: absolute;
+  top: 12rem;
+  right: 12rem;
+  z-index: 3;
 }
 
 .wrapper {

@@ -1,6 +1,7 @@
 import { CartProvider } from "components/cart/cart-context";
 import { CustomCursor } from "components/custom-cursor";
 import { SiteShell } from "components/site-shell";
+import { WishlistProvider } from "components/wishlist/wishlist-context";
 import { CUSTOMER_ACCOUNT_PROFILE_URL } from "lib/constants";
 import { getCart } from "lib/shopify";
 import { baseUrl } from "lib/utils";
@@ -72,17 +73,19 @@ export default async function RootLayout({
       </head>
       <body>
         <CartProvider cartPromise={cart}>
-          <CustomCursor />
-          <Suspense fallback={null}>
-            <SiteShell
-              leftNavItems={leftNavItems}
-              rightNavItems={rightNavItems}
-              logoSrc="/logo-lockup-white.png"
-              locales={["EN", "IN"]}
-            >
-              {children}
-            </SiteShell>
-          </Suspense>
+          <WishlistProvider>
+            <CustomCursor />
+            <Suspense fallback={null}>
+              <SiteShell
+                leftNavItems={leftNavItems}
+                rightNavItems={rightNavItems}
+                logoSrc="/logo-lockup-white.png"
+                locales={["EN", "IN"]}
+              >
+                {children}
+              </SiteShell>
+            </Suspense>
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>

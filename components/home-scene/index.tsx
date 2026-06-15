@@ -5,6 +5,7 @@ import { Footer } from "components/footer";
 import { Manifesto } from "components/manifesto";
 import { Newsletter } from "components/newsletter";
 import { PressQuote } from "components/press-quote";
+import { BlurText } from "components/react-bits/blur-text";
 import {
   ProductCarouselShowcase,
   type ProductCarouselShowcaseItem,
@@ -90,32 +91,45 @@ function WhyBlckole({ items }: { items?: WhyChooseItem[] }) {
       </header>
 
       <div className={styles.storyContent}>
-        <p className={styles.storyLead}>{brandStory[0]}</p>
+        <BlurText
+          className={styles.storyLead}
+          text={brandStory[0] ?? ""}
+          delay={75}
+          direction="bottom"
+          threshold={0.45}
+          stepDuration={0.4}
+        />
 
         <div className={styles.storyColumns}>
           <div className={styles.storyColumn}>
             {brandStory.slice(1, 5).map((paragraph, index) => (
-              <p
+              <BlurText
                 key={paragraph}
+                text={paragraph}
                 className={index === 2 ? styles.storyCallout : undefined}
-              >
-                {paragraph}
-              </p>
+                delay={index === 2 ? 55 : 24}
+                direction="bottom"
+                threshold={0.25}
+                stepDuration={0.3}
+              />
             ))}
           </div>
 
           <div className={styles.storyColumn}>
             {brandStory.slice(5).map((paragraph, index) => (
-              <p
+              <BlurText
                 key={paragraph}
+                text={paragraph}
                 className={
                   index === brandStory.slice(5).length - 1
                     ? styles.storyWelcome
                     : undefined
                 }
-              >
-                {paragraph}
-              </p>
+                delay={24}
+                direction="bottom"
+                threshold={0.25}
+                stepDuration={0.3}
+              />
             ))}
           </div>
         </div>

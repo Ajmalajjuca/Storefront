@@ -1,0 +1,79 @@
+.button {
+  --accent-red: 255, 46, 58;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  cursor: pointer;
+  color: #ffffff;
+  border-radius: 50%;
+  transition:
+    color var(--transition-base),
+    background var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-base);
+}
+
+.icon {
+  width: 60%;
+  height: 60%;
+}
+
+/* Floating chip placed over product imagery */
+.overlay {
+  width: 36rem;
+  height: 36rem;
+  border: 1rem solid rgba(255, 255, 255, 0.22);
+  background: rgba(10, 10, 12, 0.45);
+  backdrop-filter: blur(10rem) saturate(140%);
+  -webkit-backdrop-filter: blur(10rem) saturate(140%);
+  box-shadow: inset 0 1rem 0 rgba(255, 255, 255, 0.16);
+}
+
+.overlay:hover {
+  transform: scale(1.08);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(10, 10, 12, 0.6);
+}
+
+/* Bare icon button for nav / toolbars */
+.inline {
+  width: 40rem;
+  height: 40rem;
+  border: 1rem solid rgba(255, 255, 255, 0.085);
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 1rem 0 rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.inline:hover {
+  transform: scale(1.06);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.13);
+}
+
+/* Saved state — soft red */
+.active {
+  color: rgba(var(--accent-red), 1);
+  border-color: rgba(var(--accent-red), 0.6);
+}
+
+.active.overlay {
+  background: rgba(var(--accent-red), 0.16);
+  box-shadow: 0 0 18rem rgba(var(--accent-red), 0.4);
+}
+
+.active.inline {
+  background: rgba(var(--accent-red), 0.14);
+}
+
+.active:hover {
+  color: rgba(var(--accent-red), 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+}

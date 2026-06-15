@@ -34,26 +34,12 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(
-      circle at 76% 34%,
-      rgba(137, 24, 36, 0.12),
-      transparent 28%
-    ),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1rem, transparent 1rem);
-  background-size:
-    auto,
-    calc((100vw - var(--grid-margin) * 2) / 12) 100%;
-  opacity: 0.7;
-}
-
-.whySection::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 1rem;
+  background: radial-gradient(
+    circle at 78% 38%,
+    rgba(137, 24, 36, 0.09),
+    transparent 32%
+  );
+  opacity: 0.8;
 }
 
 .whyIntro,
@@ -108,15 +94,15 @@
 }
 
 .storyContent {
-  width: min(1180rem, 82vw);
+  width: min(1080rem, 78vw);
   margin: clamp(72rem, 8vw, 112rem) auto clamp(88rem, 9vw, 144rem);
 }
 
 .storyLead {
-  max-width: 980rem;
+  max-width: 900rem;
   margin: 0 0 clamp(64rem, 7vw, 104rem);
   font-family: var(--font-family-display);
-  font-size: clamp(42rem, 6vw, 92rem);
+  font-size: clamp(40rem, 3.6vw, 82rem);
   font-weight: 500;
   line-height: 0.96;
   letter-spacing: -0.045em;
@@ -127,7 +113,7 @@
 .storyColumns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(64rem, 9vw, 148rem);
+  gap: clamp(64rem, 8vw, 124rem);
   padding-top: clamp(34rem, 4vw, 58rem);
   border-top: 1rem solid rgba(255, 255, 255, 0.16);
 }
@@ -141,11 +127,11 @@
 .storyColumn p {
   margin: 0;
   font-family: var(--font-family-sans);
-  font-size: clamp(14rem, 1.12vw, 17rem);
+  font-size: clamp(13rem, 1vw, 16rem);
   font-weight: 400;
   line-height: 1.75;
   letter-spacing: 0.005em;
-  color: rgba(255, 255, 255, 0.64);
+  color: rgba(255, 255, 255, 0.58);
   text-transform: none;
 }
 
@@ -175,15 +161,15 @@
   align-items: center;
   gap: 32rem;
   margin: clamp(58rem, 6vw, 88rem) 0 0;
-  padding-top: 26rem;
+  padding-top: clamp(28rem, 3vw, 42rem);
   border-top: 1rem solid rgba(255, 255, 255, 0.16);
-  font-family: var(--font-family-sans);
-  font-size: clamp(11rem, 0.9vw, 14rem);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: 0.14em;
+  font-family: var(--font-family-display);
+  font-size: clamp(26rem, 3vw, 46rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
   color: #ffffff;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .storyClosing span {
@@ -196,41 +182,25 @@
 }
 
 .valueStrip {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(22rem, 4vw, 64rem);
+  padding: 28rem 0;
   border-top: 1rem solid rgba(255, 255, 255, 0.14);
-  border-bottom: 1rem solid rgba(255, 255, 255, 0.14);
 }
 
 .valueItem {
-  display: flex;
-  align-items: center;
-  gap: 14rem;
-  min-height: 84rem;
-  padding: 20rem clamp(12rem, 2vw, 30rem);
-  border-right: 1rem solid rgba(255, 255, 255, 0.14);
-}
-
-.valueItem:last-child {
-  border-right: 0;
-}
-
-.valueMarker {
-  font-family: var(--font-family-sans);
-  font-size: 9rem;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: 0.08em;
-  color: var(--color-accent-bright);
+  padding: 0;
 }
 
 .valueTitle {
   font-family: var(--font-family-sans);
-  font-size: clamp(11rem, 1vw, 15rem);
-  font-weight: 400;
+  font-size: clamp(10rem, 0.9vw, 13rem);
+  font-weight: 500;
   line-height: 1.2;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.78);
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.58);
   text-transform: uppercase;
 }
 
@@ -286,14 +256,8 @@
   }
 
   .valueStrip {
+    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .valueItem:nth-child(2) {
-    border-right: 0;
-  }
-
-  .valueItem:nth-child(-n + 2) {
-    border-bottom: 1rem solid rgba(255, 255, 255, 0.14);
+    gap: 22rem;
   }
 }

@@ -65,7 +65,7 @@ const brandValues: WhyChooseItem[] = [
 ];
 
 const brandStory = [
-  "We all carry a space within us.",
+  "Inside every one of us is an unknown waiting to become a universe.",
   "A space filled with unfinished dreams, untold stories, unanswered questions, and endless possibilities.",
   "Most people fear it.",
   "We call it BLCKOLE.",
@@ -127,11 +127,8 @@ function WhyBlckole({ items }: { items?: WhyChooseItem[] }) {
       </div>
 
       <div className={styles.valueStrip} aria-label="Brand values">
-        {displayItems.slice(0, 4).map((item, index) => (
+        {displayItems.slice(0, 4).map((item) => (
           <div key={item.title} className={styles.valueItem}>
-            <span className={styles.valueMarker} aria-hidden="true">
-              {String(index + 1).padStart(2, "0")}
-            </span>
             <span className={styles.valueTitle}>{item.title}</span>
           </div>
         ))}

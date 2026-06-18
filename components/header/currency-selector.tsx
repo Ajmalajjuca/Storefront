@@ -1,6 +1,7 @@
 "use client";
 
 import { GlobeAltIcon } from "@heroicons/react/24/outline";
+import { useCurrencyPreference } from "components/currency/currency-preference-context";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import {
@@ -21,25 +22,25 @@ export function CurrencySelector({
   activeMarket = CURRENCY_MARKETS[0],
   markets = CURRENCY_MARKETS,
 }: Props) {
+  const { activeMarket: savedMarket, setCountryCode } = useCurrencyPreference();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [activeCountry, setActiveCountry] = useState(activeMarket.countryCode);
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const currencyParam = searchParams.get("currency");
+  const activeCountry = savedMarket.countryCode;
   const activeCurrency =
     markets.find((market) => market.countryCode === activeCountry) ??
+    savedMarket ??
     activeMarket;
 
   useEffect(() => {
-    setActiveCountry(
-      currencyParam
-        ? getMarketByCurrencyOrCountry(currencyParam).countryCode
-        : activeMarket.countryCode,
-    );
-  }, [activeMarket.countryCode, currencyParam]);
+    if (!currencyParam) return;
+
+    setCountryCode(getMarketByCurrencyOrCountry(currencyParam).countryCode);
+  }, [currencyParam, setCountryCode]);
 
   useEffect(() => {
     if (!open) return;
@@ -65,7 +66,7 @@ export function CurrencySelector({
 
   function pick(countryCode: SupportedCountryCode) {
     const market = markets.find((item) => item.countryCode === countryCode);
-    setActiveCountry(countryCode);
+    setCountryCode(countryCode);
     setOpen(false);
     startTransition(async () => {
       const result = await selectCurrency(countryCode);

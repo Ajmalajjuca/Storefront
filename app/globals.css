@@ -88,7 +88,7 @@ html {
     );
     --font-size-heading: clamp(34rem, 9vw, 56rem);
     --font-size-hero: clamp(48rem, 14vw, 86rem);
-    --header-height: 100rem;
+    --header-height: 64rem;
   }
 }
 

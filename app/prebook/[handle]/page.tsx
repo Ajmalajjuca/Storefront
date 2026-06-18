@@ -1,5 +1,6 @@
 import { Footer } from "components/footer";
 import {
+  CURRENCY_COUNTRY_COOKIE,
   getMarketByCurrencyOrCountry,
   type SupportedCurrencyCode,
 } from "lib/currency";
@@ -7,6 +8,7 @@ import { getExchangeRates } from "lib/exchange-rates";
 import { formatMoney } from "lib/money";
 import { getProduct } from "lib/shopify";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { NotifyForm } from "./notify-form";
@@ -78,9 +80,11 @@ export default async function PrebookPage(props: {
 }) {
   const { handle } = await props.params;
   const searchParams = await props.searchParams;
+  const cookieStore = await cookies();
+  const savedCurrencyCountry = cookieStore.get(CURRENCY_COUNTRY_COOKIE)?.value;
   const drop = await resolveDrop(
     handle,
-    resolveDisplayCurrency(searchParams?.currency),
+    resolveDisplayCurrency(searchParams?.currency ?? savedCurrencyCountry),
   );
 
   return (

@@ -825,15 +825,34 @@
 }
 
 .mobileMenuFooter .currencySelector {
+  position: relative;
   width: 100%;
+  z-index: 2;
+}
+
+.mobileMenuFooter .currencySelector:has(.currencyMenu)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: rgba(5, 5, 7, 0.42);
+  backdrop-filter: blur(8rem) saturate(120%);
+  -webkit-backdrop-filter: blur(8rem) saturate(120%);
 }
 
 .mobileMenuFooter .currencyMenu {
+  position: absolute;
+  top: auto;
+  bottom: calc(100% + 12rem);
   left: 0;
   right: 0;
+  z-index: 1;
+  width: 100%;
   min-width: 0;
   max-height: min(320rem, 54dvh);
   overflow-y: auto;
+  background: rgba(20, 20, 22, 0.9);
 }
 
 .mobileMenuFooter .navLink::before {
@@ -849,9 +868,10 @@
     grid-template-columns: 1fr auto 1fr;
     top: 0;
     width: 100%;
-    min-height: 66rem;
-    gap: 12rem;
-    padding: 8rem 12rem;
+    height: 64rem;
+    min-height: 64rem;
+    gap: 10rem;
+    padding: 6rem 10rem;
     border-radius: 0;
   }
   .zoneLeft,
@@ -863,6 +883,11 @@
     align-items: center;
     grid-column: 1;
     justify-self: start;
+  }
+  .header .mobileMenuBtn {
+    width: 38rem;
+    height: 38rem;
+    flex-basis: 38rem;
   }
   .logoLink {
     grid-column: 2;
@@ -878,9 +903,9 @@
     font-size: 10rem;
   }
   .cartBtn {
-    width: 42rem;
-    height: 42rem;
-    flex-basis: 42rem;
+    width: 38rem;
+    height: 38rem;
+    flex-basis: 38rem;
     justify-content: center;
     gap: 0;
     padding: 0;
@@ -889,19 +914,19 @@
     display: none;
   }
   .cartBtn .navIcon {
-    width: 22rem;
-    height: 22rem;
+    width: 20rem;
+    height: 20rem;
   }
   .cartBtn .navCount {
     top: -5rem;
     right: -5rem;
   }
   .logoImg {
-    height: 34rem;
+    height: 30rem;
   }
   .logoLink {
-    padding: 7rem 12rem;
-    border-radius: 13rem;
+    padding: 5rem 10rem;
+    border-radius: 12rem;
   }
 }
 

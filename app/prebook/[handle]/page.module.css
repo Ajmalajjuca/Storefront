@@ -340,11 +340,28 @@
 }
 
 @media (max-width: 520px) {
+  .notifyBlock {
+    padding: 22rem 16rem;
+  }
+
   .field {
     flex-direction: column;
+    gap: 12rem;
+  }
+
+  .input,
+  .submit {
+    width: 100%;
+    min-height: 54rem;
+  }
+
+  .input {
+    padding: 0 18rem;
+    font-size: 16rem;
+    line-height: 1.2;
   }
 
   .submit {
-    width: 100%;
+    font-size: 12rem;
   }
 }

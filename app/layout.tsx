@@ -1,12 +1,15 @@
 import { CartProvider } from "components/cart/cart-context";
+import { CurrencyPreferenceProvider } from "components/currency/currency-preference-context";
 import { ExchangeRatesProvider } from "components/currency/exchange-rates-context";
 import { CustomCursor } from "components/custom-cursor";
 import { SiteShell } from "components/site-shell";
 import { WishlistProvider } from "components/wishlist/wishlist-context";
 import { CUSTOMER_ACCOUNT_PROFILE_URL } from "lib/constants";
+import { CURRENCY_COUNTRY_COOKIE, getMarketByCountry } from "lib/currency";
 import { getExchangeRates } from "lib/exchange-rates";
 import { getCart } from "lib/shopify";
 import { baseUrl } from "lib/utils";
+import { cookies } from "next/headers";
 import { ReactNode, Suspense } from "react";
 import "./globals.css";
 
@@ -41,6 +44,10 @@ export default async function RootLayout({
   });
 
   const exchangeRates = await getExchangeRates();
+  const cookieStore = await cookies();
+  const activeMarket = getMarketByCountry(
+    cookieStore.get(CURRENCY_COUNTRY_COOKIE)?.value,
+  );
 
   const leftNavItems = [
     { title: "ENTRY", href: "/" },
@@ -77,21 +84,23 @@ export default async function RootLayout({
       </head>
       <body>
         <CartProvider cartPromise={cart}>
-          <ExchangeRatesProvider rates={exchangeRates}>
-            <WishlistProvider>
-              <CustomCursor />
-              <Suspense fallback={null}>
-                <SiteShell
-                  leftNavItems={leftNavItems}
-                  rightNavItems={rightNavItems}
-                  logoSrc="/logo-lockup-white.png"
-                  locales={["EN", "IN"]}
-                >
-                  {children}
-                </SiteShell>
-              </Suspense>
-            </WishlistProvider>
-          </ExchangeRatesProvider>
+          <CurrencyPreferenceProvider initialMarket={activeMarket}>
+            <ExchangeRatesProvider rates={exchangeRates}>
+              <WishlistProvider>
+                <CustomCursor />
+                <Suspense fallback={null}>
+                  <SiteShell
+                    leftNavItems={leftNavItems}
+                    rightNavItems={rightNavItems}
+                    logoSrc="/logo-lockup-white.png"
+                    locales={["EN", "IN"]}
+                  >
+                    {children}
+                  </SiteShell>
+                </Suspense>
+              </WishlistProvider>
+            </ExchangeRatesProvider>
+          </CurrencyPreferenceProvider>
         </CartProvider>
       </body>
     </html>

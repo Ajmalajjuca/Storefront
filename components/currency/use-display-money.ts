@@ -1,5 +1,6 @@
 "use client";
 
+import { useCurrencyPreference } from "components/currency/currency-preference-context";
 import {
   getMarketByCurrencyOrCountry,
   isSupportedCurrencyCode,
@@ -7,7 +8,7 @@ import {
 } from "lib/currency";
 import { formatMoney } from "lib/money";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useExchangeRates } from "./exchange-rates-context";
 
 function getCurrencyFromSearchParam(
@@ -23,12 +24,20 @@ function getCurrencyFromSearchParam(
 
 export function useDisplayMoney() {
   const searchParams = useSearchParams();
+  const { activeMarket, setCountryCode } = useCurrencyPreference();
   const rates = useExchangeRates();
   const currencyParam = searchParams.get("currency");
   const displayCurrencyCode = useMemo(
-    () => getCurrencyFromSearchParam(currencyParam),
-    [currencyParam],
+    () =>
+      getCurrencyFromSearchParam(currencyParam) ?? activeMarket.currencyCode,
+    [activeMarket.currencyCode, currencyParam],
   );
+
+  useEffect(() => {
+    if (!currencyParam) return;
+
+    setCountryCode(getMarketByCurrencyOrCountry(currencyParam).countryCode);
+  }, [currencyParam, setCountryCode]);
 
   return useCallback(
     (amount: string | number, currencyCode: string) =>

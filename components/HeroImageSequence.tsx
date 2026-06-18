@@ -78,7 +78,7 @@ export default function HeroImageSequence({
     if (isSafeFallback) return;
 
     let isMounted = true;
-    let currentFrame = 1;
+    let currentFrame = 0;
 
     const renderFrame = (index: number) => {
       const canvas = canvasRef.current;
@@ -170,6 +170,7 @@ export default function HeroImageSequence({
       });
 
       if (!isMounted || !imagesRef.current[1]) return;
+      requestAnimationFrame(() => renderFrame(1));
       onScroll();
 
       for (let i = 2; i <= activeFrameCount; i++) {
@@ -225,17 +226,32 @@ export default function HeroImageSequence({
             }}
           />
         ) : (
-          <canvas
-            ref={canvasRef}
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              display: "block",
-              zIndex: 0,
-            }}
-          />
+          <>
+            <img
+              src={activeFallbackImage}
+              alt=""
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                zIndex: 0,
+              }}
+            />
+            <canvas
+              ref={canvasRef}
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                display: "block",
+                zIndex: 1,
+              }}
+            />
+          </>
         )}
 
         {/* Dark gradient overlay for readability */}
@@ -250,7 +266,7 @@ export default function HeroImageSequence({
   linear-gradient(to bottom, rgba(3,3,3,0.2) 0%, rgba(3,3,3,0.7) 100%)
 `,
             pointerEvents: "none",
-            zIndex: 0,
+            zIndex: 2,
           }}
         />
 
@@ -258,7 +274,7 @@ export default function HeroImageSequence({
         <div
           style={{
             position: "relative",
-            zIndex: 1,
+            zIndex: 3,
             width: "100%",
             height: "100%",
           }}

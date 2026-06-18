@@ -74,8 +74,9 @@ html {
   --ease-out-expo: cubic-bezier(0.23, 1, 0.32, 1);
   --transition-base: 0.3s var(--ease-out-expo);
 
-  /* Header */
-  --header-height: 40rem;
+  /* Header — must match the fixed bar height in
+     components/header/index.module.css (.header { height }) */
+  --header-height: 100rem;
 }
 
 @media (max-width: 900px) {
@@ -87,7 +88,7 @@ html {
     );
     --font-size-heading: clamp(34rem, 9vw, 56rem);
     --font-size-hero: clamp(48rem, 14vw, 86rem);
-    --header-height: 44rem;
+    --header-height: 100rem;
   }
 }
 

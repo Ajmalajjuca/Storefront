@@ -654,10 +654,16 @@
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: rgba(18, 18, 20, 0.72);
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: rgba(18, 18, 20, 0.86);
   display: flex;
   flex-direction: column;
-  padding: 0 24rem;
+  padding: env(safe-area-inset-top, 0rem) clamp(16rem, 5vw, 28rem)
+    env(safe-area-inset-bottom, 0rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   pointer-events: auto;
   backdrop-filter: blur(32rem) saturate(150%);
   -webkit-backdrop-filter: blur(32rem) saturate(150%);
@@ -691,7 +697,8 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  min-height: 82rem;
+  min-height: clamp(64rem, 12svh, 82rem);
+  flex: 0 0 auto;
   border-bottom: 1rem solid rgba(255, 255, 255, 0.08);
 }
 
@@ -709,29 +716,52 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-grow: 1;
-  gap: 48rem;
-  padding: 40rem 0;
+  flex: 1 0 auto;
+  width: 100%;
+  gap: clamp(14rem, 3.4svh, 30rem);
+  padding: clamp(24rem, 5svh, 44rem) 0;
 }
 
 .mobileMenuNav .navLink {
-  width: auto;
+  display: grid;
+  grid-template-columns: 24rem minmax(0, 1fr);
+  width: 100%;
+  max-width: 360rem;
   height: auto;
-  min-width: 220rem;
-  padding: 16rem 24rem;
-  gap: 16rem;
-  font-size: 32rem;
+  min-width: 0;
+  min-height: 56rem;
+  flex: 0 0 auto;
+  justify-content: stretch;
+  align-items: center;
+  padding: clamp(12rem, 3.4vw, 16rem) clamp(16rem, 5vw, 22rem);
+  gap: clamp(10rem, 3vw, 16rem);
+  border-radius: 16rem;
+  font-size: clamp(15rem, 4.8vw, 22rem);
   font-weight: 700;
-  letter-spacing: 0.18em;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
+  background: rgba(255, 255, 255, 0.075);
+  border-color: rgba(255, 255, 255, 0.12);
+  text-align: left;
   transition:
     color 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease,
     transform 0.3s ease;
 }
 
 .mobileMenuNav .navLabel {
-  display: inline;
+  display: block;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.mobileMenuNav .navIcon {
+  width: 22rem;
+  height: 22rem;
+  justify-self: center;
 }
 
 .mobileMenuNav .navLink::before {
@@ -741,23 +771,69 @@
 .mobileMenuNav .navLink:hover,
 .mobileMenuNav .navLinkActive {
   color: #ff2a2a;
-  transform: scale(1.05);
+  border-color: rgba(255, 42, 42, 0.28);
+  background: rgba(255, 42, 42, 0.09);
+  transform: translateY(-1rem);
 }
 
 .mobileMenuFooter {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132rem, 1fr));
   align-items: center;
-  padding: 32rem 0;
+  padding: clamp(18rem, 4svh, 32rem) 0;
   border-top: 1rem solid rgba(255, 255, 255, 0.08);
-  gap: 20rem;
+  gap: 12rem;
+  flex: 0 0 auto;
 }
 
-.mobileMenuFooter .navLink {
-  font-size: 14rem;
-  letter-spacing: 0.2em;
+.mobileMenuFooter .navLink,
+.mobileMenuFooter .currencyTrigger {
+  display: flex;
+  width: 100%;
+  height: 48rem;
+  min-width: 0;
+  flex: 0 0 auto;
+  justify-content: center;
+  gap: 10rem;
+  padding: 0 14rem;
+  border-radius: 14rem;
+  font-size: 11rem;
+  line-height: 1;
+  letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.7);
+}
+
+.mobileMenuFooter .navLabel,
+.mobileMenuFooter .currencyLabel,
+.mobileMenuFooter .currencyChevron {
+  position: static;
+  display: inline;
+  opacity: 1;
+  transform: none;
+  color: currentColor;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 0;
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.mobileMenuFooter .currencySelector {
+  width: 100%;
+}
+
+.mobileMenuFooter .currencyMenu {
+  left: 0;
+  right: 0;
+  min-width: 0;
+  max-height: min(320rem, 54dvh);
+  overflow-y: auto;
 }
 
 .mobileMenuFooter .navLink::before {
@@ -826,5 +902,23 @@
   .logoLink {
     padding: 7rem 12rem;
     border-radius: 13rem;
+  }
+}
+
+@media (max-width: 380px), (max-height: 640px) {
+  .mobileMenuNav {
+    justify-content: flex-start;
+    gap: 12rem;
+    padding: 20rem 0;
+  }
+
+  .mobileMenuNav .navLink {
+    min-height: 52rem;
+    font-size: clamp(14rem, 4.6vw, 18rem);
+    letter-spacing: 0.03em;
+  }
+
+  .mobileMenuFooter {
+    grid-template-columns: 1fr;
   }
 }

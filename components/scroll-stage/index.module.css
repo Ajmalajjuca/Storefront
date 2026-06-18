@@ -315,7 +315,7 @@
     justify-content: flex-start;
     align-items: stretch;
     gap: clamp(12rem, 2svh, 20rem);
-    padding: calc(var(--header-height, 44rem) + clamp(42rem, 6svh, 64rem)) 24rem
+    padding: calc(var(--header-height, 44rem) + clamp(54rem, 7svh, 76rem)) 24rem
       calc(32rem + env(safe-area-inset-bottom, 0rem));
     overflow: hidden;
   }
@@ -414,7 +414,7 @@
 @media (max-width: 520px) {
   .stage {
     gap: clamp(10rem, 1.8svh, 18rem);
-    padding: calc(var(--header-height, 44rem) + clamp(34rem, 5svh, 50rem)) 20rem
+    padding: calc(var(--header-height, 44rem) + clamp(46rem, 6svh, 62rem)) 20rem
       calc(26rem + env(safe-area-inset-bottom, 0rem));
   }
 
@@ -457,7 +457,7 @@
   .stage {
     justify-content: flex-start;
     gap: 14rem;
-    padding-top: calc(var(--header-height, 44rem) + 18rem);
+    padding-top: calc(var(--header-height, 44rem) + 34rem);
     padding-bottom: calc(18rem + env(safe-area-inset-bottom, 0rem));
   }
 

@@ -17,7 +17,7 @@ type HeroImageSequenceProps = {
 };
 
 export default function HeroImageSequence({
-  frameCount = 192,
+  frameCount = 240,
   framePath = "/hero-sequence/ezgif-frame-",
   frameExtension = "webp",
   fallbackImage = "/hero-sequence/ezgif-frame-001.webp",

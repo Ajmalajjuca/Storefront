@@ -9,16 +9,17 @@
   /* Soft HUD red — used for accents, fringing and inner glow */
   --accent-red: 255, 46, 58;
   position: fixed;
-  top: 32rem;
-  left: 50%;
-  width: calc(100% - 80rem);
-  max-width: 1780rem;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100rem;
+  max-width: none;
   z-index: var(--z-header);
   min-height: 64rem;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 7rem clamp(18rem, 1.5vw, 52rem);
+  padding: 7rem clamp(18rem, 2vw, 64rem);
   overflow: visible;
   isolation: isolate;
   backdrop-filter: blur(3rem) saturate(150%);
@@ -37,19 +38,20 @@
       transparent 58%
     ),
     rgba(9, 9, 12, 0.18);
-  border: 1rem solid rgba(255, 255, 255, 0.24);
-  border-radius: 999rem;
-  /* Floating-in-space lift, crisp top highlight, dark settled underside,
-     and a barely-there red interior bloom. */
+  border: none;
+  border-bottom: 1rem solid rgba(255, 255, 255, 0.14);
+  border-radius: 0;
+  /* Flush full-width bar: soft drop below the bar, crisp top highlight, dark
+     settled underside, and a barely-there red interior bloom. */
   box-shadow:
-    0 24rem 70rem -24rem rgba(0, 0, 0, 0.72),
-    0 6rem 22rem rgba(0, 0, 0, 0.34),
-    inset 0 1rem 0 rgba(255, 255, 255, 0.5),
-    inset 0 -2rem 8rem rgba(0, 0, 0, 0.38),
-    inset 0 0 26rem 2rem rgba(255, 255, 255, 0.06),
-    inset 0 0 2rem 1rem rgba(var(--accent-red), 0.05);
+    0 8rem 30rem -18rem rgba(0, 0, 0, 0.72),
+    0 2rem 12rem rgba(0, 0, 0, 0.28),
+    inset 0 1rem 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2rem 8rem rgba(0, 0, 0, 0.32),
+    inset 0 0 26rem 2rem rgba(255, 255, 255, 0.05),
+    inset 0 0 2rem 1rem rgba(var(--accent-red), 0.04);
   pointer-events: auto;
-  transform: translateX(-50%);
+  transform: none;
 }
 
 /* Razor-thin crystal highlight running along the top crown of the capsule. */
@@ -769,12 +771,12 @@
 @media (max-width: 900px) {
   .header {
     grid-template-columns: 1fr auto 1fr;
-    top: 8rem;
-    width: calc(100% - 12rem);
+    top: 0;
+    width: 100%;
     min-height: 66rem;
     gap: 12rem;
     padding: 8rem 12rem;
-    border-radius: 22rem;
+    border-radius: 0;
   }
   .zoneLeft,
   .zoneRightNav {

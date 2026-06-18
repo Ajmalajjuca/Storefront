@@ -105,7 +105,7 @@
 .title {
   margin: 0;
   font-family: var(--font-family-display);
-  font-size: clamp(48rem, 6vw, 88rem);
+  font-size: clamp(48rem, 4vw, 88rem);
   font-weight: 500;
   line-height: 0.9;
   letter-spacing: -0.04em;
@@ -144,31 +144,58 @@
   min-width: 0;
 }
 
-/* Equal-size tiles in a horizontal snap rail. Generous vertical padding gives
-   the hover-zoom room to grow without being clipped by the scroll container. */
+/* Marquee viewport — clips the auto-scrolling track. Generous vertical padding
+   gives the hover-zoom room to grow without being clipped. */
 .rail {
   flex: 1;
   min-width: 0;
-  display: flex;
-  gap: clamp(16rem, 1.8vw, 28rem);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  overflow: hidden;
   padding: clamp(40rem, 4.5vw, 60rem) clamp(48rem, 5vw, 84rem);
   margin: clamp(-40rem, -4.5vw, -60rem) 0;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
 }
 
-.rail::-webkit-scrollbar {
-  display: none;
+/* The track holds two identical copies of the products and glides left→right
+   forever. Translating -50% → 0 walks the second copy into the first copy's
+   start position, so the reset is invisible. */
+.track {
+  display: flex;
+  width: max-content;
+  gap: clamp(16rem, 1.8vw, 28rem);
+  animation: productMarquee 40s linear infinite;
+}
+
+@keyframes productMarquee {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Pause the glide while the viewer is interacting with a tile. */
+.rail:hover .track,
+.rail:focus-within .track {
+  animation-play-state: paused;
 }
 
 .card {
   flex: 0 0 auto;
   width: clamp(228rem, 18vw, 320rem);
-  scroll-snap-align: center;
 }
 
 .cardLink {
@@ -356,54 +383,6 @@
   transform: translateY(0);
 }
 
-.arrowButton {
-  position: relative;
-  z-index: 4;
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44rem;
-  height: 44rem;
-  border: 0;
-  border-radius: 999rem;
-  background: rgba(0, 0, 0, 0.72);
-  color: var(--color-off-black);
-  cursor: pointer;
-  box-shadow:
-    0 0 0 1rem rgba(255, 255, 255, 0.1),
-    0 14rem 34rem rgba(0, 0, 0, 0.56);
-  transition:
-    background var(--transition-base),
-    box-shadow var(--transition-base),
-    color var(--transition-base),
-    transform var(--transition-base);
-}
-
-.arrowButton span {
-  display: block;
-  margin-top: -2rem;
-  font-size: 34rem;
-  font-weight: 700;
-  line-height: 1;
-  color: #ffffff;
-  text-shadow: 0 0 16rem rgba(184, 31, 48, 0.55);
-}
-
-.arrowButton:hover {
-  background: rgba(184, 31, 48, 0.72);
-  box-shadow:
-    0 0 0 1rem rgba(255, 255, 255, 0.18),
-    0 0 28rem rgba(184, 31, 48, 0.36),
-    0 16rem 38rem rgba(0, 0, 0, 0.58);
-  transform: scale(1.06);
-}
-
-.arrowButton:focus-visible {
-  outline: 2rem solid var(--color-accent-bright);
-  outline-offset: 4rem;
-}
-
 @media (max-width: 900px) {
   .section {
     padding: clamp(48rem, 9vw, 68rem) 0;
@@ -449,10 +428,6 @@
   .cardLink:focus-visible {
     transform: scale(1);
   }
-
-  .arrowButton {
-    display: none;
-  }
 }
 
 @media (max-width: 520px) {
@@ -488,7 +463,8 @@
     transition-duration: 200ms;
   }
 
-  .rail {
-    scroll-behavior: auto;
+  /* Respect reduced-motion: stop the auto-glide entirely. */
+  .track {
+    animation: none;
   }
 }

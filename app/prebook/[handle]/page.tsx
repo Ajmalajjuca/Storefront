@@ -3,6 +3,7 @@ import {
   getMarketByCurrencyOrCountry,
   type SupportedCurrencyCode,
 } from "lib/currency";
+import { getExchangeRates } from "lib/exchange-rates";
 import { formatMoney } from "lib/money";
 import { getProduct } from "lib/shopify";
 import type { Metadata } from "next";
@@ -30,7 +31,10 @@ async function resolveDrop(
   handle: string,
   displayCurrencyCode?: SupportedCurrencyCode,
 ) {
-  const product = await getProduct(handle).catch(() => null);
+  const [product, rates] = await Promise.all([
+    getProduct(handle).catch(() => null),
+    getExchangeRates(),
+  ]);
   const price = product?.priceRange?.minVariantPrice;
 
   return {
@@ -48,6 +52,7 @@ async function resolveDrop(
             amount: price.amount,
             currencyCode: price.currencyCode,
             displayCurrencyCode,
+            rates,
           })
         : undefined,
   };

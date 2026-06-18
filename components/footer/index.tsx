@@ -6,6 +6,7 @@ const LEGAL = [
   { label: "SHIPPING", href: "/shipping-policy" },
   { label: "PRIVACY", href: "/privacy-policy" },
   { label: "TERMS", href: "/terms-of-service" },
+  { label: "CONTACT", href: "mailto:contact@blckole.com" },
 ];
 
 const SOCIAL = [

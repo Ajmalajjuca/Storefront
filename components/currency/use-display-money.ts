@@ -8,6 +8,7 @@ import {
 import { formatMoney } from "lib/money";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
+import { useExchangeRates } from "./exchange-rates-context";
 
 function getCurrencyFromSearchParam(
   value: string | null,
@@ -22,6 +23,7 @@ function getCurrencyFromSearchParam(
 
 export function useDisplayMoney() {
   const searchParams = useSearchParams();
+  const rates = useExchangeRates();
   const currencyParam = searchParams.get("currency");
   const displayCurrencyCode = useMemo(
     () => getCurrencyFromSearchParam(currencyParam),
@@ -30,7 +32,7 @@ export function useDisplayMoney() {
 
   return useCallback(
     (amount: string | number, currencyCode: string) =>
-      formatMoney({ amount, currencyCode, displayCurrencyCode }),
-    [displayCurrencyCode],
+      formatMoney({ amount, currencyCode, displayCurrencyCode, rates }),
+    [displayCurrencyCode, rates],
   );
 }

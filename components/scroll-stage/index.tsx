@@ -75,11 +75,11 @@ export const ScrollStage = React.memo(function ScrollStage({ content }: Props) {
 
   return (
     <HeroImageSequence
-      frameCount={192}
+      frameCount={240}
       framePath="/hero-sequence/ezgif-frame-"
       frameExtension="webp"
       fallbackImage="/hero-sequence/ezgif-frame-001.webp"
-      mobileFrameCount={192}
+      mobileFrameCount={240}
       mobileFramePath="/hero-sequence-mobile/ezgif-frame-"
       mobileFrameExtension="webp"
       mobileFallbackImage="/hero-sequence-mobile/ezgif-frame-001.webp"

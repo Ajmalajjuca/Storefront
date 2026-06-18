@@ -1,8 +1,10 @@
 import { CartProvider } from "components/cart/cart-context";
+import { ExchangeRatesProvider } from "components/currency/exchange-rates-context";
 import { CustomCursor } from "components/custom-cursor";
 import { SiteShell } from "components/site-shell";
 import { WishlistProvider } from "components/wishlist/wishlist-context";
 import { CUSTOMER_ACCOUNT_PROFILE_URL } from "lib/constants";
+import { getExchangeRates } from "lib/exchange-rates";
 import { getCart } from "lib/shopify";
 import { baseUrl } from "lib/utils";
 import { ReactNode, Suspense } from "react";
@@ -37,6 +39,8 @@ export default async function RootLayout({
     }
     return undefined;
   });
+
+  const exchangeRates = await getExchangeRates();
 
   const leftNavItems = [
     { title: "ENTRY", href: "/" },
@@ -73,19 +77,21 @@ export default async function RootLayout({
       </head>
       <body>
         <CartProvider cartPromise={cart}>
-          <WishlistProvider>
-            <CustomCursor />
-            <Suspense fallback={null}>
-              <SiteShell
-                leftNavItems={leftNavItems}
-                rightNavItems={rightNavItems}
-                logoSrc="/logo-lockup-white.png"
-                locales={["EN", "IN"]}
-              >
-                {children}
-              </SiteShell>
-            </Suspense>
-          </WishlistProvider>
+          <ExchangeRatesProvider rates={exchangeRates}>
+            <WishlistProvider>
+              <CustomCursor />
+              <Suspense fallback={null}>
+                <SiteShell
+                  leftNavItems={leftNavItems}
+                  rightNavItems={rightNavItems}
+                  logoSrc="/logo-lockup-white.png"
+                  locales={["EN", "IN"]}
+                >
+                  {children}
+                </SiteShell>
+              </Suspense>
+            </WishlistProvider>
+          </ExchangeRatesProvider>
         </CartProvider>
       </body>
     </html>

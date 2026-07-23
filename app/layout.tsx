@@ -24,15 +24,38 @@ export const metadata = {
   robots: { follow: true, index: true },
 };
 
-export default async function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+const leftNavItems = [
+  { title: "ENTRY", href: "/" },
+  { title: "COLLECTIONS", href: "/indexes/products" },
+  { title: "STORY", href: "/story" },
+  {
+    title: "INSTAGRAM",
+    href: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/",
+  },
+  {
+    title: "REDDIT",
+    href: process.env.NEXT_PUBLIC_REDDIT_URL || "https://www.reddit.com/",
+  },
+];
+
+const rightNavItems = [
+  { title: "ACCOUNT", href: CUSTOMER_ACCOUNT_PROFILE_URL },
+];
+
+async function StorefrontProviders({ children }: { children: ReactNode }) {
+  // Cookie-backed request data must resolve inside the Suspense boundary in
+  // RootLayout when Cache Components are enabled.
+  const [exchangeRates, cookieStore] = await Promise.all([
+    getExchangeRates(),
+    cookies(),
+  ]);
+  const activeMarket = getMarketByCountry(
+    cookieStore.get(CURRENCY_COUNTRY_COOKIE)?.value,
+  );
+
+  // Keep the private cart promise lazy so CartAwareChrome can resolve it in its
+  // own nested Suspense boundary without delaying the rest of the storefront.
   const cart = getCart().catch((error: unknown) => {
-    // `"use cache: private"` promises are intentionally cancelled when a static
-    // prerender finishes — they resolve at request time on the client instead.
-    // Only log genuine failures, not that expected cancellation.
     const digest =
       typeof error === "object" && error !== null && "digest" in error
         ? (error as { digest?: string }).digest
@@ -43,31 +66,28 @@ export default async function RootLayout({
     return undefined;
   });
 
-  const exchangeRates = await getExchangeRates();
-  const cookieStore = await cookies();
-  const activeMarket = getMarketByCountry(
-    cookieStore.get(CURRENCY_COUNTRY_COOKIE)?.value,
+  return (
+    <CartProvider cartPromise={cart}>
+      <CurrencyPreferenceProvider initialMarket={activeMarket}>
+        <ExchangeRatesProvider rates={exchangeRates}>
+          <WishlistProvider>
+            <CustomCursor />
+            <SiteShell
+              leftNavItems={leftNavItems}
+              rightNavItems={rightNavItems}
+              logoSrc="/logo-lockup-white.png"
+              locales={["EN", "IN"]}
+            >
+              {children}
+            </SiteShell>
+          </WishlistProvider>
+        </ExchangeRatesProvider>
+      </CurrencyPreferenceProvider>
+    </CartProvider>
   );
+}
 
-  const leftNavItems = [
-    { title: "ENTRY", href: "/" },
-    { title: "COLLECTIONS", href: "/indexes/products" },
-    { title: "STORY", href: "/story" },
-    {
-      title: "INSTAGRAM",
-      href:
-        process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/",
-    },
-    {
-      title: "REDDIT",
-      href: process.env.NEXT_PUBLIC_REDDIT_URL || "https://www.reddit.com/",
-    },
-  ];
-
-  const rightNavItems = [
-    { title: "ACCOUNT", href: CUSTOMER_ACCOUNT_PROFILE_URL },
-  ];
-
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -83,25 +103,9 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <CartProvider cartPromise={cart}>
-          <CurrencyPreferenceProvider initialMarket={activeMarket}>
-            <ExchangeRatesProvider rates={exchangeRates}>
-              <WishlistProvider>
-                <CustomCursor />
-                <Suspense fallback={null}>
-                  <SiteShell
-                    leftNavItems={leftNavItems}
-                    rightNavItems={rightNavItems}
-                    logoSrc="/logo-lockup-white.png"
-                    locales={["EN", "IN"]}
-                  >
-                    {children}
-                  </SiteShell>
-                </Suspense>
-              </WishlistProvider>
-            </ExchangeRatesProvider>
-          </CurrencyPreferenceProvider>
-        </CartProvider>
+        <Suspense fallback={null}>
+          <StorefrontProviders>{children}</StorefrontProviders>
+        </Suspense>
       </body>
     </html>
   );

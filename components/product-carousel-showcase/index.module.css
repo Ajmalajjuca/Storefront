@@ -86,9 +86,14 @@
 .header {
   position: relative;
   z-index: 6;
-  max-width: min(1040rem, 92vw);
-  margin: 0 auto;
-  text-align: center;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24rem;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  text-align: left;
 }
 
 .eyebrow {
@@ -103,6 +108,7 @@
 }
 
 .title {
+  flex: 1 1 auto;
   margin: 0;
   font-family: var(--font-family-display);
   font-size: clamp(48rem, 4vw, 88rem);
@@ -114,6 +120,48 @@
   text-shadow:
     0 0 24rem rgba(184, 31, 48, 0.34),
     0 14rem 42rem rgba(0, 0, 0, 0.94);
+}
+
+.arrows {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8rem;
+  margin-left: auto;
+  padding-bottom: clamp(2rem, 0.5vw, 8rem);
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 42rem;
+  height: 42rem;
+  padding: 0;
+  cursor: pointer;
+  border: 1rem solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(14rem) saturate(150%);
+  -webkit-backdrop-filter: blur(14rem) saturate(150%);
+  box-shadow: inset 0 1rem 0 rgba(255, 255, 255, 0.14);
+  transition:
+    color var(--transition-base),
+    background var(--transition-base),
+    border-color var(--transition-base),
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.arrow:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1rem);
+}
+
+.arrowIcon {
+  width: 18rem;
+  height: 18rem;
 }
 
 .subtitle {
@@ -144,12 +192,19 @@
   min-width: 0;
 }
 
-/* Marquee viewport — clips the auto-scrolling track. Generous vertical padding
-   gives the hover-zoom room to grow without being clipped. */
+/* Horizontally scrollable viewport. Generous vertical padding gives the
+   hover-zoom room to grow without being clipped. */
 .rail {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  scroll-behavior: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  user-select: none;
   padding: clamp(40rem, 4.5vw, 60rem) clamp(48rem, 5vw, 84rem);
   margin: clamp(-40rem, -4.5vw, -60rem) 0;
   -webkit-mask-image: linear-gradient(
@@ -168,29 +223,26 @@
   );
 }
 
-/* The track holds two identical copies of the products and glides left→right
-   forever. Translating -50% → 0 walks the second copy into the first copy's
-   start position, so the reset is invisible. */
+.rail[data-dragging="true"] {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
 .track {
+  --carousel-gap: clamp(16rem, 1.8vw, 28rem);
   display: flex;
   width: max-content;
-  gap: clamp(16rem, 1.8vw, 28rem);
-  animation: productMarquee 40s linear infinite;
+  gap: var(--carousel-gap);
 }
 
-@keyframes productMarquee {
-  from {
-    transform: translateX(-50%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-/* Pause the glide while the viewer is interacting with a tile. */
-.rail:hover .track,
-.rail:focus-within .track {
-  animation-play-state: paused;
+.group {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--carousel-gap);
 }
 
 .card {
@@ -399,13 +451,20 @@
   }
 
   .header {
-    max-width: 92vw;
+    align-items: flex-end;
+    gap: 18rem;
+    max-width: none;
     padding: 0 var(--grid-margin);
   }
 
   .title {
+    max-width: calc(100% - 104rem);
     font-size: clamp(34rem, 9.2vw, 56rem);
     line-height: 0.98;
+  }
+
+  .arrows {
+    padding-bottom: 2rem;
   }
 
   .subtitle {
@@ -445,6 +504,11 @@
     font-size: clamp(30rem, 10vw, 42rem);
   }
 
+  .arrow {
+    width: 38rem;
+    height: 38rem;
+  }
+
   .card {
     width: clamp(206rem, 70vw, 268rem);
   }
@@ -463,8 +527,7 @@
     transition-duration: 200ms;
   }
 
-  /* Respect reduced-motion: stop the auto-glide entirely. */
-  .track {
-    animation: none;
+  .rail {
+    scroll-behavior: auto;
   }
 }

@@ -124,7 +124,7 @@ export function CollectionShowcase({ products }: Props) {
         </h2>
 
         <div className={styles.headerActions}>
-          <div className={styles.arrows} aria-hidden="true">
+          <div className={styles.arrows}>
             <button
               type="button"
               className={styles.arrow}

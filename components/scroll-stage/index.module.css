@@ -354,6 +354,9 @@
   }
 
   .leftPanel {
+    position: absolute;
+    inset-inline: 24rem;
+    bottom: calc(32rem + env(safe-area-inset-bottom, 0rem));
     height: auto;
     flex: 0 1 auto;
     padding: 0;
@@ -427,6 +430,8 @@
   }
 
   .leftPanel {
+    inset-inline: 20rem;
+    bottom: calc(26rem + env(safe-area-inset-bottom, 0rem));
     padding: 0;
   }
 
@@ -459,6 +464,10 @@
     gap: 14rem;
     padding-top: calc(var(--header-height, 44rem) + 34rem);
     padding-bottom: calc(18rem + env(safe-area-inset-bottom, 0rem));
+  }
+
+  .leftPanel {
+    bottom: calc(18rem + env(safe-area-inset-bottom, 0rem));
   }
 
   .textContent {

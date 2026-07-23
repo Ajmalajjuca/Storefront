@@ -312,7 +312,7 @@
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: stretch;
     gap: clamp(12rem, 2svh, 20rem);
     padding: calc(var(--header-height, 44rem) + clamp(54rem, 7svh, 76rem)) 24rem
@@ -455,7 +455,7 @@
 
 @media (max-height: 640px) and (max-width: 900px) {
   .stage {
-    justify-content: flex-start;
+    justify-content: center;
     gap: 14rem;
     padding-top: calc(var(--header-height, 44rem) + 34rem);
     padding-bottom: calc(18rem + env(safe-area-inset-bottom, 0rem));

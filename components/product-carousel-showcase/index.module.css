@@ -464,7 +464,7 @@
   }
 
   .arrows {
-    padding-bottom: 2rem;
+    display: none;
   }
 
   .subtitle {

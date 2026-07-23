@@ -225,12 +225,3 @@ button {
   background-color: var(--color-accent);
   color: var(--color-off-black);
 }
-
-/* ── Hide default cursor for fine pointers ────────────────────────────────────── */
-@media (pointer: fine) {
-  body,
-  a,
-  button {
-    cursor: none !important;
-  }
-}

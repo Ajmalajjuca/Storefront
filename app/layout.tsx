@@ -1,7 +1,6 @@
 import { CartProvider } from "components/cart/cart-context";
 import { CurrencyPreferenceProvider } from "components/currency/currency-preference-context";
 import { ExchangeRatesProvider } from "components/currency/exchange-rates-context";
-import { CustomCursor } from "components/custom-cursor";
 import { SiteShell } from "components/site-shell";
 import { WishlistProvider } from "components/wishlist/wishlist-context";
 import { CUSTOMER_ACCOUNT_PROFILE_URL } from "lib/constants";
@@ -71,7 +70,6 @@ async function StorefrontProviders({ children }: { children: ReactNode }) {
       <CurrencyPreferenceProvider initialMarket={activeMarket}>
         <ExchangeRatesProvider rates={exchangeRates}>
           <WishlistProvider>
-            <CustomCursor />
             <SiteShell
               leftNavItems={leftNavItems}
               rightNavItems={rightNavItems}

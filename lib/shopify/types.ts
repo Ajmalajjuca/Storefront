@@ -333,7 +333,7 @@ export type ShopifyCollectionsOperation = {
 };
 
 export type ShopifyPageOperation = {
-  data: { pageByHandle: Page };
+  data: { pageByHandle: Page | null };
   variables: { handle: string };
 };
 

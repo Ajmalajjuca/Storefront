@@ -25,20 +25,20 @@ export function CartDrawer({ open, onClose }: Props) {
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
 
-  async function handleRemove(merchandiseId: string) {
-    updateCartItem(merchandiseId, "delete");
+  function handleRemove(merchandiseId: string) {
     startTransition(async () => {
+      updateCartItem(merchandiseId, "delete");
       await removeItem(null, merchandiseId);
     });
   }
 
-  async function handleQty(
+  function handleQty(
     merchandiseId: string,
     delta: "plus" | "minus",
     currentQty: number,
   ) {
-    updateCartItem(merchandiseId, delta);
     startTransition(async () => {
+      updateCartItem(merchandiseId, delta);
       await updateItemQuantity(null, {
         merchandiseId,
         quantity: delta === "plus" ? currentQty + 1 : currentQty - 1,

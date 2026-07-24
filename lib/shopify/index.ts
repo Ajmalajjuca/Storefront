@@ -8,10 +8,11 @@ import {
   SHOPIFY_CHECKOUT_COUNTRY,
   type SupportedCountryCode,
 } from "lib/currency";
+import { sanitizeShopifyHtml } from "lib/sanitize-html";
 import { isShopifyError } from "lib/type-guards";
 import { ensureStartsWith } from "lib/utils";
 import { cacheLife, cacheTag, revalidateTag } from "next/cache";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import {
   addToCartMutation,
@@ -76,6 +77,7 @@ import {
   ShopPolicy,
   WhyChooseItem,
 } from "./types";
+import { verifyShopifyWebhook } from "./webhook";
 
 const domain = process.env.SHOPIFY_STORE_DOMAIN
   ? ensureStartsWith(process.env.SHOPIFY_STORE_DOMAIN, "https://")
@@ -241,6 +243,7 @@ const reshapeProduct = (
 
   return {
     ...rest,
+    descriptionHtml: sanitizeShopifyHtml(rest.descriptionHtml),
     images: reshapeImages(images, product.title),
     variants: removeEdgesAndNodes(variants),
     media: reshapeMedia(media),
@@ -760,21 +763,37 @@ export async function getCollections(): Promise<Collection[]> {
   return collections;
 }
 
-export async function getPage(handle: string): Promise<Page> {
+export async function getPage(handle: string): Promise<Page | undefined> {
+  if (!endpoint) {
+    console.log(`Skipping getPage for '${handle}' - Shopify not configured`);
+    return undefined;
+  }
+
   const res = await shopifyFetch<ShopifyPageOperation>({
     query: getPageQuery,
     variables: { handle },
   });
 
-  return res.body.data.pageByHandle;
+  const page = res.body.data.pageByHandle;
+  if (!page) return undefined;
+
+  return { ...page, body: sanitizeShopifyHtml(page.body) };
 }
 
 export async function getPages(): Promise<Page[]> {
+  if (!endpoint) {
+    console.log("Skipping getPages - Shopify not configured");
+    return [];
+  }
+
   const res = await shopifyFetch<ShopifyPagesOperation>({
     query: getPagesQuery,
   });
 
-  return removeEdgesAndNodes(res.body.data.pages);
+  return removeEdgesAndNodes(res.body.data.pages).map((page) => ({
+    ...page,
+    body: sanitizeShopifyHtml(page.body),
+  }));
 }
 
 export async function getProduct(
@@ -809,6 +828,13 @@ export async function getProductRecommendations(
   cacheTag(TAGS.products);
   cacheLife("days");
 
+  if (!endpoint) {
+    console.log(
+      `Skipping product recommendations for '${productId}' - Shopify not configured`,
+    );
+    return [];
+  }
+
   const res = await shopifyFetch<ShopifyProductRecommendationsOperation>({
     query: getProductRecommendationsQuery,
     variables: {
@@ -836,6 +862,11 @@ export async function getProducts({
   cacheTag(TAGS.products);
   cacheLife("days");
 
+  if (!endpoint) {
+    console.log("Skipping getProducts - Shopify not configured");
+    return [];
+  }
+
   const res = await shopifyFetch<ShopifyProductsOperation>({
     query: getProductsQuery,
     variables: {
@@ -858,17 +889,77 @@ export async function getShopPolicies(): Promise<{
   "use cache";
   cacheLife("days");
 
+  if (!endpoint) {
+    console.log("Skipping getShopPolicies - Shopify not configured");
+    return {
+      privacyPolicy: null,
+      refundPolicy: null,
+      termsOfService: null,
+      shippingPolicy: null,
+    };
+  }
+
   const res = await shopifyFetch<ShopifyShopPoliciesOperation>({
     query: getShopPoliciesQuery,
   });
 
-  return res.body.data.shop;
+  const policies = res.body.data.shop;
+  const sanitizePolicy = (policy: ShopPolicy): ShopPolicy =>
+    policy
+      ? {
+          ...policy,
+          body: sanitizeShopifyHtml(policy.body),
+        }
+      : null;
+
+  return {
+    privacyPolicy: sanitizePolicy(policies.privacyPolicy),
+    refundPolicy: sanitizePolicy(policies.refundPolicy),
+    termsOfService: sanitizePolicy(policies.termsOfService),
+    shippingPolicy: sanitizePolicy(policies.shippingPolicy),
+  };
 }
 
-// This is called from `app/api/revalidate.ts` so providers can control revalidation logic.
 export async function revalidate(req: NextRequest): Promise<NextResponse> {
-  // We always need to respond with a 200 status code to Shopify,
-  // otherwise it will continue to retry the request.
+  const webhookSecret = process.env.SHOPIFY_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error("SHOPIFY_WEBHOOK_SECRET is not configured.");
+    return NextResponse.json(
+      { error: "Webhook authentication is not configured." },
+      { status: 503 },
+    );
+  }
+
+  const contentLength = Number(req.headers.get("content-length") ?? 0);
+  if (contentLength > 2_000_000) {
+    return NextResponse.json(
+      { error: "Webhook payload is too large." },
+      { status: 413 },
+    );
+  }
+
+  const payload = await req.text();
+  if (payload.length > 2_000_000) {
+    return NextResponse.json(
+      { error: "Webhook payload is too large." },
+      { status: 413 },
+    );
+  }
+
+  const isAuthentic = verifyShopifyWebhook(
+    payload,
+    req.headers.get("x-shopify-hmac-sha256"),
+    webhookSecret,
+  );
+
+  if (!isAuthentic) {
+    console.error("Invalid Shopify webhook signature.");
+    return NextResponse.json(
+      { error: "Invalid webhook signature." },
+      { status: 401 },
+    );
+  }
+
   const collectionWebhooks = [
     "collections/create",
     "collections/delete",
@@ -879,19 +970,12 @@ export async function revalidate(req: NextRequest): Promise<NextResponse> {
     "products/delete",
     "products/update",
   ];
-  const topic = (await headers()).get("x-shopify-topic") || "unknown";
-  const secret = req.nextUrl.searchParams.get("secret");
+  const topic = req.headers.get("x-shopify-topic") || "unknown";
   const isCollectionUpdate = collectionWebhooks.includes(topic);
   const isProductUpdate = productWebhooks.includes(topic);
 
-  if (!secret || secret !== process.env.SHOPIFY_REVALIDATION_SECRET) {
-    console.error("Invalid revalidation secret.");
-    return NextResponse.json({ status: 401 });
-  }
-
   if (!isCollectionUpdate && !isProductUpdate) {
-    // We don't need to revalidate anything for any other topics.
-    return NextResponse.json({ status: 200 });
+    return NextResponse.json({ revalidated: false });
   }
 
   if (isCollectionUpdate) {
@@ -902,5 +986,5 @@ export async function revalidate(req: NextRequest): Promise<NextResponse> {
     revalidateTag(TAGS.products, "seconds");
   }
 
-  return NextResponse.json({ status: 200, revalidated: true, now: Date.now() });
+  return NextResponse.json({ revalidated: true, now: Date.now() });
 }

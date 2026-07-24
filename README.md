@@ -1,4 +1,4 @@
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fcommerce&project-name=commerce&repo-name=commerce&demo-title=Next.js%20Commerce&demo-url=https%3A%2F%2Fdemo.vercel.store&demo-image=https%3A%2F%2Fbigcommerce-demo-asset-ksvtgfvnd.vercel.app%2Fbigcommerce.png&env=COMPANY_NAME,SHOPIFY_REVALIDATION_SECRET,SHOPIFY_STORE_DOMAIN,SHOPIFY_STOREFRONT_ACCESS_TOKEN,SITE_NAME)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fcommerce&project-name=commerce&repo-name=commerce&demo-title=Next.js%20Commerce&demo-url=https%3A%2F%2Fdemo.vercel.store&demo-image=https%3A%2F%2Fbigcommerce-demo-asset-ksvtgfvnd.vercel.app%2Fbigcommerce.png&env=COMPANY_NAME,SHOPIFY_WEBHOOK_SECRET,SHOPIFY_STORE_DOMAIN,SHOPIFY_STOREFRONT_ACCESS_TOKEN,SITE_NAME,SITE_URL)
 
 # Next.js Commerce
 
@@ -57,6 +57,22 @@ You will need to use the environment variables [defined in `.env.example`](.env.
 pnpm install
 pnpm dev
 ```
+
+### Production configuration
+
+Copy `.env.example` into your deployment provider and set every value. In
+particular, `SITE_URL` must be the public HTTPS origin and
+`SHOPIFY_WEBHOOK_SECRET` must be the signing secret provided by Shopify.
+
+Configure Shopify product and collection create, update, and delete webhooks to
+send `POST` requests to:
+
+```text
+https://<your-domain>/api/revalidate
+```
+
+Do not place the webhook secret in the URL. The endpoint authenticates Shopify's
+`X-Shopify-Hmac-Sha256` signature over the raw request body.
 
 Your app should now be running on [localhost:3000](http://localhost:3000/).
 

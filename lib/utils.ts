@@ -1,11 +1,19 @@
-export const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : "http://localhost:3000";
-
 export const ensureStartsWith = (stringToCheck: string, startsWith: string) =>
   stringToCheck.startsWith(startsWith)
     ? stringToCheck
     : `${startsWith}${stringToCheck}`;
+
+const configuredSiteUrl = process.env.SITE_URL;
+
+export const baseUrl = (
+  configuredSiteUrl
+    ? /^https?:\/\//.test(configuredSiteUrl)
+      ? configuredSiteUrl
+      : `https://${configuredSiteUrl}`
+    : process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "http://localhost:3000"
+).replace(/\/+$/, "");
 
 export const validateEnvironmentVariables = () => {
   const requiredEnvironmentVariables = [

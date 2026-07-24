@@ -26,8 +26,6 @@ export type ProductCarouselShowcaseItem = {
 type Props = {
   products?: ProductCarouselShowcaseItem[];
   backgroundImage?: string;
-  /** Kept for compatibility; the rail now sizes tiles equally. */
-  visibleProductCount?: 5 | 7;
 };
 
 const defaultBackgroundImage = "/bg-carousel1.png";

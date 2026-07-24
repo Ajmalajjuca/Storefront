@@ -51,19 +51,6 @@ export type HomeContent = {
   heroEyebrow?: string;
   heroTitle?: string;
   heroSubtitle?: string;
-  primaryButtonText?: string;
-  primaryButtonLink?: string;
-  secondaryButtonText?: string;
-  secondaryButtonLink?: string;
-  thirdButtonText?: string;
-  thirdButtonLink?: string;
-  scrollText?: string;
-  heroImage?: Image;
-  shopLabel?: string;
-  shopTitle?: string;
-  shopDescription?: string;
-  shopButtonText?: string;
-  shopButtonLink?: string;
 };
 
 export type ServiceBarItem = {
@@ -84,21 +71,6 @@ export type BrandQuoteContent = {
   cite?: string;
 };
 
-export type BrandValueItem = {
-  num: string;
-  name: string;
-  desc: string;
-  sortOrder: number;
-};
-
-export type BrandStatementContent = {
-  leftTitleLine1?: string;
-  leftTitleLine2?: string;
-  badgeText?: string;
-  body?: string;
-  establishedText?: string;
-};
-
 export type FooterContent = {
   tagline?: string;
   copyright?: string;
@@ -110,38 +82,6 @@ export type ShopPageContent = {
   eyebrow?: string;
   title?: string;
   description?: string;
-};
-
-export type StoryPageContent = {
-  eyebrow?: string;
-  title?: string;
-  intro?: string;
-  heroImage?: Image;
-  heroImageAlt?: string;
-  founderEyebrow?: string;
-  founderQuote?: string;
-  founderSign?: string;
-  timelineEyebrow?: string;
-  bottomLeft?: string;
-  bottomCenter?: string;
-  bottomRight?: string;
-};
-
-export type StorySection = {
-  id: string;
-  num: string;
-  label: string;
-  navLabel: string;
-  body: string;
-  image?: Image;
-  imageAlt?: string;
-  sortOrder: number;
-};
-
-export type TimelineItem = {
-  year: string;
-  body: string;
-  sortOrder: number;
 };
 
 type VideoSource = {
@@ -173,7 +113,7 @@ export type Menu = {
   path: string;
 };
 
-export type Money = {
+type Money = {
   amount: string;
   currencyCode: string;
 };
@@ -266,9 +206,6 @@ export type ShopifyProduct = {
 export type ShopifyMetaobjectField = {
   key: string;
   value: string | null;
-  reference?: {
-    image?: Image | null;
-  } | null;
 };
 
 export type ShopifyMetaobject = {
@@ -295,26 +232,6 @@ export type ShopifyHomeMetaobjectsByTypeOperation = {
   };
   variables: {
     type: string;
-  };
-};
-
-export type ShopifyServiceBarItemsOperation = {
-  data: {
-    metaobjects: Connection<ShopifyMetaobject>;
-  };
-  variables: {
-    type: string;
-    first: number;
-  };
-};
-
-export type ShopifyWhyChooseItemsOperation = {
-  data: {
-    metaobjects: Connection<ShopifyMetaobject>;
-  };
-  variables: {
-    type: string;
-    first: number;
   };
 };
 
@@ -406,20 +323,6 @@ export type ShopifyCartBuyerIdentityUpdateOperation = {
     buyerIdentity: {
       countryCode: SupportedCountryCode;
     };
-  };
-};
-
-export type ShopifyCollectionProductsOperation = {
-  data: {
-    collection: {
-      products: Connection<ShopifyProduct>;
-    };
-  };
-  variables: {
-    handle: string;
-    reverse?: boolean;
-    sortKey?: string;
-    country?: SupportedCountryCode;
   };
 };
 

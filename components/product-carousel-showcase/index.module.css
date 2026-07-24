@@ -164,26 +164,6 @@
   height: 18rem;
 }
 
-.subtitle {
-  position: relative;
-  z-index: 6;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 24rem 0 0;
-  padding: 10rem 20rem;
-  border-radius: 999rem;
-  background: rgba(0, 0, 0, 0.62);
-  font-family: var(--font-family-sans);
-  font-size: clamp(14rem, 1.2vw, 18rem);
-  font-weight: 700;
-  line-height: 1.45;
-  letter-spacing: 0;
-  color: #ffffff;
-  text-transform: none;
-  text-shadow: 0 8rem 24rem rgba(0, 0, 0, 1);
-}
-
 .carousel {
   position: relative;
   display: flex;
@@ -465,12 +445,6 @@
 
   .arrows {
     display: none;
-  }
-
-  .subtitle {
-    margin-top: 18rem;
-    padding: 8rem 16rem;
-    font-size: 14rem;
   }
 
   .rail {

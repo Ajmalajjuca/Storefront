@@ -31,22 +31,6 @@
   transform: translateX(-50%);
 }
 
-.watermark {
-  position: absolute;
-  bottom: clamp(-28rem, -2vw, -10rem);
-  left: 50%;
-  z-index: -1;
-  font-family: var(--font-family-display);
-  font-size: clamp(110rem, 24vw, 360rem);
-  font-weight: 500;
-  line-height: 0.8;
-  letter-spacing: -0.085em;
-  color: rgba(255, 255, 255, 0.03);
-  text-transform: uppercase;
-  white-space: nowrap;
-  transform: translateX(-50%);
-}
-
 .inner {
   position: relative;
   max-width: 940rem;

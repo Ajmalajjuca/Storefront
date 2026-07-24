@@ -1,4 +1,3 @@
-import type { BrandStatementContent } from "lib/shopify/types";
 import styles from "./index.module.css";
 
 const MANIFESTO_PARAGRAPHS = [
@@ -10,13 +9,10 @@ const MANIFESTO_PARAGRAPHS = [
 
 const OUTRO = "Welcome to BLCKOLE.";
 
-export function Manifesto({}: { content?: BrandStatementContent }) {
+export function Manifesto() {
   return (
     <section className={styles.section}>
       <div className={styles.glow} aria-hidden="true" />
-      {/* <div className={styles.watermark} aria-hidden="true">
-        BLCKOLE
-      </div> */}
 
       <div className={styles.inner}>
         <div className={styles.label}>

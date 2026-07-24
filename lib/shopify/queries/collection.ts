@@ -1,5 +1,4 @@
 import imageFragment from "../fragments/image";
-import productFragment from "../fragments/product";
 import seoFragment from "../fragments/seo";
 
 const collectionFragment = /* GraphQL */ `
@@ -30,24 +29,4 @@ export const getCollectionsQuery = /* GraphQL */ `
     }
   }
   ${collectionFragment}
-`;
-
-export const getCollectionProductsQuery = /* GraphQL */ `
-  query getCollectionProducts(
-    $handle: String!
-    $sortKey: ProductCollectionSortKeys
-    $reverse: Boolean
-    $country: CountryCode
-  ) @inContext(country: $country) {
-    collection(handle: $handle) {
-      products(sortKey: $sortKey, reverse: $reverse, first: 100) {
-        edges {
-          node {
-            ...product
-          }
-        }
-      }
-    }
-  }
-  ${productFragment}
 `;

@@ -13,8 +13,6 @@ import { ScrollStage } from "components/scroll-stage";
 import { TrustBar } from "components/trust-bar";
 import type {
   BrandQuoteContent,
-  BrandStatementContent,
-  BrandValueItem,
   FooterContent,
   HomeContent,
   ServiceBarItem,
@@ -28,8 +26,6 @@ type Props = {
   serviceBarItems?: ServiceBarItem[];
   whyChooseItems?: WhyChooseItem[];
   brandQuoteContent?: BrandQuoteContent;
-  brandStatementContent?: BrandStatementContent;
-  brandValueItems?: BrandValueItem[];
   footerContent?: FooterContent;
 };
 
@@ -143,8 +139,6 @@ export function HomeScene({
   serviceBarItems,
   whyChooseItems,
   brandQuoteContent,
-  brandStatementContent,
-  brandValueItems,
   footerContent,
 }: Props) {
   return (
@@ -159,13 +153,11 @@ export function HomeScene({
         <ProductCarouselShowcase
           products={carouselProducts}
           backgroundImage="/bg-carousel1.png"
-          visibleProductCount={5}
         />
         <PressQuote content={brandQuoteContent} />
         <WhyBlckole items={whyChooseItems} />
         <Newsletter />
-        {/* <Principles items={brandValueItems} /> */}
-        <Manifesto content={brandStatementContent} />
+        <Manifesto />
         <Footer content={footerContent} />
       </div>
     </div>

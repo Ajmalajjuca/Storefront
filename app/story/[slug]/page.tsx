@@ -37,7 +37,6 @@ export default async function StoryPage(props: {
 
   return (
     <div className={styles.wrapper}>
-      {/* Hero placeholder — stories would have a featured image via metafields */}
       <div className={styles.hero}>
         <span className={styles.indicator}>
           Story {String(currentIndex + 1).padStart(2, "0")} /{" "}

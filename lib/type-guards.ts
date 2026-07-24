@@ -1,4 +1,4 @@
-export interface ShopifyErrorLike {
+interface ShopifyErrorLike {
   status: number;
   message: Error;
   cause?: Error;

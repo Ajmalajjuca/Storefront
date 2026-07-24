@@ -1,7 +1,7 @@
 "use client";
 
 import type { HomeContent } from "lib/shopify/types";
-import React, { type CSSProperties } from "react";
+import React from "react";
 import HeroImageSequence from "../HeroImageSequence";
 import styles from "./index.module.css";
 
@@ -20,8 +20,6 @@ const splitContentLines = (value: string | undefined, fallback: string[]) => {
     .filter(Boolean);
   return lines.length > 0 ? lines : fallback;
 };
-
-// Removed HeroBackground component since it is replaced by HeroImageSequence
 
 function HeroCopy({ content }: { content?: HomeContent }) {
   const titleLines = splitContentLines(content?.heroTitle, defaultHeroTitle);
@@ -53,40 +51,12 @@ function HeroCharacters() {
   return <div className={styles.heroCharacters} aria-hidden />;
 }
 
-function ScrollIndicator({ scrollText }: { scrollText?: string }) {
-  return (
-    <div className={styles.landingFooter} data-no-swipe>
-      <div className={styles.scrollCue} aria-hidden="true">
-        <span className={styles.mouseCue}>
-          <span />
-        </span>
-        <span>{scrollText ?? "Scroll to enter"}</span>
-      </div>
-    </div>
-  );
-}
-
 export const ScrollStage = React.memo(function ScrollStage({ content }: Props) {
-  const stageStyle = content?.heroImage?.url
-    ? ({
-        "--hero-image": `url("${content.heroImage.url}")`,
-      } as CSSProperties)
-    : undefined;
-
   return (
-    <HeroImageSequence
-      frameCount={240}
-      framePath="/hero-sequence/ezgif-frame-"
-      frameExtension="webp"
-      fallbackImage="/hero-sequence/ezgif-frame-001.webp"
-      mobileFrameCount={240}
-      mobileFramePath="/hero-sequence-mobile/ezgif-frame-"
-      mobileFrameExtension="webp"
-      mobileFallbackImage="/hero-sequence-mobile/ezgif-frame-001.webp"
-    >
+    <HeroImageSequence>
       <section
         className={styles.stage}
-        style={{ ...stageStyle, background: "transparent", height: "100%" }}
+        style={{ background: "transparent", height: "100%" }}
         aria-label="BLCKOLE entry campaign"
       >
         <div className={styles.leftPanel}>
@@ -94,8 +64,6 @@ export const ScrollStage = React.memo(function ScrollStage({ content }: Props) {
         </div>
 
         <HeroCharacters />
-
-        {/* <ScrollIndicator scrollText={content?.scrollText} /> */}
       </section>
     </HeroImageSequence>
   );

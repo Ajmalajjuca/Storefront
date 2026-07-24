@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import styles from "./index.module.css";
 
-export type LatestProductItem = {
+type LatestProductItem = {
   id: string;
   title: string;
   handle?: string;

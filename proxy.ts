@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { redirectShopThemeFallback } from "lib/domain-redirects";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   return redirectShopThemeFallback(request);
 }
 

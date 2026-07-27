@@ -80,7 +80,7 @@ export function CartDrawer({ open, onClose }: Props) {
             <div className={styles.empty}>
               <p className={styles.emptyTitle}>Nothing in here yet.</p>
               <p className={styles.emptyDek}>
-                Pick a piece — it&apos;ll wait for you.
+                Pick a piece and it&apos;ll wait for you.
               </p>
               <Link
                 href={productsHref}

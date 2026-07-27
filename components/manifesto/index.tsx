@@ -1,7 +1,7 @@
 import styles from "./index.module.css";
 
 const MANIFESTO_PARAGRAPHS = [
-  "BLCKOLE was built for the creators nobody sees — the artists creating in silence. The skaters, musicians, designers, dancers, and dreamers who keep going even when nobody is watching.",
+  "BLCKOLE was built for the creators nobody sees the artists creating in silence. The skaters, musicians, designers, dancers, and dreamers who keep going even when nobody is watching.",
   "We believe talent shouldn’t be measured by followers, fame, or popularity. Our mission is to discover, support, and amplify underground artists who deserve to be seen.",
   "More than a fashion brand, BLCKOLE is a community for the overlooked, the misunderstood, and the unapologetically different.",
   "This is not just clothing. This is a movement for the unseen.",

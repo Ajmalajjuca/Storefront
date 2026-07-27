@@ -6,7 +6,7 @@ import { ShopGrid } from "./shop-grid";
 
 export const metadata = {
   title: "Shop",
-  description: "The full line — denim, tops, and layers.",
+  description: "The full line of denim, tops, and layers.",
 };
 
 export default async function ProductsIndexPage(props: {
@@ -30,7 +30,7 @@ export default async function ProductsIndexPage(props: {
           </h1>
           <p className={styles.dek}>
             {content?.description ??
-              "Denim, tops, and layers — built to hold attention without asking for it."}
+              "Denim, tops, and layers built to hold attention without asking for it."}
           </p>
         </header>
 

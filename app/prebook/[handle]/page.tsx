@@ -126,8 +126,8 @@ export default async function PrebookPage(props: {
                   Prebook &amp; get notified
                 </h2>
                 <p className={styles.notifyDek}>
-                  Drop your email — we&apos;ll reserve your place in line and
-                  send one message the moment it launches. No noise.
+                  Drop your email we&apos;ll reserve your place in line and send
+                  one message the moment it launches. No noise.
                 </p>
                 <NotifyForm />
               </div>

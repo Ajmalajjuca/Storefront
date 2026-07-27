@@ -320,18 +320,6 @@
   opacity: 0.96;
   pointer-events: auto;
   padding: 6rem 14rem;
-  transition:
-    opacity var(--transition-base),
-    transform var(--transition-base),
-    border-color var(--transition-base),
-    background var(--transition-base);
-}
-
-.logoLink:hover {
-  opacity: 1;
-  transform: scale(1.02);
-  border-color: rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.09);
 }
 
 .logoImg {

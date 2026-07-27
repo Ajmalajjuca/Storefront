@@ -46,6 +46,13 @@ function CartAwareChrome({
     };
   }, [cartOpen]);
 
+  useEffect(() => {
+    const openCart = () => setCartOpen(true);
+
+    window.addEventListener("open-cart", openCart);
+    return () => window.removeEventListener("open-cart", openCart);
+  }, []);
+
   return (
     <>
       <Header

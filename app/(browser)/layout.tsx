@@ -19,6 +19,9 @@ function mapProductsToCarouselItems(
     .map((product) => {
       const image = product.featuredImage || product.images[0];
       const price = product.priceRange?.minVariantPrice;
+      const cartVariant = product.variants.find(
+        (variant) => variant.availableForSale,
+      );
 
       return {
         id: product.id,
@@ -30,6 +33,15 @@ function mapProductsToCarouselItems(
         priceCurrencyCode: price?.currencyCode,
         image: image?.url,
         imageAlt: image?.altText ?? product.title,
+        cartProduct: image
+          ? {
+              id: product.id,
+              handle: product.handle,
+              title: product.title,
+              featuredImage: image,
+            }
+          : undefined,
+        cartVariant,
       };
     });
 }

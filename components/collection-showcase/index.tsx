@@ -1,20 +1,15 @@
 "use client";
 
+import { addItem } from "components/cart/actions";
+import { useCart } from "components/cart/cart-context";
 import { useDisplayMoney } from "components/currency/use-display-money";
+import type { ProductCarouselShowcaseItem } from "components/product-carousel-showcase";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState, useTransition } from "react";
 import styles from "./index.module.css";
 
-type LatestProductItem = {
-  id: string;
-  title: string;
-  handle?: string;
-  priceAmount?: number;
-  priceCurrencyCode?: string;
-  image?: string;
-  imageAlt?: string;
-};
+type LatestProductItem = ProductCarouselShowcaseItem;
 
 type Props = {
   products?: LatestProductItem[];
@@ -96,6 +91,96 @@ function ArrowIcon({ direction }: { direction: "left" | "right" }) {
   );
 }
 
+function CollectionCard({
+  item,
+  formatPrice,
+}: {
+  item: LatestProductItem;
+  formatPrice: (amount: string | number, currencyCode: string) => string;
+}) {
+  const { addCartItem } = useCart();
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const href = item.handle ? `/products/${item.handle}` : "/indexes/products";
+  const canAdd = Boolean(
+    item.cartProduct && item.cartVariant?.availableForSale,
+  );
+
+  function addProductToCart() {
+    const { cartProduct, cartVariant } = item;
+    if (!cartProduct || !cartVariant?.availableForSale) return;
+
+    startTransition(async () => {
+      addCartItem(cartVariant, cartProduct);
+      const result = await addItem(null, cartVariant.id);
+
+      if (result) {
+        setError(result);
+        return;
+      }
+
+      setError(null);
+      window.dispatchEvent(new Event("open-cart"));
+    });
+  }
+
+  return (
+    <article className={styles.card}>
+      <Link href={href} className={styles.cardLink} aria-label={item.title}>
+        <span className={styles.cardMedia}>
+          {item.image ? (
+            <Image
+              src={item.image}
+              alt={item.imageAlt ?? item.title}
+              fill
+              sizes="(max-width: 900px) 72vw, 23vw"
+              className={styles.cardImage}
+            />
+          ) : null}
+        </span>
+
+        <span className={styles.scrim} aria-hidden="true" />
+        <span className={styles.glassPanel} aria-hidden="true">
+          <span className={styles.glassEdge} />
+        </span>
+
+        <span className={styles.cardInfo}>
+          <span className={styles.cardText}>
+            <span className={styles.cardName}>{item.title}</span>
+            <span className={styles.cardPrice}>
+              {item.priceAmount != null && item.priceCurrencyCode
+                ? formatPrice(item.priceAmount, item.priceCurrencyCode)
+                : "View piece"}
+            </span>
+          </span>
+        </span>
+      </Link>
+
+      <form action={addProductToCart} className={styles.addForm}>
+        <button
+          type="submit"
+          className={styles.plus}
+          disabled={!canAdd || isPending}
+          aria-label={
+            isPending
+              ? `Adding ${item.title} to cart`
+              : canAdd
+                ? `Add ${item.title} to cart`
+                : `${item.title} is unavailable`
+          }
+        >
+          <PlusIcon />
+        </button>
+        {error ? (
+          <span className={styles.cartError} role="status">
+            {error}
+          </span>
+        ) : null}
+      </form>
+    </article>
+  );
+}
+
 export function CollectionShowcase({ products }: Props) {
   const items = products && products.length > 0 ? products : fallbackProducts;
   const railRef = useRef<HTMLDivElement>(null);
@@ -150,52 +235,9 @@ export function CollectionShowcase({ products }: Props) {
       </div>
 
       <div className={styles.rail} ref={railRef}>
-        {items.map((item) => {
-          const href = item.handle
-            ? `/products/${item.handle}`
-            : "/indexes/products";
-
-          return (
-            <article key={item.id} className={styles.card}>
-              <Link
-                href={href}
-                className={styles.cardLink}
-                aria-label={item.title}
-              >
-                <span className={styles.cardMedia}>
-                  {item.image ? (
-                    <Image
-                      src={item.image}
-                      alt={item.imageAlt ?? item.title}
-                      fill
-                      sizes="(max-width: 900px) 72vw, 23vw"
-                      className={styles.cardImage}
-                    />
-                  ) : null}
-                </span>
-
-                <span className={styles.scrim} aria-hidden="true" />
-                <span className={styles.glassPanel} aria-hidden="true">
-                  <span className={styles.glassEdge} />
-                </span>
-
-                <span className={styles.cardInfo}>
-                  <span className={styles.cardText}>
-                    <span className={styles.cardName}>{item.title}</span>
-                    <span className={styles.cardPrice}>
-                      {item.priceAmount != null && item.priceCurrencyCode
-                        ? formatPrice(item.priceAmount, item.priceCurrencyCode)
-                        : "View piece"}
-                    </span>
-                  </span>
-                  <span className={styles.plus}>
-                    <PlusIcon />
-                  </span>
-                </span>
-              </Link>
-            </article>
-          );
-        })}
+        {items.map((item) => (
+          <CollectionCard key={item.id} item={item} formatPrice={formatPrice} />
+        ))}
       </div>
     </section>
   );

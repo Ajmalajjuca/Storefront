@@ -17,12 +17,12 @@ import React, {
 
 type UpdateType = "plus" | "minus" | "delete";
 
-type OptimisticVariant = Pick<
+export type OptimisticVariant = Pick<
   ProductVariant,
   "id" | "title" | "selectedOptions" | "price"
 >;
 
-type OptimisticProduct = Pick<
+export type OptimisticProduct = Pick<
   Product,
   "id" | "handle" | "title" | "featuredImage"
 >;
@@ -269,7 +269,10 @@ export function useCart() {
     });
   };
 
-  const addCartItem = (variant: ProductVariant, product: Product) => {
+  const addCartItem = (
+    variant: OptimisticVariant,
+    product: OptimisticProduct,
+  ) => {
     updateOptimisticCart({ type: "ADD_ITEM", payload: { variant, product } });
   };
 

@@ -1,5 +1,9 @@
 "use client";
 
+import type {
+  OptimisticProduct,
+  OptimisticVariant,
+} from "components/cart/cart-context";
 import { useDisplayMoney } from "components/currency/use-display-money";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,6 +25,8 @@ export type ProductCarouselShowcaseItem = {
   priceCurrencyCode?: string;
   image?: string;
   imageAlt?: string;
+  cartProduct?: OptimisticProduct;
+  cartVariant?: OptimisticVariant & { availableForSale: boolean };
 };
 
 type Props = {

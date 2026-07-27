@@ -143,9 +143,13 @@
 }
 
 .card {
+  position: relative;
   flex: 0 0 auto;
   width: clamp(260rem, 22vw, 400rem);
   scroll-snap-align: start;
+  transform: translateY(0);
+  transition: transform 600ms var(--spring);
+  will-change: transform;
 }
 
 .cardLink {
@@ -158,16 +162,16 @@
   background: #0a0a0c;
   text-decoration: none;
   box-shadow: 0 26rem 60rem -30rem rgba(0, 0, 0, 0.85);
-  transform: translateY(0);
   transition:
-    transform 600ms var(--spring),
     box-shadow 600ms var(--ease-out-expo),
     border-color 600ms var(--ease-out-expo);
-  will-change: transform;
 }
 
-.cardLink:hover {
+.card:is(:hover, :focus-within) {
   transform: translateY(-12rem);
+}
+
+.card:is(:hover, :focus-within) .cardLink {
   border-color: rgba(255, 255, 255, 0.14);
   box-shadow:
     0 48rem 90rem -32rem rgba(0, 0, 0, 0.92),
@@ -192,7 +196,7 @@
 }
 
 /* Slight magnification of the imagery as the glass rises */
-.cardLink:hover .cardImage {
+.card:is(:hover, :focus-within) .cardImage {
   transform: scale(1.06);
 }
 
@@ -212,7 +216,7 @@
   transition: opacity 600ms var(--ease-out-expo);
 }
 
-.cardLink:hover .scrim {
+.card:is(:hover, :focus-within) .scrim {
   opacity: 1;
 }
 
@@ -276,7 +280,7 @@
   );
 }
 
-.cardLink:hover .glassPanel {
+.card:is(:hover, :focus-within) .glassPanel {
   clip-path: inset(0);
   opacity: 1;
 }
@@ -293,6 +297,7 @@
   justify-content: space-between;
   gap: 12rem;
   padding: clamp(16rem, 1.5vw, 26rem);
+  padding-right: calc(clamp(16rem, 1.5vw, 26rem) + 48rem);
   pointer-events: none;
   /* Resting card shows the image only; this rises in with the glass */
   opacity: 0;
@@ -302,7 +307,7 @@
     transform 560ms var(--spring);
 }
 
-.cardLink:hover .cardInfo {
+.card:is(:hover, :focus-within) .cardInfo {
   opacity: 1;
   transform: translateY(0);
 }
@@ -340,26 +345,46 @@
     transform 560ms var(--ease-out-expo);
 }
 
-.cardLink:hover .cardName {
+.card:is(:hover, :focus-within) .cardName {
   color: #ffffff;
   transform: translateY(-2rem);
 }
 
-.cardLink:hover .cardPrice {
+.card:is(:hover, :focus-within) .cardPrice {
   color: rgba(255, 255, 255, 0.92);
   transform: translateY(-2rem);
+}
+
+.addForm {
+  position: absolute;
+  right: clamp(16rem, 1.5vw, 26rem);
+  bottom: clamp(16rem, 1.5vw, 26rem);
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(14rem);
+  transition:
+    opacity 420ms ease-out,
+    transform 560ms var(--spring);
+}
+
+.card:is(:hover, :focus-within) .addForm {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .plus {
   display: grid;
   place-items: center;
-  flex: 0 0 auto;
   width: 36rem;
   height: 36rem;
+  padding: 0;
   border-radius: 50%;
   border: 1rem solid rgba(255, 255, 255, 0.22);
   background: rgba(255, 255, 255, 0.07);
   color: #ffffff;
+  cursor: pointer;
   backdrop-filter: blur(8rem);
   -webkit-backdrop-filter: blur(8rem);
   box-shadow: inset 0 1rem 0 rgba(255, 255, 255, 0.18);
@@ -370,18 +395,35 @@
     transform 520ms var(--spring);
 }
 
+.plus:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .plusIcon {
   width: 15rem;
   height: 15rem;
 }
 
-.cardLink:hover .plus {
+.card:is(:hover, :focus-within) .plus:not(:disabled) {
   border-color: rgba(var(--accent-red), 0.7);
   background: rgba(var(--accent-red), 0.18);
   box-shadow:
     inset 0 1rem 0 rgba(255, 255, 255, 0.2),
     0 0 20rem rgba(var(--accent-red), 0.55);
   transform: scale(1.08);
+}
+
+.cartError {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ─── Responsive ──────────────────────────────────────────────────────────── */
@@ -434,18 +476,25 @@
   }
 
   .scrim,
-  .cardLink:hover .scrim {
+  .card:is(:hover, :focus-within) .scrim {
     opacity: 1;
   }
 
   .glassPanel,
-  .cardLink:hover .glassPanel {
+  .card:is(:hover, :focus-within) .glassPanel {
     clip-path: inset(0);
     opacity: 1;
   }
 
   .cardInfo,
-  .cardLink:hover .cardInfo {
+  .card:is(:hover, :focus-within) .cardInfo {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .addForm,
+  .card:is(:hover, :focus-within) .addForm {
+    pointer-events: auto;
     opacity: 1;
     transform: translateY(0);
   }

@@ -209,35 +209,40 @@ export function CollectionShowcase({ products }: Props) {
         </h2>
 
         <div className={styles.headerActions}>
-          <div className={styles.arrows}>
-            <button
-              type="button"
-              className={styles.arrow}
-              onClick={() => scrollRail(-1)}
-              aria-label="Scroll to previous"
-            >
-              <ArrowIcon direction="left" />
-            </button>
-            <button
-              type="button"
-              className={styles.arrow}
-              onClick={() => scrollRail(1)}
-              aria-label="Scroll to next"
-            >
-              <ArrowIcon direction="right" />
-            </button>
-          </div>
-
           <Link href="/indexes/products" className={styles.discover}>
             Discover more
           </Link>
         </div>
       </div>
 
-      <div className={styles.rail} ref={railRef}>
-        {items.map((item) => (
-          <CollectionCard key={item.id} item={item} formatPrice={formatPrice} />
-        ))}
+      <div className={styles.carousel}>
+        <button
+          type="button"
+          className={`${styles.arrow} ${styles.arrowPrevious}`}
+          onClick={() => scrollRail(-1)}
+          aria-label="Scroll latest products to previous"
+        >
+          <ArrowIcon direction="left" />
+        </button>
+
+        <div className={styles.rail} ref={railRef}>
+          {items.map((item) => (
+            <CollectionCard
+              key={item.id}
+              item={item}
+              formatPrice={formatPrice}
+            />
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className={`${styles.arrow} ${styles.arrowNext}`}
+          onClick={() => scrollRail(1)}
+          aria-label="Scroll latest products to next"
+        >
+          <ArrowIcon direction="right" />
+        </button>
       </div>
     </section>
   );

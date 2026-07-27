@@ -2,7 +2,11 @@ import type { ServiceBarItem } from "lib/shopify/types";
 import styles from "./index.module.css";
 
 const DEFAULT_ITEMS: ServiceBarItem[] = [
-  { title: "Ship", description: "Free standard above ₹4,999", sortOrder: 1 },
+  {
+    title: "Ship",
+    description: "Free standard shipping above ₹4,999",
+    sortOrder: 1,
+  },
   {
     title: "Dispatch",
     description: "In-stock orders within 48 hours",

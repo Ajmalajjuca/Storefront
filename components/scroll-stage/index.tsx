@@ -30,9 +30,9 @@ function HeroCopy({ content }: { content?: HomeContent }) {
 
   return (
     <section className={styles.textContent} aria-labelledby="hero-title">
-      <p className={styles.heroEyebrow}>
+      {/* <p className={styles.heroEyebrow}>
         {content?.heroEyebrow ?? "You are being pulled in"}
-      </p>
+      </p> */}
       <h1 id="hero-title" className={styles.heroHeadline}>
         {titleLines.map((line, index) => (
           <span key={`${line}-${index}`}>{line}</span>

@@ -58,11 +58,6 @@
   padding-bottom: clamp(6rem, 0.8vw, 14rem);
 }
 
-.arrows {
-  display: flex;
-  gap: 8rem;
-}
-
 .arrow,
 .discover {
   cursor: pointer;
@@ -81,12 +76,32 @@
 }
 
 .arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
   display: grid;
   place-items: center;
-  width: 42rem;
-  height: 42rem;
+  width: 46rem;
+  height: 46rem;
   border-radius: 50%;
   padding: 0;
+  color: #ffffff;
+  background: rgba(8, 8, 10, 0.82);
+  border-color: rgba(255, 255, 255, 0.34);
+  box-shadow:
+    0 10rem 28rem rgba(0, 0, 0, 0.58),
+    inset 0 1rem 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1rem rgba(0, 0, 0, 0.18);
+  transform: translateY(-50%);
+  touch-action: manipulation;
+}
+
+.arrowPrevious {
+  left: clamp(8rem, 1vw, 16rem);
+}
+
+.arrowNext {
+  right: clamp(8rem, 1vw, 16rem);
 }
 
 .arrowIcon {
@@ -96,9 +111,14 @@
 
 .arrow:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.11);
-  border-color: rgba(255, 255, 255, 0.28);
-  transform: translateY(-1rem);
+  background: rgba(var(--accent-red), 0.92);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.arrow:focus-visible {
+  outline: 2rem solid #ffffff;
+  outline-offset: 3rem;
 }
 
 .discover {
@@ -124,6 +144,11 @@
 }
 
 /* ─── Carousel rail ───────────────────────────────────────────────────────── */
+.carousel {
+  position: relative;
+  isolation: isolate;
+}
+
 .rail {
   display: flex;
   gap: clamp(14rem, 1.5vw, 24rem);
@@ -453,8 +478,18 @@
     padding-bottom: 0;
   }
 
-  .arrows {
-    display: none;
+  .arrow {
+    display: grid;
+    width: 44rem;
+    height: 44rem;
+  }
+
+  .arrowPrevious {
+    left: max(8rem, env(safe-area-inset-left));
+  }
+
+  .arrowNext {
+    right: max(8rem, env(safe-area-inset-right));
   }
 
   .discover {

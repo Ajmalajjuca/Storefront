@@ -219,10 +219,11 @@
 /* ─── Liquid glass panel that rises on hover ──────────────────────────────── */
 .glassPanel {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 25%;
+  /* Overscan the clipped edges to prevent subpixel seams around the card. */
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  height: calc(25% + 1px);
   pointer-events: none;
   border-radius: 0 0 24px 24px;
 
@@ -247,11 +248,13 @@
     inset 0 0 30px rgba(255, 255, 255, 0.07),
     0 -12px 34px -8px rgba(0, 0, 0, 0.4);
 
-  transform: translateY(102%);
+  /* Reveal upward while the panel stays anchored to the bottom of the card. */
+  clip-path: inset(100% 0 0 0);
   opacity: 0;
+  will-change: clip-path, opacity;
 
   transition:
-    transform 620ms var(--spring),
+    clip-path 620ms var(--spring),
     opacity 360ms ease-out;
 }
 
@@ -274,7 +277,7 @@
 }
 
 .cardLink:hover .glassPanel {
-  transform: translateY(0);
+  clip-path: inset(0);
   opacity: 1;
 }
 
@@ -437,7 +440,7 @@
 
   .glassPanel,
   .cardLink:hover .glassPanel {
-    transform: translateY(0);
+    clip-path: inset(0);
     opacity: 1;
   }
 

@@ -75,7 +75,8 @@
   display: grid;
   gap: clamp(6rem, 1.1vh, 10rem);
   margin: 0;
-  font-family: var(--font-family-display);
+  font-family:
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: clamp(46rem, 5.2vw, 92rem);
   font-weight: 500;
   line-height: 0.92;

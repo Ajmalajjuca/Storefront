@@ -25,7 +25,19 @@ export const metadata = {
 
 const leftNavItems = [
   { title: "ENTRY", href: "/" },
-  { title: "COLLECTIONS", href: "/indexes/products" },
+  {
+    title: "COLLECTIONS",
+    href: "/indexes/products",
+    // Each child deep-links into the shop grid's productType filter.
+    children: [
+      { title: "Denim", href: "/indexes/products?category=DENIM" },
+      { title: "Jorts", href: "/indexes/products?category=JORTS" },
+      { title: "T-Shirts", href: "/indexes/products?category=T-SHIRTS" },
+      { title: "Cargo", href: "/indexes/products?category=CARGO" },
+      { title: "Joggers", href: "/indexes/products?category=JOGGERS" },
+      { title: "Women Top", href: "/indexes/products?category=WOMEN%20TOP" },
+    ],
+  },
   { title: "STORY", href: "/story" },
   {
     title: "INSTAGRAM",

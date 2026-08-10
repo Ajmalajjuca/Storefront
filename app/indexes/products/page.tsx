@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function ProductsIndexPage(props: {
-  searchParams?: Promise<{ currency?: string }>;
+  searchParams?: Promise<{ currency?: string; category?: string }>;
 }) {
   const searchParams = await props.searchParams;
   const countryCode = await getSelectedCountryCode(searchParams?.currency);
@@ -34,7 +34,13 @@ export default async function ProductsIndexPage(props: {
           </p>
         </header>
 
-        <ShopGrid products={products} />
+        {/* Keyed on the category so arriving from the header dropdown while
+            already on this page resets the grid's selected chip. */}
+        <ShopGrid
+          key={searchParams?.category ?? ""}
+          products={products}
+          initialCategory={searchParams?.category}
+        />
       </main>
 
       <Footer content={footerContent} />

@@ -14,14 +14,26 @@ import {
 import { useWishlist } from "components/wishlist/wishlist-context";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FocusEvent,
+  type PointerEvent,
+} from "react";
 import { CurrencySelector } from "./currency-selector";
 import styles from "./index.module.css";
+
+type NavChild = {
+  title: string;
+  href: string;
+};
 
 type NavItem = {
   title: string;
   href: string;
   count?: number;
+  children?: NavChild[];
 };
 
 type Props = {
@@ -36,6 +48,13 @@ type Props = {
 
 function isExternalHref(href: string) {
   return /^https?:\/\//i.test(href);
+}
+
+// Submenu hrefs already carry a `?category=` param, so the currency has to be
+// appended rather than assumed to be the first query param.
+function withCurrency(href: string, currency: string | null) {
+  if (!currency || isExternalHref(href)) return href;
+  return `${href}${href.includes("?") ? "&" : "?"}currency=${encodeURIComponent(currency)}`;
 }
 
 function NavIcon({ title }: { title: string }) {
@@ -96,10 +115,7 @@ function NavLink({ item }: { item: NavItem }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const currency = searchParams.get("currency");
-  const href =
-    currency && !isExternalHref(item.href)
-      ? `${item.href}?currency=${encodeURIComponent(currency)}`
-      : item.href;
+  const href = withCurrency(item.href, currency);
   const isActive =
     item.title === "ENTRY"
       ? pathname === "/"
@@ -148,6 +164,80 @@ function NavLink({ item }: { item: NavItem }) {
     >
       {content}
     </Link>
+  );
+}
+
+function NavSubmenu({
+  items,
+  labelledBy,
+  className,
+  onNavigate,
+}: {
+  items: NavChild[];
+  labelledBy: string;
+  className?: string;
+  onNavigate?: () => void;
+}) {
+  const searchParams = useSearchParams();
+  const currency = searchParams.get("currency");
+
+  return (
+    <ul className={className} aria-label={labelledBy}>
+      {items.map((child) => (
+        <li key={child.href}>
+          <Link
+            href={withCurrency(child.href, currency)}
+            className={styles.submenuLink}
+            onClick={onNavigate}
+          >
+            {child.title}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// Renders a nav entry plus, when it has children, the hover/focus dropdown.
+// The open state is owned by React rather than CSS :hover, so that selecting a
+// child can close the panel while the pointer is still resting on it.
+function NavEntry({ item }: { item: NavItem }) {
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const search = useSearchParams().toString();
+
+  // Any navigation — including a query-only one between two categories —
+  // dismisses the panel.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname, search]);
+
+  if (!item.children?.length) {
+    return <NavLink item={item} />;
+  }
+
+  function handleBlur(event: FocusEvent<HTMLDivElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setOpen(false);
+    }
+  }
+
+  return (
+    <div
+      className={`${styles.navGroup} ${open ? styles.navGroupOpen : ""}`}
+      onPointerEnter={() => setOpen(true)}
+      onPointerLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={handleBlur}
+    >
+      <NavLink item={item} />
+      <NavSubmenu
+        items={item.children}
+        labelledBy={item.title}
+        className={styles.submenu}
+        onNavigate={() => setOpen(false)}
+      />
+    </div>
   );
 }
 
@@ -375,7 +465,7 @@ export function Header({
 
         <nav className={styles.zoneLeft} aria-label="Primary">
           {leftNavItems.map((item) => (
-            <NavLink key={`${item.title}-${item.href}`} item={item} />
+            <NavEntry key={`${item.title}-${item.href}`} item={item} />
           ))}
         </nav>
 
@@ -432,7 +522,20 @@ export function Header({
           </div>
           <nav className={styles.mobileMenuNav}>
             {leftNavItems.map((item) => (
-              <NavLink key={`mobile-left-${item.title}`} item={item} />
+              <div
+                key={`mobile-left-${item.title}`}
+                className={styles.mobileNavGroup}
+              >
+                <NavLink item={item} />
+                {item.children?.length ? (
+                  <NavSubmenu
+                    items={item.children}
+                    labelledBy={item.title}
+                    className={styles.mobileSubmenu}
+                    onNavigate={() => setIsMobileMenuOpen(false)}
+                  />
+                ) : null}
+              </div>
             ))}
           </nav>
           <div className={styles.mobileMenuFooter}>

@@ -446,6 +446,89 @@
   transform: translateX(-50%) scale(1);
 }
 
+/* ─── Hover dropdown ─────────────────────────────────────────────────────────── */
+.navGroup {
+  position: relative;
+  display: inline-flex;
+}
+
+.submenu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  gap: 2rem;
+  min-width: 168rem;
+  /* The top padding bridges the gap to the trigger so the panel survives the
+     pointer travelling down onto it. */
+  padding: 15rem 6rem 6rem;
+  margin: 0;
+  list-style: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -4rem);
+  pointer-events: none;
+  transition:
+    opacity var(--transition-base),
+    transform var(--transition-base),
+    visibility var(--transition-base);
+}
+
+.submenu::before {
+  content: "";
+  position: absolute;
+  inset: 9rem 0 0;
+  border: 1rem solid rgba(255, 255, 255, 0.14);
+  border-radius: 14rem;
+  background: rgba(30, 30, 32, 0.74);
+  box-shadow:
+    0 8rem 24rem rgba(0, 0, 0, 0.22),
+    inset 0 1rem 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18rem) saturate(140%);
+  -webkit-backdrop-filter: blur(18rem) saturate(140%);
+}
+
+/* Opening is driven by the navGroupOpen class, not :hover, so React can close
+   the panel on selection while the pointer is still over it. */
+.navGroupOpen .submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+/* The dropdown takes the place of the tooltip for items that have one. */
+.navGroup:hover .navLink::before,
+.navGroup:focus-within .navLink::before {
+  opacity: 0;
+}
+
+.submenuLink {
+  position: relative;
+  display: block;
+  padding: 9rem 12rem;
+  border-radius: 9rem;
+  font-family: var(--font-family-sans);
+  font-size: 10rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  transition:
+    color var(--transition-base),
+    background var(--transition-base);
+}
+
+.submenuLink:hover,
+.submenuLink:focus-visible {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .navLinkActive {
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.2);
@@ -762,6 +845,31 @@
   border-color: rgba(255, 42, 42, 0.28);
   background: rgba(255, 42, 42, 0.09);
   transform: translateY(-1rem);
+}
+
+.mobileNavGroup {
+  display: grid;
+  gap: 8rem;
+  width: 100%;
+  max-width: 360rem;
+}
+
+.mobileSubmenu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(94rem, 1fr));
+  gap: 6rem;
+  margin: 0;
+  padding: 0 0 0 clamp(16rem, 5vw, 22rem);
+  list-style: none;
+}
+
+.mobileSubmenu .submenuLink {
+  padding: 10rem 8rem;
+  border: 1rem solid rgba(255, 255, 255, 0.1);
+  border-radius: 10rem;
+  background: rgba(255, 255, 255, 0.045);
+  font-size: 11rem;
+  text-align: center;
 }
 
 .mobileMenuFooter {

@@ -10,6 +10,7 @@ type NavItem = {
   title: string;
   href: string;
   count?: number;
+  children?: { title: string; href: string }[];
 };
 
 type ChromeProps = {

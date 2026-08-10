@@ -1,0 +1,23 @@
+.wrap {
+  position: relative;
+}
+
+/* The hold is done with ScrollTrigger's pin rather than position:sticky — the
+   story is taller than the viewport, and no sticky offset can hold the *end*
+   of an over-tall element against the viewport bottom. */
+.storyLayer {
+  position: relative;
+  z-index: 0;
+}
+
+/* The transform lives on an inner element so the sticky layer itself stays
+   untransformed (a transformed sticky element jitters in some browsers). */
+.storyInner {
+  transform-origin: 50% 65%;
+  will-change: transform, opacity;
+}
+
+.manifestoLayer {
+  position: relative;
+  z-index: 1;
+}

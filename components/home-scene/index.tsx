@@ -2,7 +2,6 @@
 
 import { CollectionShowcase } from "components/collection-showcase";
 import { Footer } from "components/footer";
-import { Manifesto } from "components/manifesto";
 import { Newsletter } from "components/newsletter";
 import { PressQuote } from "components/press-quote";
 import {
@@ -157,7 +156,6 @@ export function HomeScene({
         <PressQuote content={brandQuoteContent} />
         <WhyBlckole items={whyChooseItems} />
         <Newsletter />
-        <Manifesto />
         <Footer content={footerContent} />
       </div>
     </div>

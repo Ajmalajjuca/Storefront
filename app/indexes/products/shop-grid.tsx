@@ -7,10 +7,12 @@ import styles from "./page.module.css";
 
 const ALL = "ALL";
 
-type Props = { products: Product[] };
+type Props = { products: Product[]; initialCategory?: string };
 
-export function ShopGrid({ products }: Props) {
-  const [active, setActive] = useState<string>(ALL);
+export function ShopGrid({ products, initialCategory }: Props) {
+  const [active, setActive] = useState<string>(
+    initialCategory?.trim().toUpperCase() || ALL,
+  );
 
   const categories = useMemo(() => {
     const set = new Map<string, string>();

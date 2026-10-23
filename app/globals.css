@@ -76,7 +76,7 @@ html {
 
   /* Header — must match the fixed bar height in
      components/header/index.module.css (.header { height }) */
-  --header-height: 100rem;
+  --header-height: 80rem;
 }
 
 @media (max-width: 900px) {

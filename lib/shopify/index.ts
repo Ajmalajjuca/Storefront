@@ -8,10 +8,11 @@ import {
   SHOPIFY_CHECKOUT_COUNTRY,
   type SupportedCountryCode,
 } from "lib/currency";
+import { sanitizeShopifyHtml } from "lib/sanitize-html";
 import { isShopifyError } from "lib/type-guards";
 import { ensureStartsWith } from "lib/utils";
 import { cacheLife, cacheTag, revalidateTag } from "next/cache";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import {
   addToCartMutation,
@@ -22,10 +23,7 @@ import {
 } from "./mutations/cart";
 import { customerCreateMutation } from "./mutations/customer";
 import { getCartQuery } from "./queries/cart";
-import {
-  getCollectionProductsQuery,
-  getCollectionsQuery,
-} from "./queries/collection";
+import { getCollectionsQuery } from "./queries/collection";
 import {
   getHomeMetaobjectByHandleQuery,
   getHomeMetaobjectsByTypeQuery,
@@ -44,8 +42,6 @@ import {
   Collection,
   Connection,
   BrandQuoteContent,
-  BrandStatementContent,
-  BrandValueItem,
   FooterContent,
   HomeContent,
   Image,
@@ -60,7 +56,6 @@ import {
   ShopifyCartBuyerIdentityUpdateOperation,
   ShopifyCartOperation,
   ShopifyCollection,
-  ShopifyCollectionProductsOperation,
   ShopifyCollectionsOperation,
   ShopifyCreateCartOperation,
   ShopifyCustomerCreateOperation,
@@ -78,13 +73,11 @@ import {
   ShopifyProductsOperation,
   ShopifyRemoveFromCartOperation,
   ShopifyShopPoliciesOperation,
-  StorySection,
   ShopifyUpdateCartOperation,
-  StoryPageContent,
   ShopPolicy,
-  TimelineItem,
   WhyChooseItem,
 } from "./types";
+import { verifyShopifyWebhook } from "./webhook";
 
 const domain = process.env.SHOPIFY_STORE_DOMAIN
   ? ensureStartsWith(process.env.SHOPIFY_STORE_DOMAIN, "https://")
@@ -96,7 +89,7 @@ type ExtractVariables<T> = T extends { variables: object }
   ? T["variables"]
   : never;
 
-export async function shopifyFetch<T>({
+async function shopifyFetch<T>({
   headers,
   query,
   variables,
@@ -250,6 +243,7 @@ const reshapeProduct = (
 
   return {
     ...rest,
+    descriptionHtml: sanitizeShopifyHtml(rest.descriptionHtml),
     images: reshapeImages(images, product.title),
     variants: removeEdgesAndNodes(variants),
     media: reshapeMedia(media),
@@ -312,21 +306,6 @@ const getMetaobjectSortOrder = (
   return Number.isFinite(sortOrder) ? sortOrder : fallback;
 };
 
-const slugifyMetaobjectId = (value: string): string =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-const getMetaobjectImage = (
-  fields: ShopifyMetaobjectField[],
-  key: string,
-): Image | undefined => {
-  const image = fields.find((field) => field.key === key)?.reference?.image;
-  return image?.url ? image : undefined;
-};
-
 const getFirstMetaobject = async (
   type: string,
 ): Promise<ShopifyMetaobject | undefined> => {
@@ -361,25 +340,6 @@ const reshapeHomeContent = (
     heroEyebrow: getMetaobjectFieldValue(fields, "hero_eyebrow"),
     heroTitle: getMetaobjectFieldValue(fields, "hero_title"),
     heroSubtitle: getMetaobjectFieldValue(fields, "hero_subtitle"),
-    primaryButtonText: getMetaobjectFieldValue(fields, "primary_button_text"),
-    primaryButtonLink: getMetaobjectFieldValue(fields, "primary_button_link"),
-    secondaryButtonText: getMetaobjectFieldValue(
-      fields,
-      "secondary_button_text",
-    ),
-    secondaryButtonLink: getMetaobjectFieldValue(
-      fields,
-      "secondary_button_link",
-    ),
-    thirdButtonText: getMetaobjectFieldValue(fields, "third_button_text"),
-    thirdButtonLink: getMetaobjectFieldValue(fields, "third_button_link"),
-    scrollText: getMetaobjectFieldValue(fields, "scroll_text"),
-    heroImage: getMetaobjectImage(fields, "hero_image"),
-    shopLabel: getMetaobjectFieldValue(fields, "shop_label"),
-    shopTitle: getMetaobjectFieldValue(fields, "shop_title"),
-    shopDescription: getMetaobjectFieldValue(fields, "shop_description"),
-    shopButtonText: getMetaobjectFieldValue(fields, "shop_button_text"),
-    shopButtonLink: getMetaobjectFieldValue(fields, "shop_button_link"),
   };
 };
 
@@ -461,85 +421,6 @@ const reshapeBrandQuoteContent = (
   };
 };
 
-const reshapeBrandValueItem = (
-  metaobject: ShopifyMetaobject,
-  index: number,
-): BrandValueItem | undefined => {
-  const name = getFirstMetaobjectFieldValue(metaobject.fields, [
-    "name",
-    "title",
-  ]);
-  const desc = getFirstMetaobjectFieldValue(metaobject.fields, [
-    "desc",
-    "description",
-  ]);
-
-  if (!name || !desc) return undefined;
-
-  return {
-    num:
-      getFirstMetaobjectFieldValue(metaobject.fields, ["num", "number"]) ??
-      String(index + 1).padStart(2, "0"),
-    name,
-    desc,
-    sortOrder: getMetaobjectSortOrder(metaobject.fields, index),
-  };
-};
-
-const reshapeBrandValueItems = (
-  metaobjects: ShopifyMetaobject[],
-): BrandValueItem[] => {
-  return metaobjects
-    .map((metaobject, index) => reshapeBrandValueItem(metaobject, index))
-    .filter((item): item is BrandValueItem => Boolean(item))
-    .sort((a, b) => a.sortOrder - b.sortOrder);
-};
-
-const reshapeBrandStatementContent = (
-  metaobject: ShopifyMetaobject | null | undefined,
-): BrandStatementContent | undefined => {
-  if (!metaobject) return undefined;
-  const { fields } = metaobject;
-  const isActive = getMetaobjectFieldValue(fields, "is_active");
-
-  if (isActive && !["true", "1", "yes"].includes(isActive.toLowerCase())) {
-    return undefined;
-  }
-
-  return {
-    leftTitleLine1: getFirstMetaobjectFieldValue(fields, [
-      "left_title_line_1",
-      "left_title_line",
-      "title_line_1",
-      "heading_line_1",
-      "title",
-    ]),
-    leftTitleLine2: getFirstMetaobjectFieldValue(fields, [
-      "left_title_line_2",
-      "title_line_2",
-      "heading_line_2",
-      "subtitle",
-    ]),
-    badgeText: getFirstMetaobjectFieldValue(fields, [
-      "badge_text",
-      "badge",
-      "pill_text",
-    ]),
-    body: getFirstMetaobjectFieldValue(fields, [
-      "body",
-      "body_text",
-      "statement_text",
-      "description",
-      "right_body",
-    ]),
-    establishedText: getFirstMetaobjectFieldValue(fields, [
-      "established_text",
-      "meta_text",
-      "caption",
-    ]),
-  };
-};
-
 const reshapeFooterContent = (
   metaobject: ShopifyMetaobject | null | undefined,
 ): FooterContent | undefined => {
@@ -593,125 +474,6 @@ const reshapeShopPageContent = (
       "body",
     ]),
   };
-};
-
-const reshapeStoryPageContent = (
-  metaobject: ShopifyMetaobject | null | undefined,
-): StoryPageContent | undefined => {
-  if (!metaobject) return undefined;
-  const { fields } = metaobject;
-
-  return {
-    eyebrow: getFirstMetaobjectFieldValue(fields, ["eyebrow", "label"]),
-    title: getFirstMetaobjectFieldValue(fields, ["title", "heading"]),
-    intro: getFirstMetaobjectFieldValue(fields, [
-      "intro",
-      "description",
-      "subtitle",
-    ]),
-    heroImage: getMetaobjectImage(fields, "hero_image"),
-    heroImageAlt: getFirstMetaobjectFieldValue(fields, [
-      "hero_image_alt",
-      "image_alt",
-    ]),
-    founderEyebrow: getFirstMetaobjectFieldValue(fields, [
-      "founder_eyebrow",
-      "founder_label",
-    ]),
-    founderQuote: getFirstMetaobjectFieldValue(fields, ["founder_quote"]),
-    founderSign: getFirstMetaobjectFieldValue(fields, [
-      "founder_sign",
-      "founder_signature",
-    ]),
-    timelineEyebrow: getFirstMetaobjectFieldValue(fields, [
-      "timeline_eyebrow",
-      "timeline_label",
-    ]),
-    bottomLeft: getFirstMetaobjectFieldValue(fields, ["bottom_left"]),
-    bottomCenter: getFirstMetaobjectFieldValue(fields, ["bottom_center"]),
-    bottomRight: getFirstMetaobjectFieldValue(fields, ["bottom_right"]),
-  };
-};
-
-const reshapeTimelineItem = (
-  metaobject: ShopifyMetaobject,
-  index: number,
-): TimelineItem | undefined => {
-  const year = getFirstMetaobjectFieldValue(metaobject.fields, [
-    "year",
-    "date",
-  ]);
-  const body = getFirstMetaobjectFieldValue(metaobject.fields, [
-    "body",
-    "description",
-    "text",
-  ]);
-
-  if (!year || !body) return undefined;
-
-  return {
-    year,
-    body,
-    sortOrder: getMetaobjectSortOrder(metaobject.fields, index),
-  };
-};
-
-const reshapeTimelineItems = (
-  metaobjects: ShopifyMetaobject[],
-): TimelineItem[] => {
-  return metaobjects
-    .map((metaobject, index) => reshapeTimelineItem(metaobject, index))
-    .filter((item): item is TimelineItem => Boolean(item))
-    .sort((a, b) => a.sortOrder - b.sortOrder);
-};
-
-const reshapeStorySection = (
-  metaobject: ShopifyMetaobject,
-  index: number,
-): StorySection | undefined => {
-  const isActive = getMetaobjectFieldValue(metaobject.fields, "is_active");
-  if (isActive && isActive.toLowerCase() !== "true") return undefined;
-
-  const label = getFirstMetaobjectFieldValue(metaobject.fields, [
-    "title",
-    "label",
-  ]);
-  const body = getFirstMetaobjectFieldValue(metaobject.fields, [
-    "body",
-    "description",
-    "text",
-  ]);
-  if (!label || !body) return undefined;
-
-  const navLabel =
-    getFirstMetaobjectFieldValue(metaobject.fields, ["nav_label"]) ?? label;
-  const num =
-    getFirstMetaobjectFieldValue(metaobject.fields, ["number", "num"]) ??
-    String(index + 1).padStart(2, "0");
-  const id = slugifyMetaobjectId(metaobject.handle ?? navLabel ?? label);
-
-  return {
-    id,
-    num,
-    label,
-    navLabel,
-    body,
-    image: getMetaobjectImage(metaobject.fields, "image"),
-    imageAlt: getFirstMetaobjectFieldValue(metaobject.fields, [
-      "image_alt",
-      "image_alt_text",
-    ]),
-    sortOrder: getMetaobjectSortOrder(metaobject.fields, index),
-  };
-};
-
-const reshapeStorySections = (
-  metaobjects: ShopifyMetaobject[],
-): StorySection[] => {
-  return metaobjects
-    .map((metaobject, index) => reshapeStorySection(metaobject, index))
-    .filter((item): item is StorySection => Boolean(item))
-    .sort((a, b) => a.sortOrder - b.sortOrder);
 };
 
 export async function createCart(
@@ -925,36 +687,6 @@ export async function getBrandQuoteContent(): Promise<
   return reshapeBrandQuoteContent(await getFirstMetaobject("brand_quote"));
 }
 
-export async function getBrandValueItems(): Promise<BrandValueItem[]> {
-  "use cache";
-  cacheTag(TAGS.metaobjects);
-  cacheLife("hours");
-
-  if (!endpoint) {
-    console.log("Skipping getBrandValueItems - Shopify not configured");
-    return [];
-  }
-
-  return reshapeBrandValueItems(await getMetaobjects("brand_value"));
-}
-
-export async function getBrandStatementContent(): Promise<
-  BrandStatementContent | undefined
-> {
-  "use cache";
-  cacheTag(TAGS.metaobjects);
-  cacheLife("hours");
-
-  if (!endpoint) {
-    console.log("Skipping getBrandStatementContent - Shopify not configured");
-    return undefined;
-  }
-
-  return reshapeBrandStatementContent(
-    await getFirstMetaobject("brand_statement_section"),
-  );
-}
-
 export async function getFooterContent(): Promise<FooterContent | undefined> {
   "use cache";
   cacheTag(TAGS.metaobjects);
@@ -981,92 +713,6 @@ export async function getShopPageContent(): Promise<
   }
 
   return reshapeShopPageContent(await getFirstMetaobject("shop_page_content"));
-}
-
-export async function getStoryPageContent(): Promise<
-  StoryPageContent | undefined
-> {
-  "use cache";
-  cacheTag(TAGS.metaobjects);
-  cacheLife("hours");
-
-  if (!endpoint) {
-    console.log("Skipping getStoryPageContent - Shopify not configured");
-    return undefined;
-  }
-
-  return reshapeStoryPageContent(
-    await getFirstMetaobject("story_page_content"),
-  );
-}
-
-export async function getTimelineItems(): Promise<TimelineItem[]> {
-  "use cache";
-  cacheTag(TAGS.metaobjects);
-  cacheLife("hours");
-
-  if (!endpoint) {
-    console.log("Skipping getTimelineItems - Shopify not configured");
-    return [];
-  }
-
-  return reshapeTimelineItems(await getMetaobjects("timeline_item"));
-}
-
-export async function getStorySections(): Promise<StorySection[]> {
-  "use cache";
-  cacheTag(TAGS.metaobjects);
-  cacheLife("hours");
-
-  if (!endpoint) {
-    console.log("Skipping getStorySections - Shopify not configured");
-    return [];
-  }
-
-  return reshapeStorySections(await getMetaobjects("story_section"));
-}
-
-export async function getCollectionProducts({
-  collection,
-  reverse,
-  sortKey,
-  countryCode = DEFAULT_CURRENCY_MARKET.countryCode,
-}: {
-  collection: string;
-  reverse?: boolean;
-  sortKey?: string;
-  countryCode?: SupportedCountryCode;
-}): Promise<Product[]> {
-  "use cache";
-  cacheTag(TAGS.collections, TAGS.products);
-  cacheLife("days");
-
-  if (!endpoint) {
-    console.log(
-      `Skipping getCollectionProducts for '${collection}' - Shopify not configured`,
-    );
-    return [];
-  }
-
-  const res = await shopifyFetch<ShopifyCollectionProductsOperation>({
-    query: getCollectionProductsQuery,
-    variables: {
-      handle: collection,
-      reverse,
-      sortKey: sortKey === "CREATED_AT" ? "CREATED" : sortKey,
-      country: countryCode,
-    },
-  });
-
-  if (!res.body.data.collection) {
-    console.log(`No collection found for \`${collection}\``);
-    return [];
-  }
-
-  return reshapeProducts(
-    removeEdgesAndNodes(res.body.data.collection.products),
-    collection !== "hidden-homepage-featured-items",
-  );
 }
 
 export async function getCollections(): Promise<Collection[]> {
@@ -1117,21 +763,37 @@ export async function getCollections(): Promise<Collection[]> {
   return collections;
 }
 
-export async function getPage(handle: string): Promise<Page> {
+export async function getPage(handle: string): Promise<Page | undefined> {
+  if (!endpoint) {
+    console.log(`Skipping getPage for '${handle}' - Shopify not configured`);
+    return undefined;
+  }
+
   const res = await shopifyFetch<ShopifyPageOperation>({
     query: getPageQuery,
     variables: { handle },
   });
 
-  return res.body.data.pageByHandle;
+  const page = res.body.data.pageByHandle;
+  if (!page) return undefined;
+
+  return { ...page, body: sanitizeShopifyHtml(page.body) };
 }
 
 export async function getPages(): Promise<Page[]> {
+  if (!endpoint) {
+    console.log("Skipping getPages - Shopify not configured");
+    return [];
+  }
+
   const res = await shopifyFetch<ShopifyPagesOperation>({
     query: getPagesQuery,
   });
 
-  return removeEdgesAndNodes(res.body.data.pages);
+  return removeEdgesAndNodes(res.body.data.pages).map((page) => ({
+    ...page,
+    body: sanitizeShopifyHtml(page.body),
+  }));
 }
 
 export async function getProduct(
@@ -1166,6 +828,13 @@ export async function getProductRecommendations(
   cacheTag(TAGS.products);
   cacheLife("days");
 
+  if (!endpoint) {
+    console.log(
+      `Skipping product recommendations for '${productId}' - Shopify not configured`,
+    );
+    return [];
+  }
+
   const res = await shopifyFetch<ShopifyProductRecommendationsOperation>({
     query: getProductRecommendationsQuery,
     variables: {
@@ -1193,6 +862,11 @@ export async function getProducts({
   cacheTag(TAGS.products);
   cacheLife("days");
 
+  if (!endpoint) {
+    console.log("Skipping getProducts - Shopify not configured");
+    return [];
+  }
+
   const res = await shopifyFetch<ShopifyProductsOperation>({
     query: getProductsQuery,
     variables: {
@@ -1215,17 +889,77 @@ export async function getShopPolicies(): Promise<{
   "use cache";
   cacheLife("days");
 
+  if (!endpoint) {
+    console.log("Skipping getShopPolicies - Shopify not configured");
+    return {
+      privacyPolicy: null,
+      refundPolicy: null,
+      termsOfService: null,
+      shippingPolicy: null,
+    };
+  }
+
   const res = await shopifyFetch<ShopifyShopPoliciesOperation>({
     query: getShopPoliciesQuery,
   });
 
-  return res.body.data.shop;
+  const policies = res.body.data.shop;
+  const sanitizePolicy = (policy: ShopPolicy): ShopPolicy =>
+    policy
+      ? {
+          ...policy,
+          body: sanitizeShopifyHtml(policy.body),
+        }
+      : null;
+
+  return {
+    privacyPolicy: sanitizePolicy(policies.privacyPolicy),
+    refundPolicy: sanitizePolicy(policies.refundPolicy),
+    termsOfService: sanitizePolicy(policies.termsOfService),
+    shippingPolicy: sanitizePolicy(policies.shippingPolicy),
+  };
 }
 
-// This is called from `app/api/revalidate.ts` so providers can control revalidation logic.
 export async function revalidate(req: NextRequest): Promise<NextResponse> {
-  // We always need to respond with a 200 status code to Shopify,
-  // otherwise it will continue to retry the request.
+  const webhookSecret = process.env.SHOPIFY_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error("SHOPIFY_WEBHOOK_SECRET is not configured.");
+    return NextResponse.json(
+      { error: "Webhook authentication is not configured." },
+      { status: 503 },
+    );
+  }
+
+  const contentLength = Number(req.headers.get("content-length") ?? 0);
+  if (contentLength > 2_000_000) {
+    return NextResponse.json(
+      { error: "Webhook payload is too large." },
+      { status: 413 },
+    );
+  }
+
+  const payload = await req.text();
+  if (payload.length > 2_000_000) {
+    return NextResponse.json(
+      { error: "Webhook payload is too large." },
+      { status: 413 },
+    );
+  }
+
+  const isAuthentic = verifyShopifyWebhook(
+    payload,
+    req.headers.get("x-shopify-hmac-sha256"),
+    webhookSecret,
+  );
+
+  if (!isAuthentic) {
+    console.error("Invalid Shopify webhook signature.");
+    return NextResponse.json(
+      { error: "Invalid webhook signature." },
+      { status: 401 },
+    );
+  }
+
   const collectionWebhooks = [
     "collections/create",
     "collections/delete",
@@ -1236,19 +970,12 @@ export async function revalidate(req: NextRequest): Promise<NextResponse> {
     "products/delete",
     "products/update",
   ];
-  const topic = (await headers()).get("x-shopify-topic") || "unknown";
-  const secret = req.nextUrl.searchParams.get("secret");
+  const topic = req.headers.get("x-shopify-topic") || "unknown";
   const isCollectionUpdate = collectionWebhooks.includes(topic);
   const isProductUpdate = productWebhooks.includes(topic);
 
-  if (!secret || secret !== process.env.SHOPIFY_REVALIDATION_SECRET) {
-    console.error("Invalid revalidation secret.");
-    return NextResponse.json({ status: 401 });
-  }
-
   if (!isCollectionUpdate && !isProductUpdate) {
-    // We don't need to revalidate anything for any other topics.
-    return NextResponse.json({ status: 200 });
+    return NextResponse.json({ revalidated: false });
   }
 
   if (isCollectionUpdate) {
@@ -1259,5 +986,5 @@ export async function revalidate(req: NextRequest): Promise<NextResponse> {
     revalidateTag(TAGS.products, "seconds");
   }
 
-  return NextResponse.json({ status: 200, revalidated: true, now: Date.now() });
+  return NextResponse.json({ revalidated: true, now: Date.now() });
 }

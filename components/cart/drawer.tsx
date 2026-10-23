@@ -25,20 +25,20 @@ export function CartDrawer({ open, onClose }: Props) {
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
 
-  async function handleRemove(merchandiseId: string) {
-    updateCartItem(merchandiseId, "delete");
+  function handleRemove(merchandiseId: string) {
     startTransition(async () => {
+      updateCartItem(merchandiseId, "delete");
       await removeItem(null, merchandiseId);
     });
   }
 
-  async function handleQty(
+  function handleQty(
     merchandiseId: string,
     delta: "plus" | "minus",
     currentQty: number,
   ) {
-    updateCartItem(merchandiseId, delta);
     startTransition(async () => {
+      updateCartItem(merchandiseId, delta);
       await updateItemQuantity(null, {
         merchandiseId,
         quantity: delta === "plus" ? currentQty + 1 : currentQty - 1,
@@ -80,7 +80,7 @@ export function CartDrawer({ open, onClose }: Props) {
             <div className={styles.empty}>
               <p className={styles.emptyTitle}>Nothing in here yet.</p>
               <p className={styles.emptyDek}>
-                Pick a piece — it&apos;ll wait for you.
+                Pick a piece and it&apos;ll wait for you.
               </p>
               <Link
                 href={productsHref}

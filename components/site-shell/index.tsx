@@ -10,6 +10,7 @@ type NavItem = {
   title: string;
   href: string;
   count?: number;
+  children?: { title: string; href: string }[];
 };
 
 type ChromeProps = {
@@ -45,6 +46,13 @@ function CartAwareChrome({
       delete document.body.dataset.cartOpen;
     };
   }, [cartOpen]);
+
+  useEffect(() => {
+    const openCart = () => setCartOpen(true);
+
+    window.addEventListener("open-cart", openCart);
+    return () => window.removeEventListener("open-cart", openCart);
+  }, []);
 
   return (
     <>

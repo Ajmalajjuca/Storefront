@@ -1,5 +1,9 @@
 "use client";
 
+import type {
+  OptimisticProduct,
+  OptimisticVariant,
+} from "components/cart/cart-context";
 import { useDisplayMoney } from "components/currency/use-display-money";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,13 +25,13 @@ export type ProductCarouselShowcaseItem = {
   priceCurrencyCode?: string;
   image?: string;
   imageAlt?: string;
+  cartProduct?: OptimisticProduct;
+  cartVariant?: OptimisticVariant & { availableForSale: boolean };
 };
 
 type Props = {
   products?: ProductCarouselShowcaseItem[];
   backgroundImage?: string;
-  /** Kept for compatibility; the rail now sizes tiles equally. */
-  visibleProductCount?: 5 | 7;
 };
 
 const defaultBackgroundImage = "/bg-carousel1.png";
@@ -205,28 +209,18 @@ export function ProductCarouselShowcase({
             <h2 id="product-carousel-showcase-title" className={styles.title}>
               Upcoming Collection
             </h2>
-
-            <div className={styles.arrows}>
-              <button
-                type="button"
-                className={styles.arrow}
-                onClick={() => scrollRail(-1)}
-                aria-label="Scroll upcoming products to previous"
-              >
-                <ArrowIcon direction="left" />
-              </button>
-              <button
-                type="button"
-                className={styles.arrow}
-                onClick={() => scrollRail(1)}
-                aria-label="Scroll upcoming products to next"
-              >
-                <ArrowIcon direction="right" />
-              </button>
-            </div>
           </header>
 
           <div className={styles.carousel} aria-label="Upcoming drop carousel">
+            <button
+              type="button"
+              className={`${styles.arrow} ${styles.arrowPrevious}`}
+              onClick={() => scrollRail(-1)}
+              aria-label="Scroll upcoming products to previous"
+            >
+              <ArrowIcon direction="left" />
+            </button>
+
             <div
               className={styles.rail}
               ref={railRef}
@@ -313,6 +307,15 @@ export function ProductCarouselShowcase({
                 ))}
               </div>
             </div>
+
+            <button
+              type="button"
+              className={`${styles.arrow} ${styles.arrowNext}`}
+              onClick={() => scrollRail(1)}
+              aria-label="Scroll upcoming products to next"
+            >
+              <ArrowIcon direction="right" />
+            </button>
           </div>
         </div>
       </div>

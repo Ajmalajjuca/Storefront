@@ -1,7 +1,9 @@
 import { Footer } from "components/footer";
+import { Manifesto } from "components/manifesto";
 import { getFooterContent } from "lib/shopify";
 import type { Metadata } from "next";
 import styles from "./page.module.css";
+import { StoryReveal } from "./story-reveal";
 
 export const metadata: Metadata = {
   title: "Our Story",
@@ -59,31 +61,36 @@ export default async function StoryPage() {
 
   return (
     <>
-      <main className={styles.page}>
-        <section className={styles.storySection} aria-labelledby="story-title">
-          <div className={styles.heroGrid}>
-            <div className={styles.heroCopy}>
-              <h1 id="story-title" className={styles.headline}>
-                Our Story
-              </h1>
-              <p className={styles.intro}>{introParagraph}</p>
+      <StoryReveal manifesto={<Manifesto />}>
+        <main className={styles.page}>
+          <section
+            className={styles.storySection}
+            aria-labelledby="story-title"
+          >
+            <div className={styles.heroGrid}>
+              <div className={styles.heroCopy}>
+                <h1 id="story-title" className={styles.headline}>
+                  Our Story
+                </h1>
+                <p className={styles.intro}>{introParagraph}</p>
+              </div>
             </div>
-          </div>
 
-          <div className={styles.storyBody}>
-            {bodyParagraphs.map((paragraph, index) => (
-              <p
-                key={index}
-                className={`${styles.storyParagraph} ${
-                  index >= bodyParagraphs.length - 2 ? styles.closingLine : ""
-                }`}
-              >
-                {paragraph}
-              </p>
-            ))}
-          </div>
-        </section>
-      </main>
+            <div className={styles.storyBody}>
+              {bodyParagraphs.map((paragraph, index) => (
+                <p
+                  key={index}
+                  className={`${styles.storyParagraph} ${
+                    index >= bodyParagraphs.length - 2 ? styles.closingLine : ""
+                  }`}
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </section>
+        </main>
+      </StoryReveal>
       <Footer content={footerContent} />
     </>
   );

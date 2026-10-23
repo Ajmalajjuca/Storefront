@@ -6,11 +6,11 @@ import { ShopGrid } from "./shop-grid";
 
 export const metadata = {
   title: "Shop",
-  description: "The full line — denim, tops, and layers.",
+  description: "The full line of denim, tops, and layers.",
 };
 
 export default async function ProductsIndexPage(props: {
-  searchParams?: Promise<{ currency?: string }>;
+  searchParams?: Promise<{ currency?: string; category?: string }>;
 }) {
   const searchParams = await props.searchParams;
   const countryCode = await getSelectedCountryCode(searchParams?.currency);
@@ -30,11 +30,17 @@ export default async function ProductsIndexPage(props: {
           </h1>
           <p className={styles.dek}>
             {content?.description ??
-              "Denim, tops, and layers — built to hold attention without asking for it."}
+              "Denim, tops, and layers built to hold attention without asking for it."}
           </p>
         </header>
 
-        <ShopGrid products={products} />
+        {/* Keyed on the category so arriving from the header dropdown while
+            already on this page resets the grid's selected chip. */}
+        <ShopGrid
+          key={searchParams?.category ?? ""}
+          products={products}
+          initialCategory={searchParams?.category}
+        />
       </main>
 
       <Footer content={footerContent} />

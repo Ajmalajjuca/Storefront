@@ -28,7 +28,7 @@ export function NotifyForm() {
         <span className={styles.successTick} aria-hidden="true">
           ✓
         </span>
-        You&apos;re on the list — we&apos;ll email you the moment it drops.
+        You&apos;re on the list we&apos;ll email you the moment it drops.
       </div>
     );
   }

@@ -2,8 +2,6 @@ import { HomeScene } from "components/home-scene";
 import type { ProductCarouselShowcaseItem } from "components/product-carousel-showcase";
 import {
   getBrandQuoteContent,
-  getBrandStatementContent,
-  getBrandValueItems,
   getFooterContent,
   getHomeContent,
   getProducts,
@@ -21,6 +19,9 @@ function mapProductsToCarouselItems(
     .map((product) => {
       const image = product.featuredImage || product.images[0];
       const price = product.priceRange?.minVariantPrice;
+      const cartVariant = product.variants.find(
+        (variant) => variant.availableForSale,
+      );
 
       return {
         id: product.id,
@@ -32,6 +33,15 @@ function mapProductsToCarouselItems(
         priceCurrencyCode: price?.currencyCode,
         image: image?.url,
         imageAlt: image?.altText ?? product.title,
+        cartProduct: image
+          ? {
+              id: product.id,
+              handle: product.handle,
+              title: product.title,
+              featuredImage: image,
+            }
+          : undefined,
+        cartVariant,
       };
     });
 }
@@ -43,8 +53,6 @@ async function BrowserShell({ children }: { children: ReactNode }) {
     serviceBarItems,
     whyChooseItems,
     brandQuoteContent,
-    brandStatementContent,
-    brandValueItems,
     footerContent,
   ] = await Promise.all([
     getHomeContent().catch(() => undefined),
@@ -52,32 +60,19 @@ async function BrowserShell({ children }: { children: ReactNode }) {
     getServiceBarItems().catch(() => []),
     getWhyChooseItems().catch(() => []),
     getBrandQuoteContent().catch(() => undefined),
-    getBrandStatementContent().catch(() => undefined),
-    getBrandValueItems().catch(() => []),
     getFooterContent().catch(() => undefined),
   ]);
 
-  const heroImageUrl = homeContent?.heroImage?.url;
   const carouselProducts = mapProductsToCarouselItems(products);
 
   return (
     <>
-      {heroImageUrl && (
-        <link
-          rel="preload"
-          as="image"
-          href={heroImageUrl}
-          fetchPriority="high"
-        />
-      )}
       <HomeScene
         content={homeContent}
         carouselProducts={carouselProducts}
         serviceBarItems={serviceBarItems}
         whyChooseItems={whyChooseItems}
         brandQuoteContent={brandQuoteContent}
-        brandStatementContent={brandStatementContent}
-        brandValueItems={brandValueItems}
         footerContent={footerContent}
       />
       {children}

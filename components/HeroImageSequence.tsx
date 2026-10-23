@@ -3,76 +3,38 @@
 import React, { useEffect, useRef, useState } from "react";
 
 type HeroImageSequenceProps = {
-  frameCount?: number;
-  framePath?: string;
-  frameExtension?: "webp" | "jpg" | "png";
-  fallbackImage?: string;
-  mobileFrameCount?: number;
-  mobileFramePath?: string;
-  mobileFrameExtension?: "webp" | "jpg" | "png";
-  mobileFallbackImage?: string;
-  disableOnMobile?: boolean;
-  mobileBreakpoint?: number;
   children?: React.ReactNode;
 };
 
+const FRAME_COUNT = 240;
+const FRAME_PATH = "/hero-sequence/ezgif-frame-";
+const FRAME_EXTENSION = "webp";
+const FALLBACK_IMAGE = "/hero-sequence/ezgif-frame-001.webp";
+
 export default function HeroImageSequence({
-  frameCount = 240,
-  framePath = "/hero-sequence/ezgif-frame-",
-  frameExtension = "webp",
-  fallbackImage = "/hero-sequence/ezgif-frame-001.webp",
-  mobileFrameCount,
-  mobileFramePath,
-  mobileFrameExtension,
-  mobileFallbackImage,
-  disableOnMobile = false,
-  mobileBreakpoint = 768,
   children,
 }: HeroImageSequenceProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
-  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [isSafeFallback, setIsSafeFallback] = useState(false);
-
-  const activeFrameCount = isMobileViewport
-    ? (mobileFrameCount ?? frameCount)
-    : frameCount;
-  const activeFramePath = isMobileViewport
-    ? (mobileFramePath ?? framePath)
-    : framePath;
-  const activeFrameExtension = isMobileViewport
-    ? (mobileFrameExtension ?? frameExtension)
-    : frameExtension;
-  const activeFallbackImage = isMobileViewport
-    ? (mobileFallbackImage ?? fallbackImage)
-    : fallbackImage;
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const checkFallback = () => {
-      const isMobile = window.innerWidth < mobileBreakpoint;
-
-      setIsMobileViewport(isMobile);
-      setIsSafeFallback(mediaQuery.matches || (disableOnMobile && isMobile));
-    };
+    const checkFallback = () => setIsSafeFallback(mediaQuery.matches);
 
     checkFallback();
-    window.addEventListener("resize", checkFallback);
 
     if (mediaQuery.addEventListener) {
       mediaQuery.addEventListener("change", checkFallback);
     }
 
     return () => {
-      window.removeEventListener("resize", checkFallback);
-
       if (mediaQuery.removeEventListener) {
         mediaQuery.removeEventListener("change", checkFallback);
       }
     };
-  }, [disableOnMobile, mobileBreakpoint]);
+  }, []);
 
   useEffect(() => {
     if (isSafeFallback) return;
@@ -140,8 +102,8 @@ export default function HeroImageSequence({
       scrollProgress = Math.max(0, Math.min(1, scrollProgress));
 
       const frameIndex = Math.min(
-        activeFrameCount,
-        Math.max(1, Math.floor(scrollProgress * activeFrameCount) + 1),
+        FRAME_COUNT,
+        Math.max(1, Math.floor(scrollProgress * FRAME_COUNT) + 1),
       );
 
       if (frameIndex !== currentFrame) {
@@ -154,10 +116,10 @@ export default function HeroImageSequence({
       requestAnimationFrame(() => renderFrame(currentFrame));
 
     const loadImages = async () => {
-      imagesRef.current = new Array(activeFrameCount + 1);
+      imagesRef.current = new Array(FRAME_COUNT + 1);
 
       const firstImg = new Image();
-      firstImg.src = `${activeFramePath}${String(1).padStart(3, "0")}.${activeFrameExtension}`;
+      firstImg.src = `${FRAME_PATH}${String(1).padStart(3, "0")}.${FRAME_EXTENSION}`;
 
       await new Promise((resolve, reject) => {
         firstImg.onload = () => {
@@ -173,10 +135,10 @@ export default function HeroImageSequence({
       requestAnimationFrame(() => renderFrame(1));
       onScroll();
 
-      for (let i = 2; i <= activeFrameCount; i++) {
+      for (let i = 2; i <= FRAME_COUNT; i++) {
         if (!isMounted) break;
         const img = new Image();
-        img.src = `${activeFramePath}${String(i).padStart(3, "0")}.${activeFrameExtension}`;
+        img.src = `${FRAME_PATH}${String(i).padStart(3, "0")}.${FRAME_EXTENSION}`;
         img.onload = () => {
           imagesRef.current[i] = img;
           if (currentFrame === i) {
@@ -195,7 +157,7 @@ export default function HeroImageSequence({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
-  }, [activeFrameCount, activeFramePath, activeFrameExtension, isSafeFallback]);
+  }, [isSafeFallback]);
 
   return (
     <div
@@ -214,7 +176,7 @@ export default function HeroImageSequence({
       >
         {isSafeFallback ? (
           <img
-            src={activeFallbackImage}
+            src={FALLBACK_IMAGE}
             alt="Hero background fallback"
             style={{
               position: "absolute",
@@ -228,7 +190,7 @@ export default function HeroImageSequence({
         ) : (
           <>
             <img
-              src={activeFallbackImage}
+              src={FALLBACK_IMAGE}
               alt=""
               aria-hidden="true"
               style={{

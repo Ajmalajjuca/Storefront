@@ -1,18 +1,9 @@
-import imageFragment from "../fragments/image";
-
 const metaobjectFields = /* GraphQL */ `
   handle
   type
   fields {
     key
     value
-    reference {
-      ... on MediaImage {
-        image {
-          ...image
-        }
-      }
-    }
   }
 `;
 
@@ -22,7 +13,6 @@ export const getHomeMetaobjectByHandleQuery = /* GraphQL */ `
       ${metaobjectFields}
     }
   }
-  ${imageFragment}
 `;
 
 export const getHomeMetaobjectsByTypeQuery = /* GraphQL */ `
@@ -35,7 +25,6 @@ export const getHomeMetaobjectsByTypeQuery = /* GraphQL */ `
       }
     }
   }
-  ${imageFragment}
 `;
 
 export const getMetaobjectsByTypeQuery = /* GraphQL */ `
@@ -48,5 +37,4 @@ export const getMetaobjectsByTypeQuery = /* GraphQL */ `
       }
     }
   }
-  ${imageFragment}
 `;

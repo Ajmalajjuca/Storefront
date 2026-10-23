@@ -23,9 +23,7 @@ export default async function CollectionsIndexPage() {
               href={`/indexes/collections/${col.handle}`}
               className={styles.card}
             >
-              <div className={styles.cardMedia}>
-                {/* Collection image shown when available via Shopify metafields */}
-              </div>
+              <div className={styles.cardMedia} />
               <div className={styles.cardInfo}>
                 <span className={styles.cardTitle}>{col.title}</span>
               </div>

@@ -25,7 +25,19 @@ export const metadata = {
 
 const leftNavItems = [
   { title: "ENTRY", href: "/" },
-  { title: "COLLECTIONS", href: "/indexes/products" },
+  {
+    title: "COLLECTIONS",
+    href: "/indexes/products",
+    // Each child deep-links into the shop grid's productType filter.
+    children: [
+      { title: "Denim", href: "/indexes/products?category=DENIM" },
+      { title: "Jorts", href: "/indexes/products?category=JORTS" },
+      { title: "T-Shirts", href: "/indexes/products?category=T-SHIRTS" },
+      { title: "Cargo", href: "/indexes/products?category=CARGO" },
+      { title: "Joggers", href: "/indexes/products?category=JOGGERS" },
+      { title: "Women Top", href: "/indexes/products?category=WOMEN%20TOP" },
+    ],
+  },
   { title: "STORY", href: "/story" },
   {
     title: "INSTAGRAM",
@@ -96,7 +108,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Open+Sans:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>

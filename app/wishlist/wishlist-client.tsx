@@ -44,7 +44,7 @@ export function WishlistClient() {
         <p className={styles.eyebrow}>Saved</p>
         <h1 className={styles.headline}>Wishlist</h1>
         <p className={styles.dek}>
-          The pieces you&apos;ve kept an eye on — tap the heart to remove.
+          The pieces you&apos;ve kept an eye on tap the heart to remove.
         </p>
       </header>
 

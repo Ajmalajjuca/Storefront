@@ -205,28 +205,12 @@
 }
 
 @media (max-width: 1100px) {
-  .categoryFeature {
-    --category-title-top: calc(100svh - clamp(98rem, 20vw, 180rem));
-  }
-
   .storyContent {
     width: min(860rem, 86vw);
   }
 }
 
 @media (max-width: 700px) {
-  .categoryShowcase {
-    padding: 48rem 0 60rem;
-  }
-
-  .categoryTitle {
-    font-size: clamp(76rem, 24vw, 158rem);
-  }
-
-  .categoryFeature {
-    --category-title-top: calc(100svh - clamp(88rem, 31vw, 142rem));
-  }
-
   .whySection {
     padding: 72rem var(--grid-margin) 78rem;
   }
